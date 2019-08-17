@@ -663,7 +663,7 @@ shopt -s dotglob
 wget ${GRADLE_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/gradle.zip && \
-unzip ${TEMP_PATH}/gradle.zip \
+unzip ${TEMP_PATH}/gradle.zip && \
 mv ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gradle-)/* \
    ${GRADLE_INSTALL_PATH}
 
