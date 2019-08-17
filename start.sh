@@ -1030,14 +1030,14 @@ Description=${NEW_USER}_${REDIS_INSTALL_DIRECTORY_NAME}
 After=syslog.target network.target
 
 [Service]
-Type=forking
+Type=notify 
 User=${REDIS_USER}
 Group=${DB_USER_GROUP}
-PIDFile=${REDIS_PID_FILE_PATH}
+# PIDFile=${REDIS_PID_FILE_PATH}
 TimeoutStartSec=0
 TimeoutStopSec=0
 PermissionsStartOnly=true
-ExecStart=${REDIS_EXEC_FILE_PATH} ${REDIS_CONFIG_FILE_PATH}
+ExecStart=${REDIS_EXEC_FILE_PATH} ${REDIS_CONFIG_FILE_PATH} --supervised systemd
 ExecStop=${REDIS_CLI_EXEC_FILE_PATH} shutdown
 ExecStopPost=/bin/rm -f ${REDIS_PID_FILE_PATH}
 
