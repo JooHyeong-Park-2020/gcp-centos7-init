@@ -24,11 +24,20 @@ SERVER_USER_GROUP=${NEW_USER}_server_group
 
 NEW_DB_SCHEMA_NAME=demo
 
-NGINX_MAIN_DOMAIN=jhpark.gq
-NEXUS_DOMAIN=nexus.${NGINX_MAIN_DOMAIN}
-DEV_DOMAIN=dev.${NGINX_MAIN_DOMAIN}
-WEBDAV_DOMAIN=webdav.${NGINX_MAIN_DOMAIN}
-DEV_PORT=8081
+MAIN_DOMAIN=jhpark.gq
+
+NEXUS_DOMAIN_PREFIX=nexus
+NEXUS_DOMAIN=${NEXUS_DOMAIN_PREFIX}.${MAIN_DOMAIN}
+
+DEV_DOMAIN_PREFIX=dev
+DEV_DOMAIN=${DEV_DOMAIN_PREFIX}.${MAIN_DOMAIN}
+
+WEBDAV_DOMAIN_PREFIX=webdav
+WEBDAV_DOMAIN=${WEBDAV_DOMAIN_PREFIX}.${MAIN_DOMAIN}
+
+REAL_SERVER_LOCAL_PORT=8080
+DEV_SERVER_LOCAL_PORT=8081
+NEXUS_SERVER_LOCAL_PORT=8090
 
 DOCKER_GROUP_ID=1205
 
@@ -1064,7 +1073,7 @@ usermod -aG ${SERVER_USER_GROUP} ${TOMCAT_USER}
 TOMCAT_INSTALL_DIRECTORY_NAME=tomcat-MASTER
 TOMCAT_PATH=${SERVER_MAIN_PATH}/${TOMCAT_INSTALL_DIRECTORY_NAME}
 TOMCAT_PID_PATH=${TOMCAT_PATH}/pid
-TOMCAT_PORT=8080
+TOMCAT_PORT=${REAL_SERVER_LOCAL_PORT}
 TOMCAT_ADMIN_ID=admin
 TOMCAT_ADMIN_PASSWORD=admin123
 
@@ -1219,7 +1228,7 @@ usermod -aG ${SERVER_USER_GROUP} ${NEXUS_USER}
 
 NEXUS_INSTALL_DIRECTORY_NAME=nexus
 NEXUS_DATA_DIRECTORY_NAME=nexus-data
-NEXUS_PORT=8090
+NEXUS_PORT=${NEXUS_SERVER_LOCAL_PORT}
 # NEXUS_INITIAL_ADMIN_PASSWORD=admin123
 
 NEXUS_PATH=${SERVER_MAIN_PATH}/${NEXUS_INSTALL_DIRECTORY_NAME}
@@ -1750,7 +1759,7 @@ server {
    server_name  ${NEXUS_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/nexus_access.log;
+   access_log   ${NGINX_ACCESS_LOG_PATH}/${NEXUS_DOMAIN_PREFIX}_access.log;
    error_page   500 502 503 504  /50x.html;
 
    proxy_send_timeout  120;
@@ -1803,7 +1812,7 @@ server {
    server_name  ${DEV_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/dev_access.log;
+   access_log   ${NGINX_ACCESS_LOG_PATH}/${DEV_DOMAIN_PREFIX}_access.log;
    error_page   500 502 503 504  /50x.html;
 
    location / {
@@ -1879,7 +1888,7 @@ server {
    server_name  ${WEBDAV_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/webdav_access.log;
+   access_log   ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;
    error_page   500 502 503 504  /50x.html;
 
    location / {
@@ -2100,7 +2109,7 @@ sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
 LINE_NO=`grep -n "access_log" \
    ${NGINX_SITES_AVAILABLE_PATH}/${DEV_DOMAIN} | cut -d: -f1 | head -1`
 
-LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/dev_access.log;"
+LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/${DEV_DOMAIN_PREFIX}_access.log;"
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
    ${NGINX_SITES_AVAILABLE_PATH}/${DEV_DOMAIN}
@@ -2117,7 +2126,7 @@ server {
    server_name  ${DEV_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/dev_access.log;
+   access_log   ${NGINX_ACCESS_LOG_PATH}/${DEV_DOMAIN_PREFIX}_access.log;
 
    # allow large uploads of files
    client_max_body_size 1G;
@@ -2140,7 +2149,7 @@ server {
    ssl_stapling_verify        on;
 
    location / {
-      proxy_pass         http://127.0.0.1:${DEV_PORT};
+      proxy_pass         http://127.0.0.1:${DEV_SERVER_LOCAL_PORT};
  
       proxy_set_header   Host \$host;
       proxy_set_header   X-Real-IP \$remote_addr;
@@ -2185,7 +2194,7 @@ sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
 LINE_NO=`grep -n "access_log" \
    ${NGINX_SITES_AVAILABLE_PATH}/${WEBDAV_DOMAIN} | cut -d: -f1 | head -1`
 
-LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/webdav_access.log;"
+LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;"
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
    ${NGINX_SITES_AVAILABLE_PATH}/${WEBDAV_DOMAIN}
@@ -2202,7 +2211,7 @@ server {
    server_name  ${WEBDAV_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/webdav_access.log;
+   access_log   ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;
 
    # allow large uploads of files
    client_max_body_size 1G;
@@ -2277,7 +2286,7 @@ sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
 LINE_NO=`grep -n "access_log" \
    ${NGINX_SITES_AVAILABLE_PATH}/${NEXUS_DOMAIN} | cut -d: -f1 | head -1`
 
-LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/nexus_access.log;"
+LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/${NEXUS_DOMAIN_PREFIX}_access.log;"
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
    ${NGINX_SITES_AVAILABLE_PATH}/${NEXUS_DOMAIN}
@@ -2294,7 +2303,7 @@ server {
    server_name  ${NEXUS_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/nexus_access.log;
+   access_log   ${NGINX_ACCESS_LOG_PATH}/${NEXUS_DOMAIN_PREFIX}_access.log;
 
    proxy_send_timeout  120;
    proxy_read_timeout  300;
