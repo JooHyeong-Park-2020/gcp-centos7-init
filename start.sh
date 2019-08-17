@@ -35,9 +35,9 @@ DEV_DOMAIN=${DEV_DOMAIN_PREFIX}.${MAIN_DOMAIN}
 WEBDAV_DOMAIN_PREFIX=webdav
 WEBDAV_DOMAIN=${WEBDAV_DOMAIN_PREFIX}.${MAIN_DOMAIN}
 
-REAL_SERVER_PORT=8080
-DEV_SERVER_PORT=8081
-NEXUS_SERVER_PORT=8090
+REAL_SERVER_LOCAL_PORT=8080
+DEV_SERVER_LOCAL_PORT=8081
+NEXUS_SERVER_LOCAL_PORT=8090
 
 DOCKER_GROUP_ID=1205
 
@@ -1073,7 +1073,7 @@ usermod -aG ${SERVER_USER_GROUP} ${TOMCAT_USER}
 TOMCAT_INSTALL_DIRECTORY_NAME=tomcat-MASTER
 TOMCAT_PATH=${SERVER_MAIN_PATH}/${TOMCAT_INSTALL_DIRECTORY_NAME}
 TOMCAT_PID_PATH=${TOMCAT_PATH}/pid
-TOMCAT_PORT=${REAL_SERVER_PORT}
+TOMCAT_PORT=${REAL_SERVER_LOCAL_PORT}
 TOMCAT_ADMIN_ID=admin
 TOMCAT_ADMIN_PASSWORD=admin123
 
@@ -1175,7 +1175,7 @@ systemctl enable ${NEW_USER}_${TOMCAT_INSTALL_DIRECTORY_NAME}
 NODEJS_DOWNLOAD_URL=https://nodejs.org/dist/v10.16.2/node-v10.16.2-linux-x64.tar.xz
 
 # DEPENDENCY_MAIN_PATH 내 NPM 저장소 디렉토리
-NPM_REPOSITORY_DIRECTORY_NAME=npm
+NPM_REPOSITORY_DIRECTORY_NAME=.npm_libraries
 NPM_REPOSITORY_PATH=${DEPENDENCY_MAIN_PATH}/${NPM_REPOSITORY_DIRECTORY_NAME}
 
 mkdir -p ${NPM_REPOSITORY_PATH}
@@ -1300,15 +1300,14 @@ mv ${NEXUS_PATH}/etc/nexus-default.properties \
 cat > ${NEXUS_PATH}/etc/nexus-default.properties \
 <<EOF
 # Jetty section
-application-port=${NEXUS_SERVER_PORT}
+application-port=${NEXUS_SERVER_LOCAL_PORT}
 application-host=0.0.0.0
 nexus-args=\${jetty.etc}/jetty.xml,\${jetty.etc}/jetty-http.xml,\${jetty.etc}/jetty-requestlog.xml
 nexus-context-path=/
 
 # Nexus section
 nexus-edition=nexus-oss-edition
-nexus-features=\
- nexus-oss-feature
+nexus-features=nexus-oss-feature
 EOF
 
 # 넥서스 초기 관리자 비밀번호 생성
@@ -1774,7 +1773,7 @@ server {
    # proxy_max_temp_file_size 2G;
 
    location / {
-      proxy_pass        http://127.0.0.1:${NEXUS_SERVER_PORT};
+      proxy_pass        http://127.0.0.1:${NEXUS_SERVER_LOCAL_PORT};
 
       proxy_set_header  Host \$host;
       proxy_set_header  X-Real-IP \$remote_addr;
@@ -2148,7 +2147,7 @@ server {
    ssl_stapling_verify        on;
 
    location / {
-      proxy_pass         http://127.0.0.1:${DEV_SERVER_PORT};
+      proxy_pass         http://127.0.0.1:${DEV_SERVER_LOCAL_PORT};
  
       proxy_set_header   Host \$host;
       proxy_set_header   X-Real-IP \$remote_addr;
@@ -2330,7 +2329,7 @@ server {
    ssl_stapling_verify        on;
 
    location / {
-      proxy_pass         http://127.0.0.1:${NEXUS_SERVER_PORT};
+      proxy_pass         http://127.0.0.1:${NEXUS_SERVER_LOCAL_PORT};
  
       proxy_set_header   Host \$host;
       proxy_set_header   X-Real-IP \$remote_addr;
