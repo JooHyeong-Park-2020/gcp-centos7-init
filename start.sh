@@ -2456,4 +2456,4 @@ chown -R ${NGINX_USER}:${NGINX_USER_GROUP} \
 chown -R ${NGINX_USER}:${NGINX_USER_GROUP} \
    ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH}
 
-reboot
+# reboot
