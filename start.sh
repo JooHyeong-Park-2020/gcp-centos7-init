@@ -24,11 +24,20 @@ SERVER_USER_GROUP=${NEW_USER}_server_group
 
 NEW_DB_SCHEMA_NAME=demo
 
-NGINX_MAIN_DOMAIN=jhpark.gq
-NEXUS_DOMAIN=nexus.${NGINX_MAIN_DOMAIN}
-DEV_DOMAIN=dev.${NGINX_MAIN_DOMAIN}
-WEBDAV_DOMAIN=webdav.${NGINX_MAIN_DOMAIN}
-DEV_PORT=8081
+MAIN_DOMAIN=jhpark.gq
+
+NEXUS_DOMAIN_PREFIX=nexus
+NEXUS_DOMAIN=${NEXUS_DOMAIN_PREFIX}.${MAIN_DOMAIN}
+
+DEV_DOMAIN_PREFIX=dev
+DEV_DOMAIN=${DEV_DOMAIN_PREFIX}.${MAIN_DOMAIN}
+
+WEBDAV_DOMAIN_PREFIX=webdav
+WEBDAV_DOMAIN=${WEBDAV_DOMAIN_PREFIX}.${MAIN_DOMAIN}
+
+REAL_SERVER_PORT=8080
+DEV_SERVER_PORT=8081
+NEXUS_SERVER_PORT=8090
 
 DOCKER_GROUP_ID=1205
 
@@ -1064,7 +1073,7 @@ usermod -aG ${SERVER_USER_GROUP} ${TOMCAT_USER}
 TOMCAT_INSTALL_DIRECTORY_NAME=tomcat-MASTER
 TOMCAT_PATH=${SERVER_MAIN_PATH}/${TOMCAT_INSTALL_DIRECTORY_NAME}
 TOMCAT_PID_PATH=${TOMCAT_PATH}/pid
-TOMCAT_PORT=8080
+TOMCAT_PORT=${REAL_SERVER_PORT}
 TOMCAT_ADMIN_ID=admin
 TOMCAT_ADMIN_PASSWORD=admin123
 
@@ -1219,7 +1228,6 @@ usermod -aG ${SERVER_USER_GROUP} ${NEXUS_USER}
 
 NEXUS_INSTALL_DIRECTORY_NAME=nexus
 NEXUS_DATA_DIRECTORY_NAME=nexus-data
-NEXUS_PORT=8090
 # NEXUS_INITIAL_ADMIN_PASSWORD=admin123
 
 NEXUS_PATH=${SERVER_MAIN_PATH}/${NEXUS_INSTALL_DIRECTORY_NAME}
@@ -1292,7 +1300,7 @@ mv ${NEXUS_PATH}/etc/nexus-default.properties \
 cat > ${NEXUS_PATH}/etc/nexus-default.properties \
 <<EOF
 # Jetty section
-application-port=${NEXUS_PORT}
+application-port=${NEXUS_SERVER_PORT}
 application-host=0.0.0.0
 nexus-args=\${jetty.etc}/jetty.xml,\${jetty.etc}/jetty-http.xml,\${jetty.etc}/jetty-requestlog.xml
 nexus-context-path=/
@@ -1686,30 +1694,30 @@ EOF
 
 ##############################################################################
 
-# 도메인 디렉토리 생성 : NGINX_MAIN_DOMAIN 운영 도메인 
-mkdir -p ${NGINX_STORE_MAIN_PATH}/${NGINX_MAIN_DOMAIN}
+# 도메인 디렉토리 생성 : MAIN_DOMAIN 운영 도메인 
+mkdir -p ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN}
 
-# NGINX_MAIN_DOMAIN : http 연결 설정
-cat > ${NGINX_SITES_AVAILABLE_PATH}/${NGINX_MAIN_DOMAIN} \
+# MAIN_DOMAIN : http 연결 설정
+cat > ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN} \
 <<EOF
 server {
    listen       80;
    listen       [::]:80;
-   server_name  ${NGINX_MAIN_DOMAIN} www.${NGINX_MAIN_DOMAIN};
+   server_name  ${MAIN_DOMAIN} www.${MAIN_DOMAIN};
    charset      utf-8;
 
    access_log   ${NGINX_ACCESS_LOG_PATH}/main_access.log;
    error_page   500 502 503 504  /50x.html;
 
    location / {
-      root   ${NGINX_STORE_MAIN_PATH}/${NGINX_MAIN_DOMAIN};
+      root   ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN};
       index  index.html index.htm;
    }
 
    # certbot --webroot 인증을 위한 설정
    location ^~/.well-known/acme-challenge/ {
       default_type  "text/plain";
-      root          ${NGINX_STORE_MAIN_PATH}/${NGINX_MAIN_DOMAIN};
+      root          ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN};
    }
 
    # return   301 https://\$host\$request_uri;
@@ -1718,24 +1726,24 @@ server {
 
 EOF
 
-ln -s ${NGINX_SITES_AVAILABLE_PATH}/${NGINX_MAIN_DOMAIN} \
-   ${NGINX_SITES_ENABLED_PATH}/${NGINX_MAIN_DOMAIN}
+ln -s ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN} \
+   ${NGINX_SITES_ENABLED_PATH}/${MAIN_DOMAIN}
 
 cp ${NGINX_PATH}/html/index.html \
-   ${NGINX_STORE_MAIN_PATH}/${NGINX_MAIN_DOMAIN}/index.html
+   ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN}/index.html
 
 # 
 LINE_NO=`grep -n "<h1>Welcome to nginx!</h1>" \
-   ${NGINX_STORE_MAIN_PATH}/${NGINX_MAIN_DOMAIN}/index.html | cut -d: -f1 | head -1`
+   ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN}/index.html | cut -d: -f1 | head -1`
 
 LINE_CONTENT="<h1>Welcome to nginx! - MAIN (운영)</h1>"
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
-   ${NGINX_STORE_MAIN_PATH}/${NGINX_MAIN_DOMAIN}/index.html
+   ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN}/index.html
 
 # 
 cp ${NGINX_PATH}/html/50x.html \
-   ${NGINX_STORE_MAIN_PATH}/${NGINX_MAIN_DOMAIN}/50x.html
+   ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN}/50x.html
 
 ##############################################################################
 
@@ -1750,7 +1758,7 @@ server {
    server_name  ${NEXUS_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/nexus_access.log;
+   access_log   ${NGINX_ACCESS_LOG_PATH}/${NEXUS_DOMAIN_PREFIX}_access.log;
    error_page   500 502 503 504  /50x.html;
 
    proxy_send_timeout  120;
@@ -1766,7 +1774,7 @@ server {
    # proxy_max_temp_file_size 2G;
 
    location / {
-      proxy_pass        http://127.0.0.1:${NEXUS_PORT};
+      proxy_pass        http://127.0.0.1:${NEXUS_SERVER_PORT};
 
       proxy_set_header  Host \$host;
       proxy_set_header  X-Real-IP \$remote_addr;
@@ -1803,7 +1811,7 @@ server {
    server_name  ${DEV_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/dev_access.log;
+   access_log   ${NGINX_ACCESS_LOG_PATH}/${DEV_DOMAIN_PREFIX}_access.log;
    error_page   500 502 503 504  /50x.html;
 
    location / {
@@ -1879,7 +1887,7 @@ server {
    server_name  ${WEBDAV_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/webdav_access.log;
+   access_log   ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;
    error_page   500 502 503 504  /50x.html;
 
    location / {
@@ -1982,45 +1990,45 @@ LETS_ENCRYPT_EMAIL=reverse32@naver.com
 
 # docker -v 옵션 지정시 호스트에 디렉토리가 없으면 docker 가 자동 생성함
 
-# NGINX_MAIN_DOMAIN 운영 도메인 인증
+# MAIN_DOMAIN 운영 도메인 인증
 docker run -it --rm --name certbot \
-   -v "${NGINX_STORE_MAIN_PATH}/${NGINX_MAIN_DOMAIN}:/var/www" \
+   -v "${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN}:/var/www" \
    -v "${LETS_ENCRYPT_INSTALL_PATH}:/etc/letsencrypt" \
    -v "${LETS_ENCRYPT_INSTALL_PATH}/lib:/var/lib/letsencrypt" \
    -v "${LETS_ENCRYPT_INSTALL_PATH}/log:/var/log/letsencrypt" \
    certbot/certbot certonly --webroot \
    --webroot-path /var/www \
-   -d ${NGINX_MAIN_DOMAIN} \
-   -d www.${NGINX_MAIN_DOMAIN} \
+   -d ${MAIN_DOMAIN} \
+   -d www.${MAIN_DOMAIN} \
    --agree-tos \
    --manual-public-ip-logging-ok \
    --email ${LETS_ENCRYPT_EMAIL} \
    --no-eff-email
 
 chmod 701 ${LETS_ENCRYPT_INSTALL_PATH}/live
-chmod 604 ${LETS_ENCRYPT_INSTALL_PATH}/archive/${NGINX_MAIN_DOMAIN}/privkey1.pem
+chmod 604 ${LETS_ENCRYPT_INSTALL_PATH}/archive/${MAIN_DOMAIN}/privkey1.pem
 chmod 701 ${LETS_ENCRYPT_INSTALL_PATH}/archive
 
 # 
 LINE_NO=`grep -n "return" \
-   ${NGINX_SITES_AVAILABLE_PATH}/${NGINX_MAIN_DOMAIN} | cut -d: -f1 | head -1`
+   ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN} | cut -d: -f1 | head -1`
 
 LINE_CONTENT="return   301 https://\$host\$request_uri;"
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
-   ${NGINX_SITES_AVAILABLE_PATH}/${NGINX_MAIN_DOMAIN}
+   ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN}
 
 # 
 LINE_NO=`grep -n "access_log" \
-   ${NGINX_SITES_AVAILABLE_PATH}/${NGINX_MAIN_DOMAIN} | cut -d: -f1 | head -1`
+   ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN} | cut -d: -f1 | head -1`
 
 LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/main_access.log;"
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
-   ${NGINX_SITES_AVAILABLE_PATH}/${NGINX_MAIN_DOMAIN}
+   ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN}
 
-# NGINX_MAIN_DOMAIN 운영 도메인 : 리버스 프록시 설정
-cat >> ${NGINX_SITES_AVAILABLE_PATH}/${NGINX_MAIN_DOMAIN} \
+# MAIN_DOMAIN 운영 도메인 : 리버스 프록시 설정
+cat >> ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN} \
 <<EOF
 # 
 # HTTPS server
@@ -2029,7 +2037,7 @@ server {
    listen       443 ssl default_server;
    listen       [::]:443 ssl default_server;
 
-   server_name  ${NGINX_MAIN_DOMAIN} www.${NGINX_MAIN_DOMAIN};
+   server_name  ${MAIN_DOMAIN} www.${MAIN_DOMAIN};
    charset      utf-8;
 
    access_log   ${NGINX_ACCESS_LOG_PATH}/main_access.log;
@@ -2040,8 +2048,8 @@ server {
    # optimize downloading files larger than 1G
    # proxy_max_temp_file_size 2G;
 
-   ssl_certificate     ${LETS_ENCRYPT_INSTALL_PATH}/live/${NGINX_MAIN_DOMAIN}/fullchain.pem;
-   ssl_certificate_key ${LETS_ENCRYPT_INSTALL_PATH}/live/${NGINX_MAIN_DOMAIN}/privkey.pem;
+   ssl_certificate     ${LETS_ENCRYPT_INSTALL_PATH}/live/${MAIN_DOMAIN}/fullchain.pem;
+   ssl_certificate_key ${LETS_ENCRYPT_INSTALL_PATH}/live/${MAIN_DOMAIN}/privkey.pem;
 
    ssl  on;
    ssl_session_timeout  5m;
@@ -2100,7 +2108,7 @@ sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
 LINE_NO=`grep -n "access_log" \
    ${NGINX_SITES_AVAILABLE_PATH}/${DEV_DOMAIN} | cut -d: -f1 | head -1`
 
-LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/dev_access.log;"
+LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/${DEV_DOMAIN_PREFIX}_access.log;"
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
    ${NGINX_SITES_AVAILABLE_PATH}/${DEV_DOMAIN}
@@ -2117,7 +2125,7 @@ server {
    server_name  ${DEV_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/dev_access.log;
+   access_log   ${NGINX_ACCESS_LOG_PATH}/${DEV_DOMAIN_PREFIX}_access.log;
 
    # allow large uploads of files
    client_max_body_size 1G;
@@ -2140,7 +2148,7 @@ server {
    ssl_stapling_verify        on;
 
    location / {
-      proxy_pass         http://127.0.0.1:${DEV_PORT};
+      proxy_pass         http://127.0.0.1:${DEV_SERVER_PORT};
  
       proxy_set_header   Host \$host;
       proxy_set_header   X-Real-IP \$remote_addr;
@@ -2185,7 +2193,7 @@ sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
 LINE_NO=`grep -n "access_log" \
    ${NGINX_SITES_AVAILABLE_PATH}/${WEBDAV_DOMAIN} | cut -d: -f1 | head -1`
 
-LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/webdav_access.log;"
+LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;"
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
    ${NGINX_SITES_AVAILABLE_PATH}/${WEBDAV_DOMAIN}
@@ -2202,7 +2210,7 @@ server {
    server_name  ${WEBDAV_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/webdav_access.log;
+   access_log   ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;
 
    # allow large uploads of files
    client_max_body_size 1G;
@@ -2277,7 +2285,7 @@ sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
 LINE_NO=`grep -n "access_log" \
    ${NGINX_SITES_AVAILABLE_PATH}/${NEXUS_DOMAIN} | cut -d: -f1 | head -1`
 
-LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/nexus_access.log;"
+LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/${NEXUS_DOMAIN_PREFIX}_access.log;"
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
    ${NGINX_SITES_AVAILABLE_PATH}/${NEXUS_DOMAIN}
@@ -2294,7 +2302,7 @@ server {
    server_name  ${NEXUS_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/nexus_access.log;
+   access_log   ${NGINX_ACCESS_LOG_PATH}/${NEXUS_DOMAIN_PREFIX}_access.log;
 
    proxy_send_timeout  120;
    proxy_read_timeout  300;
@@ -2322,7 +2330,7 @@ server {
    ssl_stapling_verify        on;
 
    location / {
-      proxy_pass         http://127.0.0.1:${NEXUS_PORT};
+      proxy_pass         http://127.0.0.1:${NEXUS_SERVER_PORT};
  
       proxy_set_header   Host \$host;
       proxy_set_header   X-Real-IP \$remote_addr;
