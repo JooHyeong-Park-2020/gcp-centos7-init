@@ -303,7 +303,7 @@ mv ${TEMP_PATH}/$( ls ${TEMP_PATH} | grep rclone- )/* \
 
 # rclone 심볼릭 링크를 사용자 bin 디렉토리에 추가
 ln -s ${RCLONE_INSTALL_PATH}/rclone \
-   /home/${NEW_USER}/bin/rclone
+   /home/${NEW_USER}/bin/rclone  
 
 ##############################################################################
 
