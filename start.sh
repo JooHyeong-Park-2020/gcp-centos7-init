@@ -24,16 +24,16 @@ SERVER_USER_GROUP=${NEW_USER}_server_group
 
 NEW_DB_SCHEMA_NAME=demo
 
-MAIN_DOMAIN=jhpark.gq
+REAL_DOMAIN=jhpark.gq
 
 NEXUS_DOMAIN_PREFIX=nexus
-NEXUS_DOMAIN=${NEXUS_DOMAIN_PREFIX}.${MAIN_DOMAIN}
+NEXUS_DOMAIN=${NEXUS_DOMAIN_PREFIX}.${REAL_DOMAIN}
 
 DEV_DOMAIN_PREFIX=dev
-DEV_DOMAIN=${DEV_DOMAIN_PREFIX}.${MAIN_DOMAIN}
+DEV_DOMAIN=${DEV_DOMAIN_PREFIX}.${REAL_DOMAIN}
 
 WEBDAV_DOMAIN_PREFIX=webdav
-WEBDAV_DOMAIN=${WEBDAV_DOMAIN_PREFIX}.${MAIN_DOMAIN}
+WEBDAV_DOMAIN=${WEBDAV_DOMAIN_PREFIX}.${REAL_DOMAIN}
 
 REAL_SERVER_LOCAL_PORT=8080
 DEV_SERVER_LOCAL_PORT=8081
@@ -67,24 +67,24 @@ usermod -aG ${SERVER_USER_GROUP} ${NEW_USER}
 ##############################################################################
 
 # 개발환경 디렉토리 경로
-DEV_TOOLS_PATH=/dev_tools        # NEW_USER : NEW_USER_GROUO 소유
+DEV_TOOLS_PATH=/dev_tools           # NEW_USER : NEW_USER_GROUO 소유
 
-DATABASE_MAIN_PATH=/dev_db       # NEW_USER : DB_USER_GROUP 소유
-                                 # 디렉토리 내에서 다시 소유자 달라짐
+DATABASE_MAIN_PATH=/dev_db          # NEW_USER : DB_USER_GROUP 소유
+                                    # 디렉토리 내에서 다시 소유자 달라짐
 
-LIBRARY_MAIN_PATH=/dev_lib       # NEW_USER : NEW_USER_GROUO 소유
-                                 # 다른 사용자 읽기/실행 가능
+LIBRARY_MAIN_PATH=/dev_lib          # NEW_USER : NEW_USER_GROUO 소유
+                                    # 다른 사용자 읽기/실행 가능
 
-SERVER_MAIN_PATH=/dev_server     # NEW_USER : SERVER_USER_GROUP 소유
-                                 # 디렉토리 내에서 다시 소유자 달라짐
+SERVER_MAIN_PATH=/dev_server        # NEW_USER : SERVER_USER_GROUP 소유
+                                    # 디렉토리 내에서 다시 소유자 달라짐
 
-REPOSITORY_MAIN_PATH=/dev_repo   # NEW_USER : NGINX_USER_GROUP 소유
+STATIC_FILE_MAIN_PATH=/dev_static   # NEW_USER : NGINX_USER_GROUP 소유
 
 mkdir -p ${DEV_TOOLS_PATH}
 mkdir -p ${DATABASE_MAIN_PATH}
 mkdir -p ${LIBRARY_MAIN_PATH}
 mkdir -p ${SERVER_MAIN_PATH}
-mkdir -p ${REPOSITORY_MAIN_PATH}
+mkdir -p ${STATIC_FILE_MAIN_PATH}
 
 ##############################################################################
 
@@ -107,7 +107,7 @@ chown -R ${NEW_USER}:${NEW_GROUP} ${DEV_TOOLS_PATH}
 chown -R ${NEW_USER}:${DB_USER_GROUP} ${DATABASE_MAIN_PATH}
 chown -R ${NEW_USER}:${NEW_GROUP} ${LIBRARY_MAIN_PATH}
 chown -R ${NEW_USER}:${SERVER_USER_GROUP} ${SERVER_MAIN_PATH}
-chown -R ${NEW_USER}:${NGINX_USER_GROUP} ${REPOSITORY_MAIN_PATH}
+chown -R ${NEW_USER}:${NGINX_USER_GROUP} ${STATIC_FILE_MAIN_PATH}
 
 # LIBRARY_MAIN_PATH 는 모든 사용자가 읽기/실행 가능, 단 쓰기는 소유자만 가능
 chmod 755 ${LIBRARY_MAIN_PATH}
@@ -303,7 +303,31 @@ mv ${TEMP_PATH}/$( ls ${TEMP_PATH} | grep rclone- )/* \
 
 # rclone 심볼릭 링크를 사용자 bin 디렉토리에 추가
 ln -s ${RCLONE_INSTALL_PATH}/rclone \
-   /home/${NEW_USER}/bin/rclone  
+   /home/${NEW_USER}/bin/rclone
+
+##############################################################################
+
+# postman 설치
+
+# postman 다운로드 경로 : 7.5.0 ( 2019-08-12 )
+POSTMAN_DOWNLOAD_URL=https://dl.pstmn.io/download/version/7.5.0/linux64
+
+POSTMAN_INSTALL_DIRECTORY_NAME=postman
+POSTMAN_INSTALL_PATH=${UTILS_MAIN_PATH}/${POSTMAN_INSTALL_DIRECTORY_NAME}
+
+mkdir -p ${POSTMAN_INSTALL_PATH}
+
+# postman 다운로드 / POSTMAN_INSTALL_PATH 에 설치
+wget ${POSTMAN_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/postman.tar.gz && \
+tar -zxf ${TEMP_PATH}/postman.tar.gz \
+   -C ${POSTMAN_INSTALL_PATH} \
+   --strip-components 1
+
+# Postman 심볼릭 링크를 사용자 bin 디렉토리에 추가
+ln -s ${POSTMAN_INSTALL_PATH}/Postman \
+   /home/${NEW_USER}/bin/Postman
 
 ##############################################################################
 
@@ -463,24 +487,24 @@ mkdir -p ${OPENJDK_12_JAVA_HOME_PATH}
 # OPENJDK 1.8 다운로드 / OPENJDK_8_JAVA_HOME_PATH 에 설치
 wget ${OPENJDK_8_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/jdk1.8.tar.gz && \
-tar -zxf ${TEMP_PATH}/jdk1.8.tar.gz \
+   -O ${TEMP_PATH}/jdk1_8.tar.gz && \
+tar -zxf ${TEMP_PATH}/jdk1_8.tar.gz \
    -C ${OPENJDK_8_JAVA_HOME_PATH} \
    --strip-components 1
 
 # OPENJDK 1.11 다운로드 / OPENJDK_11_JAVA_HOME_PATH 에 설치
 wget ${OPENJDK_11_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/jdk1.11.tar.gz && \
-tar -zxf ${TEMP_PATH}/jdk1.11.tar.gz \
+   -O ${TEMP_PATH}/jdk1_11.tar.gz && \
+tar -zxf ${TEMP_PATH}/jdk1_11.tar.gz \
    -C ${OPENJDK_11_JAVA_HOME_PATH} \
    --strip-components 1
 
 # OPENJDK 1.12 다운로드 / OPENJDK_12_JAVA_HOME_PATH 에 설치
 wget ${OPENJDK_12_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/jdk1.12.tar.gz && \
-tar -zxf ${TEMP_PATH}/jdk1.12.tar.gz \
+   -O ${TEMP_PATH}/jdk1_12.tar.gz && \
+tar -zxf ${TEMP_PATH}/jdk1_12.tar.gz \
    -C ${OPENJDK_12_JAVA_HOME_PATH} \
    --strip-components 1
 
@@ -1071,11 +1095,17 @@ usermod -aG ${SERVER_USER_GROUP} ${TOMCAT_USER}
 
 # Tomcat 설치 경로 / 폴더 / PID / 포트
 TOMCAT_INSTALL_DIRECTORY_NAME=tomcat-MASTER
-TOMCAT_PATH=${SERVER_MAIN_PATH}/${TOMCAT_INSTALL_DIRECTORY_NAME}
-TOMCAT_PID_PATH=${TOMCAT_PATH}/pid
+TOMCAT_INSTALL_PATH=${SERVER_MAIN_PATH}/${TOMCAT_INSTALL_DIRECTORY_NAME}
+TOMCAT_PID_PATH=${TOMCAT_INSTALL_PATH}/pid
 TOMCAT_PORT=${REAL_SERVER_LOCAL_PORT}
+
+# host-manager 에 적용되는 admin 계정
 TOMCAT_ADMIN_ID=admin
 TOMCAT_ADMIN_PASSWORD=admin123
+
+# manager 에 적용되는 manager 계정
+TOMCAT_MANAGER_ID=admin
+TOMCAT_MANAGER_PASSWORD=admin123
 
 mkdir -p ${TOMCAT_PID_PATH}
 
@@ -1083,55 +1113,66 @@ wget ${TOMCAT_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/tomcat.tar.gz && \
 tar -zxf ${TEMP_PATH}/tomcat.tar.gz \
-   -C ${TOMCAT_PATH} \
+   -C ${TOMCAT_INSTALL_PATH} \
    --strip-components 1
 
-# ${TOMCAT_PATH}/conf/server.xml 에서 톰캣 가동 포트 변경
+# ${TOMCAT_INSTALL_PATH}/conf/server.xml 에서 톰캣 가동 포트 변경
 LINE_NO=`grep -n "<Connector port=" \
-   ${TOMCAT_PATH}/conf/server.xml | cut -d: -f1 | head -1`
+   ${TOMCAT_INSTALL_PATH}/conf/server.xml | cut -d: -f1 | head -1`
 
 LINE_CONTENT="    <Connector port=\"${TOMCAT_PORT}\" protocol=\"HTTP/1.1\""
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
-   ${TOMCAT_PATH}/conf/server.xml
+   ${TOMCAT_INSTALL_PATH}/conf/server.xml
 
-# ${TOMCAT_PATH}/conf/tomcat-users.xml 에서 </tomcat-users> 닫는 태그 제거
+# ${TOMCAT_INSTALL_PATH}/conf/tomcat-users.xml 에서 </tomcat-users> 닫는 태그 제거
 LINE_NO=`grep -n "</tomcat-users>" \
-   ${TOMCAT_PATH}/conf/tomcat-users.xml | cut -d: -f1 | head -1`
+   ${TOMCAT_INSTALL_PATH}/conf/tomcat-users.xml | cut -d: -f1 | head -1`
 
 LINE_CONTENT=""
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
-   ${TOMCAT_PATH}/conf/tomcat-users.xml
+   ${TOMCAT_INSTALL_PATH}/conf/tomcat-users.xml
 
 
-# ${TOMCAT_PATH}/conf/tomcat-users.xml 에 톰캣 관리자 Role / 계정 추가
-cat >> /${TOMCAT_PATH}/conf/tomcat-users.xml \
+# ${TOMCAT_INSTALL_PATH}/conf/tomcat-users.xml 에 톰캣 관리자 Role / 계정 추가
+cat >> /${TOMCAT_INSTALL_PATH}/conf/tomcat-users.xml \
 <<EOF
+<!-- https://www.lesstif.com/pages/viewpage.action?pageId=18219510 -->
+
+<role rolename="admin"/>
+<role rolename="admin-gui"/>
+<role rolename="admin-script"/>
 
 <role rolename="manager"/>
-<role rolename="manager-gui" />
-<role rolename="manager-script" />
-<role rolename="manager-jmx" />
-<role rolename="manager-status" />
-<role rolename="admin"/>
+<role rolename="manager-gui"/>
+<role rolename="manager-script"/>
+<role rolename="manager-jmx"/>
+<role rolename="manager-status"/>
 
-<user username="${TOMCAT_ADMIN_ID}" password="${TOMCAT_ADMIN_PASSWORD}" roles="admin, manager, manager-gui, manager-script, manager-jmx, manager-status"/>
+<user username="${TOMCAT_ADMIN_ID}" password="${TOMCAT_ADMIN_PASSWORD}" 
+   roles="admin, admin-gui,admin-script"/>
+
+<user username="${TOMCAT_MANAGER_ID}" password="${TOMCAT_MANAGER_PASSWORD}" 
+   roles="manager, manager-gui, manager-script, manager-jmx, manager-status"/>
 
 </tomcat-users>
 EOF
 
-mkdir -p ${TOMCAT_PATH}/conf/Catalina/localhost
+mkdir -p ${TOMCAT_INSTALL_PATH}/conf/Catalina/localhost
 
-# ${TOMCAT_PATH}/conf/Catalina/localhost/manager.xml 추가 : 모든 연결 허용
-cat > /${TOMCAT_PATH}/conf/Catalina/localhost/manager.xml \
+# ${TOMCAT_INSTALL_PATH}/conf/Catalina/localhost/manager.xml 추가 : 모든 연결 허용
+cat > /${TOMCAT_INSTALL_PATH}/conf/Catalina/localhost/manager.xml \
 <<EOF
 <Context privileged="true" antiResourceLocking="false" docBase="\${catalina.home}/webapps/manager">
    <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="^.*\$" />
 </Context>
 EOF
 
-chown -R ${TOMCAT_USER}:${SERVER_USER_GROUP} ${TOMCAT_PATH}
+
+
+
+chown -R ${TOMCAT_USER}:${SERVER_USER_GROUP} ${TOMCAT_INSTALL_PATH}
 
 cat > /usr/lib/systemd/system/${NEW_USER}_${TOMCAT_INSTALL_DIRECTORY_NAME}.service \
 <<EOF
@@ -1147,13 +1188,13 @@ PIDFile=${TOMCAT_PID_PATH}/tomcat.pid
 
 Environment="JAVA_HOME=${OPENJDK_LINK_PATH}"
 Environment="CATALINA_PID=${TOMCAT_PID_PATH}/tomcat.pid"
-Environment="CATALINA_HOME=${TOMCAT_PATH}"
-Environment="CATALINA_BASE=${TOMCAT_PATH}"
+Environment="CATALINA_HOME=${TOMCAT_INSTALL_PATH}"
+Environment="CATALINA_BASE=${TOMCAT_INSTALL_PATH}"
 Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
 # Environment="JAVA_OPTS=-Djava.security.egd=file:///dev/urandom"
 
-ExecStart=${TOMCAT_PATH}/bin/startup.sh
-ExecStop=${TOMCAT_PATH}/bin/shutdown.sh
+ExecStart=${TOMCAT_INSTALL_PATH}/bin/startup.sh
+ExecStop=${TOMCAT_INSTALL_PATH}/bin/shutdown.sh
 ExecStopPost=/bin/rm -f ${TOMCAT_PID_PATH}/tomcat.pid
 
 UMask=0007
@@ -1521,8 +1562,8 @@ mkdir -p ${NGINX_MODULES_PATH}
 mkdir -p ${NGINX_SITES_ENABLED_PATH}
 mkdir -p ${NGINX_SITES_AVAILABLE_PATH}
 
-# REPOSITORY_MAIN_PATH 설치 경로
-NGINX_STORE_MAIN_PATH=${REPOSITORY_MAIN_PATH}/WWW
+# STATIC_FILE_MAIN_PATH 설치 경로
+NGINX_STORE_MAIN_PATH=${STATIC_FILE_MAIN_PATH}/WWW
 mkdir -p ${NGINX_STORE_MAIN_PATH}
 
 ##############################################################################
@@ -1695,30 +1736,30 @@ EOF
 
 ##############################################################################
 
-# 도메인 디렉토리 생성 : MAIN_DOMAIN 운영 도메인 
-mkdir -p ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN}
+# 도메인 디렉토리 생성 : REAL_DOMAIN 운영 도메인 
+mkdir -p ${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN}
 
-# MAIN_DOMAIN : http 연결 설정
-cat > ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN} \
+# REAL_DOMAIN : http 연결 설정
+cat > ${NGINX_SITES_AVAILABLE_PATH}/${REAL_DOMAIN} \
 <<EOF
 server {
    listen       80;
    listen       [::]:80;
-   server_name  ${MAIN_DOMAIN} www.${MAIN_DOMAIN};
+   server_name  ${REAL_DOMAIN} www.${REAL_DOMAIN};
    charset      utf-8;
 
    access_log   ${NGINX_ACCESS_LOG_PATH}/main_access.log;
    error_page   500 502 503 504  /50x.html;
 
    location / {
-      root   ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN};
+      root   ${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN};
       index  index.html index.htm;
    }
 
    # certbot --webroot 인증을 위한 설정
    location ^~/.well-known/acme-challenge/ {
       default_type  "text/plain";
-      root          ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN};
+      root          ${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN};
    }
 
    # return   301 https://\$host\$request_uri;
@@ -1727,24 +1768,24 @@ server {
 
 EOF
 
-ln -s ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN} \
-   ${NGINX_SITES_ENABLED_PATH}/${MAIN_DOMAIN}
+ln -s ${NGINX_SITES_AVAILABLE_PATH}/${REAL_DOMAIN} \
+   ${NGINX_SITES_ENABLED_PATH}/${REAL_DOMAIN}
 
 cp ${NGINX_PATH}/html/index.html \
-   ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN}/index.html
+   ${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN}/index.html
 
 # 
 LINE_NO=`grep -n "<h1>Welcome to nginx!</h1>" \
-   ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN}/index.html | cut -d: -f1 | head -1`
+   ${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN}/index.html | cut -d: -f1 | head -1`
 
 LINE_CONTENT="<h1>Welcome to nginx! - MAIN (운영)</h1>"
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
-   ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN}/index.html
+   ${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN}/index.html
 
 # 
 cp ${NGINX_PATH}/html/50x.html \
-   ${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN}/50x.html
+   ${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN}/50x.html
 
 ##############################################################################
 
@@ -1853,31 +1894,69 @@ cp ${NGINX_PATH}/html/50x.html \
 
 ##############################################################################
 
-# WEBDAV 디렉토리 생성
+# STATIC_FILE_MAIN_PATH 내 WEBDAV 관련 디렉토리 생성
 NGINX_WEBDAV_DIRECTORY_NAME=WEBDAV
 NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME=WEBDAV_temp
 
-NGINX_WEBDAV_MAIN_PATH=${REPOSITORY_MAIN_PATH}/${NGINX_WEBDAV_DIRECTORY_NAME}
-NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH=${REPOSITORY_MAIN_PATH}/${NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME}
+NGINX_WEBDAV_MAIN_PATH=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_DIRECTORY_NAME}
+NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME}
 
 mkdir -p ${NGINX_WEBDAV_MAIN_PATH}
 mkdir -p ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH}
 
-# WEBDAV 사용자 계정 생성
-# openssl 설치시 실행 파일은 /usr/local/bin 에 생성 : 별도 path 불필요 
-# echo "계정이름:$(openssl passwd -crypt 비밀번호)" >> /etc/nginx/.passwd.list
-NGINX_WEBDAV_USER_ID=admin
-NGINX_WEBDAV_USER_PASSWORD=admin123
+# 톰캣에 수동 배포 위해 TOMCAT_INSTALL_PATH 의 webapps 심볼릭 링크 생성
+TOMCAT_WEBAPPS_PATH=${TOMCAT_INSTALL_PATH}/webapps
+TOMCAT_WEBAPPS_LINK_NAME=TOMCAT_WEBAPPS
+NGINX_WEBAPPS_REPO_URL=webapps
+ln -s ${TOMCAT_INSTALL_PATH}/webapps \
+   ${STATIC_FILE_MAIN_PATH}/${TOMCAT_WEBAPPS_LINK_NAME}
 
-NGINX_WEBDAV_PASSWD_LIST_NAME=.htpasswd
+# WEBDAV 계정 정보 저장할 디렉토리 생성
 NGINX_WEBDAV_PASSWD_LIST_DIRECTORY_NAME=.passwd
 NGINX_WEBDAV_PASSWD_LIST_PATH=${NGINX_PATH}/${NGINX_WEBDAV_PASSWD_LIST_DIRECTORY_NAME}
 
 mkdir -p ${NGINX_WEBDAV_PASSWD_LIST_PATH}
 
-# WEBDAV 계정 파일 생성
+# openssl 설치시 실행 파일은 /usr/local/bin 에 생성 : 별도 path 불필요 
+# echo "계정이름:$(openssl passwd -crypt 비밀번호)" >> (...)/(계정 저장 파일명)
+
+# WEBDAV 디렉토리 접속할 계정 정보 / WEBDAV 계정 파일 생성
+NGINX_WEBDAV_USER_ID=admin
+NGINX_WEBDAV_USER_PASSWORD=admin123
+
+NGINX_WEBDAV_PASSWD_LIST_NAME=.htpasswd-WEBDAV
+
 echo "${NGINX_WEBDAV_USER_ID}:$(openssl passwd -crypt ${NGINX_WEBDAV_USER_PASSWORD})" >> \
     ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBDAV_PASSWD_LIST_NAME}
+
+# WEBAPPS 링크 디렉토리 접속할 계정 정보 / WEBAPPS 계정 파일 생성
+NGINX_WEBAPPS_USER_ID=admin
+NGINX_WEBAPPS_USER_PASSWORD=admin123
+
+NGINX_WEBAPPS_PASSWD_LIST_NAME=.htpasswd-WEBAPPS
+
+echo "${NGINX_WEBAPPS_USER_ID}:$(openssl passwd -crypt ${NGINX_WEBAPPS_USER_PASSWORD})" >> \
+    ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBAPPS_PASSWD_LIST_NAME}
+
+# 개발 도메인의 정적 파일 저장 디렉토리 접속할 계정 정보 / 계정 파일 생성
+NGINX_DEV_REPO_USER_ID=admin
+NGINX_DEV_REPO_USER_PASSWORD=admin123
+
+NGINX_DEV_REPO_PASSWD_LIST_NAME=.htpasswd-DEV_REPO
+NGINX_DEV_REPO_URL=dev
+
+echo "${NGINX_DEV_REPO_USER_ID}:$(openssl passwd -crypt ${NGINX_DEV_REPO_USER_PASSWORD})" >> \
+    ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_DEV_REPO_PASSWD_LIST_NAME}
+
+# 운영 도메인 정적 파일 저장 디렉토리 접속할 계정 정보 / 계정 파일 생성
+NGINX_REAL_REPO_USER_ID=admin
+NGINX_REAL_REPO_USER_PASSWORD=admin123
+
+NGINX_REAL_REPO_PASSWD_LIST_NAME=.htpasswd-REAL_REPO
+NGINX_REAL_REPO_URL=real
+
+echo "${NGINX_REAL_REPO_USER_ID}:$(openssl passwd -crypt ${NGINX_REAL_REPO_USER_PASSWORD})" >> \
+    ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_REAL_REPO_PASSWD_LIST_NAME}
 
 # WEBDAV_DOMAIN : http 연결 설정
 cat > ${NGINX_SITES_AVAILABLE_PATH}/${WEBDAV_DOMAIN} \
@@ -1888,25 +1967,45 @@ server {
    server_name  ${WEBDAV_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;
    error_page   500 502 503 504  /50x.html;
 
+   dav_methods            PUT DELETE MKCOL COPY MOVE;
+   dav_ext_methods        PROPFIND OPTIONS;
+   dav_access             user:rw group:rw all:r;
+   autoindex              on;
+
+   client_body_temp_path  ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH};
+   create_full_put_path   on;
+   client_max_body_size   0;
+
    location / {
-        charset                utf-8;
-        root                   ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 실행 디렉토리
-        dav_methods            PUT DELETE MKCOL COPY MOVE;
-        dav_ext_methods        PROPFIND OPTIONS;
-        dav_access             user:rw group:rw all:r;
-        autoindex              on;
-
-        client_body_temp_path  ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH};
-        create_full_put_path   on;
-        client_max_body_size   0;
-        
-        auth_basic             "Restricted Access";
-        auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBDAV_PASSWD_LIST_NAME};
-
+      access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;
+      root                   ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 실행 디렉토리        
+      auth_basic             "WEBDAV Access";
+      auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBDAV_PASSWD_LIST_NAME};
    }
+
+   location /${NGINX_WEBAPPS_REPO_URL}  {
+      access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_WEBAPPS_REPO_URL}_access.log;
+      root                   ${STATIC_FILE_MAIN_PATH}/${TOMCAT_WEBAPPS_LINK_NAME};   # webapps 링크 디렉토리        
+      auth_basic             "WEBAPPS Access";
+      auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBAPPS_PASSWD_LIST_NAME};
+   }
+
+   location /${NGINX_DEV_REPO_URL}  {
+      access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_DEV_REPO_URL}_access.log;
+      root                   ${NGINX_STORE_MAIN_PATH}/${DEV_DOMAIN};   # DEV-REPO 디렉토리        
+      auth_basic             "DEV-REPO Access";
+      auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_DEV_REPO_PASSWD_LIST_NAME};
+   }
+
+   location /${NGINX_REAL_REPO_URL} {
+      access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_REAL_REPO_URL}_access.log;
+      root                   ${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN};   # REAL-REPO 디렉토리        
+      auth_basic             "REAL-REPO Access";
+      auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_REAL_REPO_PASSWD_LIST_NAME};
+   }
+
 
    # certbot --webroot 인증을 위한 설정
    location ^~/.well-known/acme-challenge/ {
@@ -1991,45 +2090,45 @@ LETS_ENCRYPT_EMAIL=reverse32@naver.com
 
 # docker -v 옵션 지정시 호스트에 디렉토리가 없으면 docker 가 자동 생성함
 
-# MAIN_DOMAIN 운영 도메인 인증
+# REAL_DOMAIN 운영 도메인 인증
 docker run -it --rm --name certbot \
-   -v "${NGINX_STORE_MAIN_PATH}/${MAIN_DOMAIN}:/var/www" \
+   -v "${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN}:/var/www" \
    -v "${LETS_ENCRYPT_INSTALL_PATH}:/etc/letsencrypt" \
    -v "${LETS_ENCRYPT_INSTALL_PATH}/lib:/var/lib/letsencrypt" \
    -v "${LETS_ENCRYPT_INSTALL_PATH}/log:/var/log/letsencrypt" \
    certbot/certbot certonly --webroot \
    --webroot-path /var/www \
-   -d ${MAIN_DOMAIN} \
-   -d www.${MAIN_DOMAIN} \
+   -d ${REAL_DOMAIN} \
+   -d www.${REAL_DOMAIN} \
    --agree-tos \
    --manual-public-ip-logging-ok \
    --email ${LETS_ENCRYPT_EMAIL} \
    --no-eff-email
 
 chmod 701 ${LETS_ENCRYPT_INSTALL_PATH}/live
-chmod 604 ${LETS_ENCRYPT_INSTALL_PATH}/archive/${MAIN_DOMAIN}/privkey1.pem
+chmod 604 ${LETS_ENCRYPT_INSTALL_PATH}/archive/${REAL_DOMAIN}/privkey1.pem
 chmod 701 ${LETS_ENCRYPT_INSTALL_PATH}/archive
 
 # 
 LINE_NO=`grep -n "return" \
-   ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN} | cut -d: -f1 | head -1`
+   ${NGINX_SITES_AVAILABLE_PATH}/${REAL_DOMAIN} | cut -d: -f1 | head -1`
 
 LINE_CONTENT="return   301 https://\$host\$request_uri;"
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
-   ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN}
+   ${NGINX_SITES_AVAILABLE_PATH}/${REAL_DOMAIN}
 
 # 
 LINE_NO=`grep -n "access_log" \
-   ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN} | cut -d: -f1 | head -1`
+   ${NGINX_SITES_AVAILABLE_PATH}/${REAL_DOMAIN} | cut -d: -f1 | head -1`
 
 LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/main_access.log;"
 
 sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
-   ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN}
+   ${NGINX_SITES_AVAILABLE_PATH}/${REAL_DOMAIN}
 
-# MAIN_DOMAIN 운영 도메인 : 리버스 프록시 설정
-cat >> ${NGINX_SITES_AVAILABLE_PATH}/${MAIN_DOMAIN} \
+# REAL_DOMAIN 운영 도메인 : 리버스 프록시 설정
+cat >> ${NGINX_SITES_AVAILABLE_PATH}/${REAL_DOMAIN} \
 <<EOF
 # 
 # HTTPS server
@@ -2038,7 +2137,7 @@ server {
    listen       443 ssl default_server;
    listen       [::]:443 ssl default_server;
 
-   server_name  ${MAIN_DOMAIN} www.${MAIN_DOMAIN};
+   server_name  ${REAL_DOMAIN} www.${REAL_DOMAIN};
    charset      utf-8;
 
    access_log   ${NGINX_ACCESS_LOG_PATH}/main_access.log;
@@ -2049,8 +2148,8 @@ server {
    # optimize downloading files larger than 1G
    # proxy_max_temp_file_size 2G;
 
-   ssl_certificate     ${LETS_ENCRYPT_INSTALL_PATH}/live/${MAIN_DOMAIN}/fullchain.pem;
-   ssl_certificate_key ${LETS_ENCRYPT_INSTALL_PATH}/live/${MAIN_DOMAIN}/privkey.pem;
+   ssl_certificate     ${LETS_ENCRYPT_INSTALL_PATH}/live/${REAL_DOMAIN}/fullchain.pem;
+   ssl_certificate_key ${LETS_ENCRYPT_INSTALL_PATH}/live/${REAL_DOMAIN}/privkey.pem;
 
    ssl  on;
    ssl_session_timeout  5m;
@@ -2191,13 +2290,13 @@ sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
    ${NGINX_SITES_AVAILABLE_PATH}/${WEBDAV_DOMAIN}
 
 # 
-LINE_NO=`grep -n "access_log" \
-   ${NGINX_SITES_AVAILABLE_PATH}/${WEBDAV_DOMAIN} | cut -d: -f1 | head -1`
+# LINE_NO=`grep -n "access_log" \
+#    ${NGINX_SITES_AVAILABLE_PATH}/${WEBDAV_DOMAIN} | cut -d: -f1 | head -1`
 
-LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;"
+# LINE_CONTENT="#  access_log   ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;"
 
-sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
-   ${NGINX_SITES_AVAILABLE_PATH}/${WEBDAV_DOMAIN}
+# sed -i "${LINE_NO}s@.*@${LINE_CONTENT}@" \
+#    ${NGINX_SITES_AVAILABLE_PATH}/${WEBDAV_DOMAIN}
 
 # WEBDAV_DOMAIN 도메인 : 리버스 프록시 설정
 cat >> ${NGINX_SITES_AVAILABLE_PATH}/${WEBDAV_DOMAIN} \
@@ -2234,22 +2333,43 @@ server {
    ssl_stapling               on;
    ssl_stapling_verify        on;
 
+   dav_methods            PUT DELETE MKCOL COPY MOVE;
+   dav_ext_methods        PROPFIND OPTIONS;
+   dav_access             user:rw group:rw all:r;
+   autoindex              on;
+
+   client_body_temp_path  ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH};
+   create_full_put_path   on;
+   client_max_body_size   0;
+
    location / {
-      charset                utf-8;
-      root                   ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 실행 디렉토리
-      dav_methods            PUT DELETE MKCOL COPY MOVE;
-      dav_ext_methods        PROPFIND OPTIONS;
-      dav_access             user:rw group:rw all:r;
-      autoindex              on;
-
-      client_body_temp_path  ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH};
-      create_full_put_path   on;
-      client_max_body_size   0;
-
-      auth_basic             "Restricted Access";
+      access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;
+      root                   ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 실행 디렉토리        
+      auth_basic             "WEBDAV Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBDAV_PASSWD_LIST_NAME};
-
    }
+
+   location /${NGINX_WEBAPPS_REPO_URL}  {
+      access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_WEBAPPS_REPO_URL}_access.log;
+      root                   ${STATIC_FILE_MAIN_PATH}/${TOMCAT_WEBAPPS_LINK_NAME};   # webapps 링크 디렉토리        
+      auth_basic             "WEBAPPS Access";
+      auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBAPPS_PASSWD_LIST_NAME};
+   }
+
+   location /${NGINX_DEV_REPO_URL}  {
+      access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_DEV_REPO_URL}_access.log;
+      root                   ${NGINX_STORE_MAIN_PATH}/${DEV_DOMAIN};   # DEV-REPO 디렉토리        
+      auth_basic             "DEV-REPO Access";
+      auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_DEV_REPO_PASSWD_LIST_NAME};
+   }
+
+   location /${NGINX_REAL_REPO_URL} {
+      access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_REAL_REPO_URL}_access.log;
+      root                   ${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN};   # REAL-REPO 디렉토리        
+      auth_basic             "REAL-REPO Access";
+      auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_REAL_REPO_PASSWD_LIST_NAME};
+   }
+
 }
 EOF
 
@@ -2394,7 +2514,7 @@ export MARIADB_BASE=${MARIA_DB_INSTALL_PATH}
 export REDIS_BASE=${REDIS_INSTALL_PATH}
 
 # 사용자 CATALINA_HOME 환경변수 추가 : tomcat 설치 경로 
-export CATALINA_HOME=${TOMCAT_PATH}
+export CATALINA_HOME=${TOMCAT_INSTALL_PATH}
 
 # 사용자 NODEJS_HOME 환경변수 추가 : node.js 설치 경로 
 export NODEJS_HOME=${NODEJS_INSTALL_PATH}
