@@ -1669,7 +1669,7 @@ make install
 cd ..
 
 ##############################################################################
-
+# nginx.conf 원본 파일 백업
 cp ${NGINX_PATH}/nginx.conf \
    ${NGINX_PATH}/nginx_origin_backup.conf
 
@@ -1720,16 +1720,17 @@ http {
       application/rss+xml
       image/svg+xml;
 
-   error_log ${NGINX_ERROR_LOG_PATH}/error.log crit;
+    # error 로그는 도메인 상관없이 통합으로 관리함
+    error_log ${NGINX_ERROR_LOG_PATH}/error.log crit;
 
-   include       mime.types;
-   default_type  application/octet-stream;
+    include       mime.types;
+    default_type  application/octet-stream;
 
-   include ${NGINX_SITES_ENABLED_PATH}/*;
+    include ${NGINX_SITES_ENABLED_PATH}/*;
 
-   log_format   main '\$remote_addr - \$remote_user [\$time_local]  \$status '
-    '"\$request" \$body_bytes_sent "\$http_referer" '
-    '"\$http_user_agent" "\$http_x_forwarded_for"';
+    log_format   main '\$remote_addr - \$remote_user [\$time_local]  \$status '
+        '"\$request" \$body_bytes_sent "\$http_referer" '
+        '"\$http_user_agent" "\$http_x_forwarded_for"';
 
 }
 EOF
@@ -1895,10 +1896,10 @@ cp ${NGINX_PATH}/html/50x.html \
 ##############################################################################
 
 # STATIC_FILE_MAIN_PATH 내 WEBDAV 관련 디렉토리 생성
-NGINX_WEBDAV_DIRECTORY_NAME=WEBDAV
-NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME=WEBDAV_temp
+NGINX_WEBDAV_MAIN_DIRECTORY_NAME=WEBDAV-MAIN
+NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME=WEBDAV-temp
 
-NGINX_WEBDAV_MAIN_PATH=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_DIRECTORY_NAME}
+NGINX_WEBDAV_MAIN_PATH=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_MAIN_DIRECTORY_NAME}
 NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME}
 
 mkdir -p ${NGINX_WEBDAV_MAIN_PATH}
@@ -1906,16 +1907,24 @@ mkdir -p ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH}
 
 # 톰캣에 수동 배포 위해 TOMCAT_INSTALL_PATH 의 webapps 심볼릭 링크 생성
 TOMCAT_WEBAPPS_PATH=${TOMCAT_INSTALL_PATH}/webapps
-TOMCAT_WEBAPPS_LINK_NAME=TOMCAT_WEBAPPS
+TOMCAT_WEBAPPS_LINK_NAME=TOMCAT-WEBAPPS
 NGINX_WEBAPPS_REPO_URL=webapps
 ln -s ${TOMCAT_INSTALL_PATH}/webapps \
    ${STATIC_FILE_MAIN_PATH}/${TOMCAT_WEBAPPS_LINK_NAME}
+
+# 운영 서버 도메인 정적 파일 저장 경로
+REAL_DOMAIN_REPO_PATH=${NGINX_STORE_MAIN_PATH}/${DEV_DOMAIN}
+
+# 개발 서버 도메인 정적파일 저장 경로
+DEV_DOMAIN_REPO_PATH=${NGINX_STORE_MAIN_PATH}/${DEV_DOMAIN}
 
 # WEBDAV 계정 정보 저장할 디렉토리 생성
 NGINX_WEBDAV_PASSWD_LIST_DIRECTORY_NAME=.passwd
 NGINX_WEBDAV_PASSWD_LIST_PATH=${NGINX_PATH}/${NGINX_WEBDAV_PASSWD_LIST_DIRECTORY_NAME}
 
 mkdir -p ${NGINX_WEBDAV_PASSWD_LIST_PATH}
+
+##############################################################################
 
 # openssl 설치시 실행 파일은 /usr/local/bin 에 생성 : 별도 path 불필요 
 # echo "계정이름:$(openssl passwd -crypt 비밀번호)" >> (...)/(계정 저장 파일명)
@@ -1924,16 +1933,16 @@ mkdir -p ${NGINX_WEBDAV_PASSWD_LIST_PATH}
 NGINX_WEBDAV_USER_ID=admin
 NGINX_WEBDAV_USER_PASSWORD=admin123
 
-NGINX_WEBDAV_PASSWD_LIST_NAME=.htpasswd-WEBDAV
+NGINX_WEBDAV_PASSWD_LIST_NAME=.htpasswd-${NGINX_WEBDAV_MAIN_DIRECTORY_NAME}
 
 echo "${NGINX_WEBDAV_USER_ID}:$(openssl passwd -crypt ${NGINX_WEBDAV_USER_PASSWORD})" >> \
     ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBDAV_PASSWD_LIST_NAME}
 
-# WEBAPPS 링크 디렉토리 접속할 계정 정보 / WEBAPPS 계정 파일 생성
+# 톰캣 WEBAPPS 링크 디렉토리 접속할 계정 정보 / WEBAPPS 계정 파일 생성
 NGINX_WEBAPPS_USER_ID=admin
 NGINX_WEBAPPS_USER_PASSWORD=admin123
 
-NGINX_WEBAPPS_PASSWD_LIST_NAME=.htpasswd-WEBAPPS
+NGINX_WEBAPPS_PASSWD_LIST_NAME=.htpasswd-${TOMCAT_WEBAPPS_LINK_NAME}
 
 echo "${NGINX_WEBAPPS_USER_ID}:$(openssl passwd -crypt ${NGINX_WEBAPPS_USER_PASSWORD})" >> \
     ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBAPPS_PASSWD_LIST_NAME}
@@ -1942,8 +1951,8 @@ echo "${NGINX_WEBAPPS_USER_ID}:$(openssl passwd -crypt ${NGINX_WEBAPPS_USER_PASS
 NGINX_DEV_REPO_USER_ID=admin
 NGINX_DEV_REPO_USER_PASSWORD=admin123
 
-NGINX_DEV_REPO_PASSWD_LIST_NAME=.htpasswd-DEV_REPO
 NGINX_DEV_REPO_URL=dev
+NGINX_DEV_REPO_PASSWD_LIST_NAME=.htpasswd-${NGINX_DEV_REPO_URL}
 
 echo "${NGINX_DEV_REPO_USER_ID}:$(openssl passwd -crypt ${NGINX_DEV_REPO_USER_PASSWORD})" >> \
     ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_DEV_REPO_PASSWD_LIST_NAME}
@@ -1952,8 +1961,8 @@ echo "${NGINX_DEV_REPO_USER_ID}:$(openssl passwd -crypt ${NGINX_DEV_REPO_USER_PA
 NGINX_REAL_REPO_USER_ID=admin
 NGINX_REAL_REPO_USER_PASSWORD=admin123
 
-NGINX_REAL_REPO_PASSWD_LIST_NAME=.htpasswd-REAL_REPO
 NGINX_REAL_REPO_URL=real
+NGINX_REAL_REPO_PASSWD_LIST_NAME=.htpasswd-${NGINX_REAL_REPO_URL}
 
 echo "${NGINX_REAL_REPO_USER_ID}:$(openssl passwd -crypt ${NGINX_REAL_REPO_USER_PASSWORD})" >> \
     ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_REAL_REPO_PASSWD_LIST_NAME}
@@ -1980,7 +1989,7 @@ server {
 
    location / {
       access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;
-      root                   ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 실행 디렉토리        
+      root                   ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 메인 디렉토리        
       auth_basic             "WEBDAV Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBDAV_PASSWD_LIST_NAME};
    }
@@ -2310,8 +2319,6 @@ server {
    server_name  ${WEBDAV_DOMAIN};
    charset      utf-8;
 
-   access_log   ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;
-
    # allow large uploads of files
    client_max_body_size 1G;
    
@@ -2344,7 +2351,7 @@ server {
 
    location / {
       access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;
-      root                   ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 실행 디렉토리        
+      root                   ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 메인 디렉토리        
       auth_basic             "WEBDAV Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBDAV_PASSWD_LIST_NAME};
    }
