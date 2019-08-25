@@ -1996,7 +1996,7 @@ server {
       autoindex              on;
       index                  main_index.html;
       access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_WEBDAV_MAIN_REPO_URL}_access.log;
-      root                   ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 메인 디렉토리        
+      alias                  ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 메인 디렉토리        
       auth_basic             "WEBDAV Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBDAV_PASSWD_LIST_NAME};
       try_files              \$uri \$uri/ =404;
@@ -2007,7 +2007,7 @@ server {
       autoindex              on;
       # index                webapps_index.html;
       access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_WEBAPPS_REPO_URL}_access.log;
-      root                   ${STATIC_FILE_MAIN_PATH}/${TOMCAT_WEBAPPS_LINK_NAME};   # webapps 링크 디렉토리        
+      alias                  ${STATIC_FILE_MAIN_PATH}/${TOMCAT_WEBAPPS_LINK_NAME};   # webapps 링크 디렉토리        
       auth_basic             "WEBAPPS Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBAPPS_PASSWD_LIST_NAME};
       try_files              \$uri \$uri/ =404;
