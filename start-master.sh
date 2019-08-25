@@ -1897,9 +1897,10 @@ cp ${NGINX_PATH}/html/50x.html \
 
 # STATIC_FILE_MAIN_PATH 내 WEBDAV 관련 디렉토리 생성
 NGINX_WEBDAV_MAIN_DIRECTORY_NAME=WEBDAV-MAIN
-NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME=WEBDAV-temp
-
 NGINX_WEBDAV_MAIN_PATH=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_MAIN_DIRECTORY_NAME}
+NGINX_WEBDAV_MAIN_REPO_URL=main
+
+NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME=WEBDAV-temp
 NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME}
 
 mkdir -p ${NGINX_WEBDAV_MAIN_PATH}
@@ -1980,7 +1981,7 @@ server {
 
    dav_methods            PUT DELETE MKCOL COPY MOVE;
    dav_ext_methods        PROPFIND OPTIONS;
-   dav_access             user:rw group:rw all:r;
+   dav_access             user:rw  group:rw  all:r;
    autoindex              on;
 
    client_body_temp_path  ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH};
@@ -1988,33 +1989,52 @@ server {
    client_max_body_size   0;
 
    location / {
-      access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_access.log;
+      deny  all;
+   }
+
+   location /${NGINX_WEBDAV_MAIN_REPO_URL} {
+      autoindex              on;
+      index                  main_index.html;
+      access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_WEBDAV_MAIN_REPO_URL}_access.log;
       root                   ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 메인 디렉토리        
       auth_basic             "WEBDAV Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBDAV_PASSWD_LIST_NAME};
+      try_files              $uri $uri/ =404;
+
    }
 
    location /${NGINX_WEBAPPS_REPO_URL}  {
+      autoindex              on;
+      # index                webapps_index.html;
       access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_WEBAPPS_REPO_URL}_access.log;
       root                   ${STATIC_FILE_MAIN_PATH}/${TOMCAT_WEBAPPS_LINK_NAME};   # webapps 링크 디렉토리        
       auth_basic             "WEBAPPS Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBAPPS_PASSWD_LIST_NAME};
+      try_files              $uri $uri/ =404;
+
    }
 
    location /${NGINX_DEV_REPO_URL}  {
+      autoindex              on;
+      index                  ${NGINX_DEV_REPO_URL}-index.html;
       access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_DEV_REPO_URL}_access.log;
-      root                   ${NGINX_STORE_MAIN_PATH}/${DEV_DOMAIN};   # DEV-REPO 디렉토리        
+      alias                  ${NGINX_STORE_MAIN_PATH}/${DEV_DOMAIN};   # DEV-REPO 디렉토리        
       auth_basic             "DEV-REPO Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_DEV_REPO_PASSWD_LIST_NAME};
+      try_files              $uri $uri/ =404;
+
    }
 
    location /${NGINX_REAL_REPO_URL} {
+      autoindex              on;
+      index                  ${NGINX_REAL_REPO_URL}-index.html;
       access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_REAL_REPO_URL}_access.log;
-      root                   ${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN};   # REAL-REPO 디렉토리        
+      alias                  ${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN};   # REAL-REPO 디렉토리        
       auth_basic             "REAL-REPO Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_REAL_REPO_PASSWD_LIST_NAME};
-   }
+      try_files              $uri $uri/ =404;
 
+   }
 
    # certbot --webroot 인증을 위한 설정
    location ^~/.well-known/acme-challenge/ {
