@@ -1082,8 +1082,8 @@ chown -R ${REDIS_USER}:${DB_USER_GROUP} \
 
 # Tomcat 설치
 
-# Tomcat 다운로드 경로 : apache-tomcat-9.0.22 ( 2019-07-09 )
-TOMCAT_DOWNLOAD_URL=http://mirror.apache-kr.org/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22.tar.gz
+# Tomcat 다운로드 경로 : apache-tomcat-9.0.24 ( 2019-08-14 )
+TOMCAT_DOWNLOAD_URL=https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.24/bin/apache-tomcat-9.0.24.tar.gz
 
 # TOMCAT_USER 생성
 useradd ${TOMCAT_USER} \
@@ -1999,7 +1999,7 @@ server {
       root                   ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 메인 디렉토리        
       auth_basic             "WEBDAV Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBDAV_PASSWD_LIST_NAME};
-      try_files              $uri $uri/ =404;
+      try_files              \$uri \$uri/ =404;
 
    }
 
@@ -2010,7 +2010,7 @@ server {
       root                   ${STATIC_FILE_MAIN_PATH}/${TOMCAT_WEBAPPS_LINK_NAME};   # webapps 링크 디렉토리        
       auth_basic             "WEBAPPS Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBAPPS_PASSWD_LIST_NAME};
-      try_files              $uri $uri/ =404;
+      try_files              \$uri \$uri/ =404;
 
    }
 
@@ -2021,7 +2021,7 @@ server {
       alias                  ${NGINX_STORE_MAIN_PATH}/${DEV_DOMAIN};   # DEV-REPO 디렉토리        
       auth_basic             "DEV-REPO Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_DEV_REPO_PASSWD_LIST_NAME};
-      try_files              $uri $uri/ =404;
+      try_files              \$uri \$uri/ =404;
 
    }
 
@@ -2032,7 +2032,7 @@ server {
       alias                  ${NGINX_STORE_MAIN_PATH}/${REAL_DOMAIN};   # REAL-REPO 디렉토리        
       auth_basic             "REAL-REPO Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_REAL_REPO_PASSWD_LIST_NAME};
-      try_files              $uri $uri/ =404;
+      try_files              \$uri \$uri/ =404;
 
    }
 
