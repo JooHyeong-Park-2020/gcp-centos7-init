@@ -237,15 +237,15 @@ wget -c ${GPGME_DOWNLOAD_URL} \
 wget -c ${GPA_DOWNLOAD_URL} \
    -O ./GPA.tar.bz2
 
-tar -xzf Libgpg-error.tar.bz2 && \
-tar -xzf Libgcrypt.tar.bz2 && \
-tar -xjf Libksba.tar.bz2 && \
-tar -xjf Libassuan.tar.bz2 && \
-tar -xjf ntbTLS.tar.bz2 && \
-tar -xjf nPth.tar.bz2 && \
-tar -xjf Pinentry.tar.bz2 && \
-tar -xjf GPGME.tar.bz2 && \
-tar -xjf GPA.tar.bz2
+tar -jxf Libgpg-error.tar.bz2 && \
+tar -jxf Libgcrypt.tar.bz2 && \
+tar -jxf Libksba.tar.bz2 && \
+tar -jxf Libassuan.tar.bz2 && \
+tar -jxf ntbTLS.tar.bz2 && \
+tar -jxf nPth.tar.bz2 && \
+tar -jxf Pinentry.tar.bz2 && \
+tar -jxf GPGME.tar.bz2 && \
+tar -jxf GPA.tar.bz2
 
 
 ##############################################################################
