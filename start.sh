@@ -182,40 +182,39 @@ rpm -ivh ${TEMP_PATH}/epel-release.rpm
 
 # GnuPG 의존 라이브러리 설치
 
-# Libgpg-error : 1.36 ( 2019-03-19 )
+# Libgpg-error :  1.36 ( 2019-03-19 )
 Libgpg_error_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.36.tar.bz2
 
-# Libgcrypt    : 1.8.4 ( 2018-10-26 )
+# Libgcrypt    :  1.8.4 ( 2018-10-26 )
 Libgcrypt_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.8.4.tar.bz2
 
-# Libksba      : 1.3.5	( 2016-08-22 )
+# Libksba      :  1.3.5	( 2016-08-22 )
 Libksba_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/libksba/libksba-1.3.5.tar.bz2
 
-# Libassuan    : 2.5.3 ( 2019-02-11 )
+# Libassuan    :  2.5.3 ( 2019-02-11 )
 Libassuan_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/libassuan/libassuan-2.5.3.tar.bz2
 
-# ntbTLS       : 0.1.2 ( 2017-09-19 )
+# ntbTLS       :  0.1.2 ( 2017-09-19 )
 ntbTLS_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/ntbtls/ntbtls-0.1.2.tar.bz2
 
-# nPth         : 1.6 ( 2018-07-16 ) 
+# nPth         :  1.6 ( 2018-07-16 ) 
 nPth_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/npth/npth-1.6.tar.bz2
 
-# Pinentry     : 1.1.0 ( 2017-12-03 )
+# Pinentry     :  1.1.0 ( 2017-12-03 )
 #     a collection of passphrase entry dialogs which is required for almost all usages of GnuPG
 Pinentry_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.0.tar.bz2
 
-# GPGME        : 1.13.1 ( 2019-06-13 )
+# GPGME        :  1.13.1 ( 2019-06-13 )
 #     the standard library to access GnuPG functions from programming languages
 GPGME_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gpgme/gpgme-1.13.1.tar.bz2
 
-# GPA          : 0.10.0 ( 2018-10-16 )
+# GPA          :  0.10.0 ( 2018-10-16 )
 #     a graphical frontend to GnuPG
 GPA_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gpa/gpa-0.10.0.tar.bz2
 
+# GnuPG 의존 라이브러리 다운받을 temp 디렉토리 생성
 GNU_PG_TEMP_DOWNLOAD_PATH=${TEMP_PATH}/gnupg-temp
-
 mkdir -p ${GNU_PG_TEMP_DOWNLOAD_PATH}
-
 cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
 
 wget -c ${Libgpg_error_DOWNLOAD_URL} \
@@ -247,16 +246,15 @@ tar -jxf pinentry.tar.bz2 && \
 tar -jxf gpgme.tar.bz2 && \
 tar -jxf gpa.tar.bz2
 
-cd $(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep libgpg-error-) && ./configure && make && make install && cd ..
-cd $(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep libgcrypt-) && ./configure && make && make install && cd ..
-cd $(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep libksba-) && ./configure && make && make install && cd ..
-cd $(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep libassuan-) && ./configure && make && make install && cd ..
-cd $(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep ntbtls-) && ./configure && make && make install && cd ..
-cd $(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep npth-) && ./configure && make && make install && cd ..
-cd $(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep pinentry-) && ./configure --enable-pinentry-curses --disable-pinentry-qt4 && make && make install && cd ..
-cd $(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep gpgme-) && ./configure && make && make install && cd ..
-cd $(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep gpa-) && ./configure && make && make install && cd .. 
-
+cd $(ls ./ | grep libgpg-error-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
+cd $(ls ./ | grep libgcrypt-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
+cd $(ls ./ | grep libksba-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
+cd $(ls ./ | grep libassuan-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
+cd $(ls ./ | grep ntbtls-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
+cd $(ls ./ | grep npth-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
+cd $(ls ./ | grep pinentry-) && ./configure --enable-pinentry-curses --disable-pinentry-qt4 && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
+cd $(ls ./ | grep gpgme-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
+cd $(ls ./ | grep gpa-) && ./configure && make && make install
 
 ##############################################################################
 
