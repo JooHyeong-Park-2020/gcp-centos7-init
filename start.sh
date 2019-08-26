@@ -215,7 +215,6 @@ GPA_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gpa/gpa-0.10.0.tar.bz2
 # GnuPG 의존 라이브러리 다운받을 temp 디렉토리 생성
 GNU_PG_TEMP_DOWNLOAD_PATH=${TEMP_PATH}/gnupg-temp
 mkdir -p ${GNU_PG_TEMP_DOWNLOAD_PATH}
-cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
 
 # zlib-devel : ntbTLS 설치시 필요한 듯??
 # ncurses-devel : pinentry 설치시 필요한 듯??
@@ -224,43 +223,62 @@ yum install -y \
    ncurses-devel
 
 wget -c ${Libgpg_error_DOWNLOAD_URL} \
-   -O ./libgpg-error.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/libgpg-error.tar.bz2 && \
 wget -c ${Libgcrypt_DOWNLOAD_URL} \
-   -O ./libgcrypt.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/libgcrypt.tar.bz2 && \
 wget -c ${Libksba_DOWNLOAD_URL} \
-   -O ./libksba.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/libksba.tar.bz2 && \
 wget -c ${Libassuan_DOWNLOAD_URL} \
-   -O ./libassuan.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/libassuan.tar.bz2 && \
 wget -c ${ntbTLS_DOWNLOAD_URL} \
-   -O ./ntbtls.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/ntbtls.tar.bz2 && \
 wget -c ${nPth_DOWNLOAD_URL} \
-   -O ./npth.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/npth.tar.bz2 && \
 wget -c ${Pinentry_DOWNLOAD_URL} \
-   -O ./pinentry.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/pinentry.tar.bz2 && \
 wget -c ${GPGME_DOWNLOAD_URL} \
-   -O ./gpgme.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/gpgme.tar.bz2 && \
 wget -c ${GPA_DOWNLOAD_URL} \
-   -O ./gpa.tar.bz2
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/gpa.tar.bz2
 
-tar -jxf libgpg-error.tar.bz2 && \
-tar -jxf libgcrypt.tar.bz2 && \
-tar -jxf libksba.tar.bz2 && \
-tar -jxf libassuan.tar.bz2 && \
-tar -jxf ntbtls.tar.bz2 && \
-tar -jxf npth.tar.bz2 && \
-tar -jxf pinentry.tar.bz2 && \
-tar -jxf gpgme.tar.bz2 && \
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
+
+tar -jxf libgpg-error.tar.bz2
+tar -jxf libgcrypt.tar.bz2
+tar -jxf libksba.tar.bz2
+tar -jxf libassuan.tar.bz2
+tar -jxf ntbtls.tar.bz2
+tar -jxf npth.tar.bz2
+tar -jxf pinentry.tar.bz2
+tar -jxf gpgme.tar.bz2
 tar -jxf gpa.tar.bz2
 
-cd $(ls ./ | grep libgpg-error-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
-cd $(ls ./ | grep libgcrypt-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
-cd $(ls ./ | grep libksba-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
-cd $(ls ./ | grep libassuan-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
-cd $(ls ./ | grep ntbtls-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
-cd $(ls ./ | grep npth-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
-cd $(ls ./ | grep pinentry-) && ./configure --enable-pinentry-curses --enable-pinentry-tty && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
-cd $(ls ./ | grep gpgme-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
-cd $(ls ./ | grep gpa-) && ./configure && make && make install
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep libgpg-error-)
+./configure && make && make install
+
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep libgcrypt-)
+./configure && make && make install
+
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep libksba-)
+./configure && make && make install
+
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep libassuan-)
+./configure && make && make install
+
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep ntbtls-)
+./configure && make && make install
+
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep npth-)
+./configure && make && make install
+
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep pinentry-)
+./configure --enable-pinentry-curses --enable-pinentry-tty && make && make install
+
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep gpgme-)
+# ./configure && make && make install
+
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ./ | grep gpa-)
+# ./configure && make && make install
 
 ##############################################################################
 
@@ -280,10 +298,7 @@ wget ${GNU_PG_DOWNLOAD_URL} \
 tar -jxf ${TEMP_PATH}/gnupg.tar.bz2 \
    -C ${TEMP_PATH}
 
-
-
-
-cd gnupg
+# cd gnupg
 
 # ./configure --sysconfdir=/etc --localstatedir=/var
 
