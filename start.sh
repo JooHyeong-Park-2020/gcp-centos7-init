@@ -6,7 +6,7 @@
 # chmod o+x ./start.sh  => 실행 권한 부여
 # ./start.sh developer 1200 dev dev  => 다음으로 실행
 
-NEW_GROUP=developer
+NEW_GROUP=developer  
 NEW_GROUP_ID=1200
 NEW_USER=dev
 NEW_USER_PASSWORD=dev
