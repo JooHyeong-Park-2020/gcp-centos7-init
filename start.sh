@@ -274,14 +274,7 @@ cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep npth-)
 cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep pinentry-)
 ./configure --enable-pinentry-curses --enable-pinentry-tty && make && make install
 
-cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep gpgme-)
-# ./configure && make && make install
-
-cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ./ | grep gpa-)
-# ./configure && make && make install
-
 ##############################################################################
-
 
 # GnuPG 다운로드 경로 : 2.2.17 ( 2019-07-09 )
 GNU_PG_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2
@@ -300,7 +293,17 @@ tar -jxf ${TEMP_PATH}/gnupg.tar.bz2 \
 
 cd ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gnupg-)
 
-# ./configure --sysconfdir=/etc --localstatedir=/var
+./configure && make && make install
 
+# 아래 명령어를 실행하지 않는 경우 다음과 같은 에러 메시지 출력됨
+# gpg: error while loading shared libraries: libgcrypt.so.20: cannot open shared object file: No such file or directory
+echo "/usr/local/lib" > /etc/ld.so.conf.d/gpg2.conf && ldconfig -v
+
+
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep gpgme-)
+./configure && make && make install
+
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ./ | grep gpa-)
+./configure && make && make install
 
 ##############################################################################
