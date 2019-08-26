@@ -298,7 +298,7 @@ wget ${GNU_PG_DOWNLOAD_URL} \
 tar -jxf ${TEMP_PATH}/gnupg.tar.bz2 \
    -C ${TEMP_PATH}
 
-# cd gnupg
+cd ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gnupg-)
 
 # ./configure --sysconfdir=/etc --localstatedir=/var
 
