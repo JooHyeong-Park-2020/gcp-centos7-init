@@ -217,8 +217,11 @@ GNU_PG_TEMP_DOWNLOAD_PATH=${TEMP_PATH}/gnupg-temp
 mkdir -p ${GNU_PG_TEMP_DOWNLOAD_PATH}
 cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
 
-# ntbTLS 설치시 필요한 듯??
-yum install zlib-devel -y
+# zlib-devel : ntbTLS 설치시 필요한 듯??
+# ncurses-devel : pinentry 설치시 필요한 듯??
+yum install -y \
+   zlib-devel \
+   ncurses-devel
 
 wget -c ${Libgpg_error_DOWNLOAD_URL} \
    -O ./libgpg-error.tar.bz2 && \
@@ -255,7 +258,7 @@ cd $(ls ./ | grep libksba-) && ./configure && make && make install && cd ${GNU_P
 cd $(ls ./ | grep libassuan-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
 cd $(ls ./ | grep ntbtls-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
 cd $(ls ./ | grep npth-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
-cd $(ls ./ | grep pinentry-) && ./configure --enable-pinentry-curses --disable-pinentry-qt4 && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
+cd $(ls ./ | grep pinentry-) && ./configure --enable-pinentry-curses --enable-pinentry-tty && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
 cd $(ls ./ | grep gpgme-) && ./configure && make && make install && cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
 cd $(ls ./ | grep gpa-) && ./configure && make && make install
 
