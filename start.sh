@@ -217,6 +217,9 @@ GNU_PG_TEMP_DOWNLOAD_PATH=${TEMP_PATH}/gnupg-temp
 mkdir -p ${GNU_PG_TEMP_DOWNLOAD_PATH}
 cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
 
+# ntbTLS 설치시 필요한 듯??
+yum install zlib-devel -y
+
 wget -c ${Libgpg_error_DOWNLOAD_URL} \
    -O ./libgpg-error.tar.bz2 && \
 wget -c ${Libgcrypt_DOWNLOAD_URL} \
