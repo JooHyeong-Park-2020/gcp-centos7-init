@@ -331,6 +331,31 @@ ln -s ${POSTMAN_INSTALL_PATH}/Postman \
 
 ##############################################################################
 
+# GnuPG 다운로드 경로 : 2.2.17 ( 2019-07-09 )
+GNU_PG_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2
+
+# UTILS_MAIN_PATH 내 GnuPG 설치 디렉토리
+GNU_PG_INSTALL_DIRECTORY_NAME=gnupg
+GNU_PG_INSTALL_PATH=${UTILS_MAIN_PATH}/${GNU_PG_INSTALL_DIRECTORY_NAME}
+
+mkdir -p ${GNU_PG_INSTALL_PATH}
+
+wget ${GNU_PG_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/gnupg.tar.bz2 && \
+tar -jxf ${TEMP_PATH}/gnupg.tar.bz2 \
+   -C ${TEMP_PATH}
+
+rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gnupg-) \
+   ${TEMP_PATH}/gnupg \
+   ${TEMP_PATH}/gnupg-*
+
+cd gnupg
+
+# ./configure --sysconfdir=/etc --localstatedir=/var
+
+##############################################################################
+
 # 사용자 전용 GIT 설치
 
 # Git 다운로드 경로 : git-2.22.0 ( 2019-06-07 )
@@ -1895,13 +1920,14 @@ cp ${NGINX_PATH}/html/50x.html \
 
 ##############################################################################
 
+# STATIC_FILE_MAIN_PATH 내 WEBDAV 관련 임시 디렉토리 생성 : 모든 WEBDAV 저장소가 공용으로 사용
+NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME=WEBDAV-temp
+NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME}
+
 # STATIC_FILE_MAIN_PATH 내 WEBDAV 관련 디렉토리 생성
 NGINX_WEBDAV_MAIN_DIRECTORY_NAME=WEBDAV-MAIN
 NGINX_WEBDAV_MAIN_PATH=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_MAIN_DIRECTORY_NAME}
 NGINX_WEBDAV_MAIN_REPO_URL=main
-
-NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME=WEBDAV-temp
-NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME}
 
 mkdir -p ${NGINX_WEBDAV_MAIN_PATH}
 mkdir -p ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH}
@@ -1997,7 +2023,7 @@ server {
       index                  main_index.html;
       access_log             ${NGINX_ACCESS_LOG_PATH}/${WEBDAV_DOMAIN_PREFIX}_${NGINX_WEBDAV_MAIN_REPO_URL}_access.log;
       alias                  ${NGINX_WEBDAV_MAIN_PATH};   # WEBDAV 메인 디렉토리        
-      auth_basic             "WEBDAV Access";
+      auth_basic             "WEBDAV MAIN Access";
       auth_basic_user_file   ${NGINX_WEBDAV_PASSWD_LIST_PATH}/${NGINX_WEBDAV_PASSWD_LIST_NAME};
       try_files              \$uri \$uri/ =404;
 
