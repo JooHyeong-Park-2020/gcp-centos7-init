@@ -177,6 +177,80 @@ rpm -ivh ${TEMP_PATH}/epel-release.rpm
 
 ##############################################################################
 
+# https://gnupg.org/download/ 
+# https://gist.github.com/simbo1905/ba3e8af9a45435db6093aea35c6150e8
+
+# GnuPG 의존 라이브러리 설치
+
+# Libgpg-error : 1.36 ( 2019-03-19 )
+Libgpg-error_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.36.tar.bz2
+
+# Libgcrypt    : 1.8.4 ( 2018-10-26 )
+Libgcrypt_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.8.4.tar.bz2
+
+# Libksba      : 1.3.5	( 2016-08-22 )
+Libksba_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/libksba/libksba-1.3.5.tar.bz2
+
+# Libassuan    : 2.5.3 ( 2019-02-11 )
+Libassuan_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/libassuan/libassuan-2.5.3.tar.bz2
+
+# ntbTLS       : 0.1.2 ( 2017-09-19 )
+ntbTLS_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/ntbtls/ntbtls-0.1.2.tar.bz2
+
+# nPth         : 1.6 ( 2018-07-16 ) 
+nPth_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/npth/npth-1.6.tar.bz2
+
+# Pinentry     : 1.1.0 ( 2017-12-03 )
+#     a collection of passphrase entry dialogs which is required for almost all usages of GnuPG
+Pinentry_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.0.tar.bz2
+
+# GPGME        : 1.13.1 ( 2019-06-13 )
+#     the standard library to access GnuPG functions from programming languages
+GPGME_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gpgme/gpgme-1.13.1.tar.bz2
+
+# GPA          : 0.10.0 ( 2018-10-16 )
+#     a graphical frontend to GnuPG
+GPA_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gpa/gpa-0.10.0.tar.bz2
+
+GNU_PG_TEMP_DOWNLOAD_PATH=${TEMP_PATH}/gnupg-temp
+
+mkdir -p ${GNU_PG_TEMP_DOWNLOAD_PATH}
+
+cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
+
+wget -c ${Libgpg-error_DOWNLOAD_URL} \
+   -O ./Libgpg-error.tar.bz2 && \
+wget -c ${Libgcrypt_DOWNLOAD_URL} \
+   -O ./Libgcrypt.tar.bz2 && \
+wget -c ${Libksba_DOWNLOAD_URL} \
+   -O ./Libksba.tar.bz2 && \
+wget -c ${Libassuan_DOWNLOAD_URL} \
+   -O ./Libassuan.tar.bz2 && \
+wget -c ${ntbTLS_DOWNLOAD_URL} \
+   -O ./ntbTLS.tar.bz2 && \
+wget -c ${nPth_DOWNLOAD_URL} \
+   -O ./nPth.tar.bz2 && \
+wget -c ${Pinentry_DOWNLOAD_URL} \
+   -O ./Pinentry.tar.bz2 && \
+wget -c ${GPGME_DOWNLOAD_URL} \
+   -O ./GPGME.tar.bz2 && \
+wget -c ${GPA_DOWNLOAD_URL} \
+   -O ./GPA.tar.bz2
+
+tar -xzf Libgpg-error.tar.bz2 && \
+tar -xzf Libgcrypt.tar.bz2 && \
+tar -xjf Libksba.tar.bz2 && \
+tar -xjf Libassuan.tar.bz2 && \
+tar -xjf ntbTLS.tar.bz2 && \
+tar -xjf nPth.tar.bz2 && \
+tar -xjf Pinentry.tar.bz2 && \
+tar -xjf GPGME.tar.bz2 && \
+tar -xjf GPA.tar.bz2
+
+
+##############################################################################
+
+
 # GnuPG 다운로드 경로 : 2.2.17 ( 2019-07-09 )
 GNU_PG_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2
 
@@ -198,6 +272,7 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gnupg-) \
 
 cd gnupg
 
-./configure --sysconfdir=/etc --localstatedir=/var
+# ./configure --sysconfdir=/etc --localstatedir=/var
+
 
 ##############################################################################
