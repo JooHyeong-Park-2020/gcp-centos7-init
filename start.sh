@@ -288,9 +288,33 @@ echo "/usr/local/lib" > /etc/ld.so.conf.d/gpg2.conf && ldconfig -v
 
 ##############################################################################
 
-su - dev -c "gpg --gen-key"
+# https://gist.github.com/woods/8970150
 
+# https://www.gnupg.org/documentation/manuals/gnupg-devel/Unattended-GPG-key-generation.html
 
+cat > ${TEMP_PATH}/gen-key-script \
+<<EOF
+%echo Generating a basic OpenPGP key
+Key-Type: DSA
+Key-Length: 1024
+Subkey-Type: ELG-E
+Subkey-Length: 1024
+Name-Real: Joe Tester
+Name-Comment: with stupid passphrase
+Name-Email: joe@foo.bar
+Expire-Date: 0
+Passphrase: abc
+# Do a commit here, so that we can later print "done" :-)
+%commit
+%echo done
+EOF
+
+# chown dev:developer ${TEMP_PATH}/gen-key-script
+
+sudo -i -u dev bash << EOF
+whoami
+gpg --verbose --batch --gen-key ${TEMP_PATH}/gen-key-script
+EOF
 
 ##############################################################################
 
