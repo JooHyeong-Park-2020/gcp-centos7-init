@@ -223,23 +223,19 @@ yum install -y \
    ncurses-devel
 
 wget -c ${Libgpg_error_DOWNLOAD_URL} \
-   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/libgpg-error.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/libgpg-error.tar.bz2
 wget -c ${Libgcrypt_DOWNLOAD_URL} \
-   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/libgcrypt.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/libgcrypt.tar.bz2
 wget -c ${Libksba_DOWNLOAD_URL} \
-   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/libksba.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/libksba.tar.bz2
 wget -c ${Libassuan_DOWNLOAD_URL} \
-   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/libassuan.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/libassuan.tar.bz2
 wget -c ${ntbTLS_DOWNLOAD_URL} \
-   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/ntbtls.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/ntbtls.tar.bz2
 wget -c ${nPth_DOWNLOAD_URL} \
-   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/npth.tar.bz2 && \
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/npth.tar.bz2
 wget -c ${Pinentry_DOWNLOAD_URL} \
-   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/pinentry.tar.bz2 && \
-wget -c ${GPGME_DOWNLOAD_URL} \
-   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/gpgme.tar.bz2 && \
-wget -c ${GPA_DOWNLOAD_URL} \
-   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/gpa.tar.bz2
+   -O ${GNU_PG_TEMP_DOWNLOAD_PATH}/pinentry.tar.bz2
 
 cd ${GNU_PG_TEMP_DOWNLOAD_PATH}
 
@@ -250,8 +246,6 @@ tar -jxf libassuan.tar.bz2
 tar -jxf ntbtls.tar.bz2
 tar -jxf npth.tar.bz2
 tar -jxf pinentry.tar.bz2
-tar -jxf gpgme.tar.bz2
-tar -jxf gpa.tar.bz2
 
 cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep libgpg-error-)
 ./configure && make && make install
@@ -279,31 +273,42 @@ cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep pinentr
 # GnuPG 다운로드 경로 : 2.2.17 ( 2019-07-09 )
 GNU_PG_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2
 
-# UTILS_MAIN_PATH 내 GnuPG 설치 디렉토리
-GNU_PG_INSTALL_DIRECTORY_NAME=gnupg
-GNU_PG_INSTALL_PATH=${UTILS_MAIN_PATH}/${GNU_PG_INSTALL_DIRECTORY_NAME}
-
-mkdir -p ${GNU_PG_INSTALL_PATH}
-
 wget ${GNU_PG_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/gnupg.tar.bz2 && \
 tar -jxf ${TEMP_PATH}/gnupg.tar.bz2 \
    -C ${TEMP_PATH}
 
-cd ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gnupg-)
-
+cd ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gnupg-) && \
 ./configure && make && make install
 
 # 아래 명령어를 실행하지 않는 경우 다음과 같은 에러 메시지 출력됨
 # gpg: error while loading shared libraries: libgcrypt.so.20: cannot open shared object file: No such file or directory
 echo "/usr/local/lib" > /etc/ld.so.conf.d/gpg2.conf && ldconfig -v
 
+##############################################################################
 
-cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep gpgme-)
-./configure && make && make install
+su - dev -c "gpg --gen-key"
 
-cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ./ | grep gpa-)
-./configure && make && make install
+
 
 ##############################################################################
+
+# PASS 다운로드 경로 : 1.7.3 ( 2018-08-03 )
+PASS_DOWNLOAD_URL=https://git.zx2c4.com/password-store/snapshot/password-store-1.7.3.tar.xz
+
+# UTILS_MAIN_PATH 내 PASS 설치 디렉토리
+PASS_INSTALL_DIRECTORY_NAME=pass
+PASS_INSTALL_PATH=${UTILS_MAIN_PATH}/${PASS_INSTALL_DIRECTORY_NAME}
+
+mkdir -p ${PASS_INSTALL_PATH}
+
+# -xf 옵션으로 풀 것
+wget ${PASS_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/pass.tar.gz && \
+tar -xf ${TEMP_PATH}/nodejs.tar.gz \
+   -C ${PASS_INSTALL_PATH} \
+   --strip-components 1
+
+
