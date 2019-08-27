@@ -285,7 +285,8 @@ yum localinstall -y \
 
 # https://it.toolbox.com/blogs/edmonbegoli/how-to-generate-enough-entropy-for-gpg-key-generation-process-on-fedora-linux-041410
 # http://egloos.zum.com/dmlim/v/4360902
-rngd -r /dev/random
+# http://blog.naver.com/PostView.nhn?blogId=solvage&logNo=220852336686&parentCategoryNo=&categoryNo=24&viewDate=&isShowPopularPosts=true&from=search
+rngd -r /dev/urandom
 
 # cat /proc/sys/kernel/random/entropy_avail
 
