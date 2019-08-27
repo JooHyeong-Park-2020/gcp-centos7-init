@@ -1563,6 +1563,10 @@ cp /usr/local/lib64/libcrypto.so.1.1 \
 # PCRE 다운로드 경로 : 8.43 ( 2019-02-23 )
 PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
 
+# 기존 pcre 제거
+yum remove -y \
+   pcre
+
 wget ${PCRE_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/pcre.tar.gz && \
@@ -1573,22 +1577,25 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep pcre-) \
    ${TEMP_PATH}/pcre \
    ${TEMP_PATH}/pcre-*
 
-# cd pcre
+cd pcre
 
-# ./configure \
-#     --prefix=/usr/local
+./configure \
+   --prefix=/usr/local
 
-# make
-# make install
-# 
-# cd ..
+make
+make install
+cd ..
 
 ##############################################################################
 
 # zlib 컴파일 버전 다운로드 ( NGINX Dependencies : openssl, PCRE, ZLIB )
 
-# ZLIB 다운로드 경로 : 1.2.11 ( 2017-01-15 )
+# zlib 다운로드 경로 : 1.2.11 ( 2017-01-15 )
 ZLIB_DOWNLOAD_URL=http://zlib.net/zlib-1.2.11.tar.gz
+
+# 기존 zlib 제거
+yum remove -y \
+   zlib
 
 wget ${ZLIB_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
@@ -1600,15 +1607,15 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep zlib-) \
    ${TEMP_PATH}/zlib \
    ${TEMP_PATH}/zlib-*
 
-# cd zlib
+cd zlib
 
-# ./configure \
-#    --prefix=/usr/local
+./configure \
+   --prefix=/usr/local
 
-# make
-# make install
+make
+make install
 
-# cd ..
+cd ..
 
 ##############################################################################
 
