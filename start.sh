@@ -271,6 +271,7 @@ cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep pinentr
 ##############################################################################
 
 # https://github.com/nhorman/rng-tools/releases
+# https://centos.pkgs.org/7/centos-x86_64/rng-tools-6.3.1-3.el7.x86_64.rpm.html
 
 # 	rng-tools 다운로드 경로 ( rpm ) : 6.3.1 ( 2018-07-14 )
 RNG_TOOLS_DOWNLOAD_URL=http://mirror.centos.org/centos/7/os/x86_64/Packages/rng-tools-6.3.1-3.el7.x86_64.rpm
