@@ -463,9 +463,6 @@ cd ..
 # zlib 다운로드 경로 : 1.2.11 ( 2017-01-15 )
 ZLIB_DOWNLOAD_URL=http://zlib.net/zlib-1.2.11.tar.gz
 
-# 기존 설치된 zlib rpm 제거
-rpm -e zlib --nodeps
-
 wget ${ZLIB_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/zlib.tar.gz && \
@@ -478,11 +475,10 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep zlib-) \
 
 cd zlib
 
-# libz.so 관련모듈생성 : https://www.happyjung.com/lecture/788
-./configure -s
-make
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/zlib.html
+# https://www.happyjung.com/lecture/788
 
-# libz.a 생성, prefix 는 기본값 /usr/local 과 동일하게 지정
+# libz.a , libz.so 모듈 생성, prefix 는 기본값 /usr/local 과 동일하게 지정
 ./configure \
    --prefix=/usr/local
 make
@@ -492,6 +488,10 @@ make install
 # cp -rf libz.so* /usr/lib64
 
 cd ..
+
+
+# 기존 설치된 zlib rpm 제거
+# rpm -e zlib --nodeps
 
 ##############################################################################
 
