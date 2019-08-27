@@ -304,7 +304,7 @@ echo "/usr/local/lib" > /etc/ld.so.conf.d/gpg2.conf && ldconfig -v
 ##############################################################################
 
 # https://gist.github.com/woods/8970150
-
+# https://johngrib.github.io/wiki/gpg/
 # https://www.gnupg.org/documentation/manuals/gnupg-devel/Unattended-GPG-key-generation.html
 
 cat > ${TEMP_PATH}/gen-key-script \
@@ -345,8 +345,8 @@ mkdir -p ${PASS_INSTALL_PATH}
 # -xf 옵션으로 풀 것
 wget ${PASS_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/pass.tar.gz && \
-tar -xf ${TEMP_PATH}/nodejs.tar.gz \
+   -O ${TEMP_PATH}/pass.tar.xz && \
+tar -xf ${TEMP_PATH}/pass.tar.xz \
    -C ${PASS_INSTALL_PATH} \
    --strip-components 1
 
