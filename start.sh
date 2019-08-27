@@ -463,6 +463,9 @@ cd ..
 # zlib 다운로드 경로 : 1.2.11 ( 2017-01-15 )
 ZLIB_DOWNLOAD_URL=http://zlib.net/zlib-1.2.11.tar.gz
 
+# 기존 설치된 zlib rpm 제거
+rpm -e zlib --nodeps
+
 wget ${ZLIB_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/zlib.tar.gz && \
@@ -489,7 +492,7 @@ make install
 # cp -rf libz.so* /usr/local/lib
 
 cd ..
-
+ㅊㅇ..
 ##############################################################################
 
 # openSSH 최신버전 설치
