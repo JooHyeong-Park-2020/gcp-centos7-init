@@ -488,11 +488,11 @@ make
 make
 make install
 
-# libz.so* 파일들을 /usr/local/lib 로 복사 : -rf 로 모두 overwrite
-# cp -rf libz.so* /usr/local/lib
+# libz.so* 파일들을 /usr/lib64 로 복사 : -rf 로 모두 overwrite
+# cp -rf libz.so* /usr/lib64
 
 cd ..
-ㅊㅇ..
+
 ##############################################################################
 
 # openSSH 최신버전 설치
