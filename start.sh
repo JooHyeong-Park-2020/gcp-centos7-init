@@ -204,13 +204,6 @@ nPth_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/npth/npth-1.6.tar.bz2
 #     a collection of passphrase entry dialogs which is required for almost all usages of GnuPG
 Pinentry_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.0.tar.bz2
 
-# GPGME        :  1.13.1 ( 2019-06-13 )
-#     the standard library to access GnuPG functions from programming languages
-GPGME_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gpgme/gpgme-1.13.1.tar.bz2
-
-# GPA          :  0.10.0 ( 2018-10-16 )
-#     a graphical frontend to GnuPG
-GPA_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gpa/gpa-0.10.0.tar.bz2
 
 # GnuPG 의존 라이브러리 다운받을 temp 디렉토리 생성
 GNU_PG_TEMP_DOWNLOAD_PATH=${TEMP_PATH}/gnupg-temp
@@ -398,8 +391,9 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssl-) \
 #   => 일반적으로 $PATH 에 기본 등록되는 경로이므로 별도 PATH 등록 불필요
 # library 는 /usr/local/lib/openssl 폴더에 설치된다. (고 한다..)
 #   => 근데 openssl 폴더가 없다??
-#   => 아래 설정으로 설치시에는 /usr/local/lib64 에 설치되는 것이 아닌가 추측됨
-# (추가) 인증서비스를 위한 파일 : /usr/local/openssl 에 설치된다.
+#   => 아래 설정으로 설치시에는 /usr/lib64 에 설치되는 것으로 확인됨
+#      ( find / | grep openssl 명령어로 확인 )
+#   => GCP centos 에 뭔가 다른 설정이 있는 듯..
 
 cd openssl
 
@@ -407,6 +401,7 @@ cd openssl
 ./Configure \
     linux-x86_64 \
     shared \
+    zlib \
     no-idea no-md2 no-mdc2 no-rc5 no-rc4 \
     --prefix=/usr/local \
     --openssldir=/usr/local/openssl
@@ -426,12 +421,15 @@ cp /usr/local/lib64/libcrypto.so.1.1 \
 
 ##############################################################################
 
-# PCRE 컴파일 버전 다운로드 ( NGINX Dependencies : openssl, PCRE, ZLIB )
+# PCRE 컴파일 버전 다운로드
 
 # http://blog.naver.com/PostView.nhn?blogId=apocalypsekr&logNo=150156152811
 
 # PCRE 다운로드 경로 : 8.43 ( 2019-02-23 )
 PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
+
+# gcc-c++ 라이브러리 필요
+yum install gcc-c++ -y
 
 wget ${PCRE_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
@@ -446,24 +444,38 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep pcre-) \
 cd pcre
 
 # prefix 는 기본값 /usr/local 과 동일하게 지정
+# http://www.linuxfromscratch.org/blfs/view/cvs/general/pcre.html
 ./configure \
    --prefix=/usr/local \
-   --enable-static=yes \
-   --enable-utf8=yes \
-   --enable-unicode-properties=yes
-
+   --enable-static \
+   --enable-utf8 \
+   --enable-unicode-properties \
+   --enable-pcre16 \
+   --enable-pcre32 \
+   --enable-pcregrep-libz
 make
 make install
+
+# libpcre.so.* 파일들을 /usr/lib64 로 복사 : 모두 overwrite
+yes | cp -rf  ${TEMP_PATH}/pcre/.libs/libpcre.so.* /usr/lib64
+
+# 기존 설치된 pcre rpm 제거
+rpm -e pcre --nodeps
+
+# pcre 라이브러리 버전 변경 확인 명령어
+# ldconfig -v | grep pcre
+
+
 cd ..
 
 ##############################################################################
 
-# zlib 컴파일 버전 다운로드 ( NGINX Dependencies : openssl, PCRE, ZLIB )
+# zlib 최신 버전 다운로드 / 갱신 설치
 
 # zlib 다운로드 경로 : 1.2.11 ( 2017-01-15 )
 ZLIB_DOWNLOAD_URL=http://zlib.net/zlib-1.2.11.tar.gz
 
-wget ${ZLIB_DOWNLOAD_URL} \
+wget -c ${ZLIB_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/zlib.tar.gz && \
 tar -zxf ${TEMP_PATH}/zlib.tar.gz \
@@ -484,14 +496,26 @@ cd zlib
 make
 make install
 
-# libz.so* 파일들을 /usr/lib64 로 복사 : -rf 로 모두 overwrite
-# cp -rf libz.so* /usr/lib64
-
-cd ..
-
+# libz.a , libz.so 파일들을 /usr/lib64 로 복사 : 모두 overwrite
+yes | cp -rf libz.* /usr/lib64
 
 # 기존 설치된 zlib rpm 제거
-# rpm -e zlib --nodeps
+rpm -e zlib --nodeps
+
+# zlib ( libz ) 라이브러리 버전 변경 확인 명령어
+# ldconfig -v | grep libz
+
+
+# cat >> /etc/ld.so.conf \
+# <<EOF
+# /usr/lib64
+# EOF
+
+# 또는  echo "/usr/lib64" >> /etc/ld.so.conf
+
+# ldconfig
+
+cd ..
 
 ##############################################################################
 
