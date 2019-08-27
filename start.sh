@@ -280,8 +280,14 @@ wget ${RNG_TOOLS_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/rng-tools.rpm && \
 
-# yum localinstall -y \
-#    ${TEMP_PATH}/rng-tools.rpm \
+yum localinstall -y \
+   ${TEMP_PATH}/rng-tools.rpm
+
+# https://it.toolbox.com/blogs/edmonbegoli/how-to-generate-enough-entropy-for-gpg-key-generation-process-on-fedora-linux-041410
+# http://egloos.zum.com/dmlim/v/4360902
+rngd -r /dev/random
+
+# cat /proc/sys/kernel/random/entropy_avail
 
 ##############################################################################
 
