@@ -445,7 +445,7 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep pcre-) \
 
 cd pcre
 
-# prefix 는 기본값 /usr/local 과 같음
+# prefix 는 기본값 /usr/local 과 동일하게 지정
 ./configure \
    --prefix=/usr/local \
    --enable-static=yes \
@@ -475,8 +475,7 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep zlib-) \
 
 cd zlib
 
-
-# libz.so 관련모듈생성 : https://rednine.tistory.com/668
+# libz.so 관련모듈생성 : https://www.happyjung.com/lecture/788
 ./configure -s
 make
 
@@ -485,6 +484,9 @@ make
    --prefix=/usr/local
 make
 make install
+
+# libz.so* 파일들을 /usr/local/lib 로 복사 : -rf 로 모두 overwrite
+# cp -rf libz.so* /usr/local/lib
 
 cd ..
 
