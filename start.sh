@@ -525,3 +525,5 @@ cd ..
 OPENSSL_DOWNLOAD_URL=https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-8.0p1.tar.gz
 
 # https://www.tecmint.com/install-openssh-server-from-source-in-linux/
+# http://www.linuxfromscratch.org/blfs/view/systemd/postlfs/openssh.html
+# https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile
