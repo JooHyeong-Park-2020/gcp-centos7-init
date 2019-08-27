@@ -270,6 +270,20 @@ cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep pinentr
 
 ##############################################################################
 
+# https://github.com/nhorman/rng-tools/releases
+
+# 	rng-tools 다운로드 경로 ( rpm ) : 6.3.1 ( 2018-07-14 )
+RNG_TOOLS_DOWNLOAD_URL=http://mirror.centos.org/centos/7/os/x86_64/Packages/rng-tools-6.3.1-3.el7.x86_64.rpm
+
+wget ${RNG_TOOLS_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/rng-tools.rpm && \
+
+yum localinstall -y \
+   ${TEMP_PATH}/rng-tools.rpm \
+
+##############################################################################
+
 # GnuPG 다운로드 경로 : 2.2.17 ( 2019-07-09 )
 GNU_PG_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2
 
@@ -311,10 +325,10 @@ EOF
 
 # chown dev:developer ${TEMP_PATH}/gen-key-script
 
-sudo -i -u dev bash << EOF
-whoami
-gpg --verbose --batch --gen-key ${TEMP_PATH}/gen-key-script
-EOF
+# sudo -i -u dev bash << EOF
+# whoami
+# gpg --verbose --batch --gen-key ${TEMP_PATH}/gen-key-script
+# EOF
 
 ##############################################################################
 
