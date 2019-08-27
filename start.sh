@@ -280,8 +280,8 @@ wget ${RNG_TOOLS_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/rng-tools.rpm && \
 
-yum localinstall -y \
-   ${TEMP_PATH}/rng-tools.rpm \
+# yum localinstall -y \
+#    ${TEMP_PATH}/rng-tools.rpm \
 
 ##############################################################################
 
