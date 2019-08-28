@@ -600,9 +600,9 @@ cd openssh
 # --prefix : SSH 설치 경로, 기본값 /usr/local 로 지정함
 ./configure \
    --prefix=/usr/local \
-   --sbindir=/usr/sbin \
    --with-privsep-path=/var/lib/sshd \
    --sysconfdir=/etc/ssh \
+   --with-zlib=/usr/local \
    --with-tcp-wrappers \
    --with-md5-passwords \
    --with-pam \
@@ -624,4 +624,7 @@ make install
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile?category=563849
 cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
    /etc/pamd.sshd
+
+# 8월 28 21:33:00 centos sshd[1338]: /etc/ssh/sshd_config line 79: Unsupported option GSSAPIAuthentication
+# 8월 28 21:33:00 centos sshd[1338]: /etc/ssh/sshd_config line 80: Unsupported option GSSAPICleanupCredentials
 
