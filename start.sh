@@ -549,6 +549,9 @@ cd ..
 # openSSH 최신버전 설치
 
 # 최초 설치후 ssh -V 로 확인한 버전 : OpenSSH_7.4p1, OpenSSL 1.0.2k-fips  26 Jan 2017
+# 최초 설치 후 sshd 계정 정보 : sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
+# 최초 설치 후 sshd 그룹 정보 : sshd:x:74:
+# 최초 설치 후 sshd 서비스 스크립트 경로 : /usr/lib/systemd/system/sshd.service
 
 # openSSH 다운로드 경로 : 8.0 ( 2019-04-17 )
 OPENSSL_DOWNLOAD_URL=https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-8.0p1.tar.gz
@@ -558,4 +561,23 @@ OPENSSL_DOWNLOAD_URL=https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openss
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile
 
 # yum install zlib-devel openssl-devel
+
+mkdir /var/lib/sshd && \
+chmod -R 700 /var/lib/sshd && \
+chown -R root:sys /var/lib/sshd
+   
+# -g : 기존 그룹이 있을 경우 해당 그룹으로 지정 => sshd 그룹은 최초 설치시 이미 존재함
+# -d : 사용자 홈 디렉토리 경로 지정 
+# -s : 쉘 사용권한이 없는 계정 생성시 /sbin/nologin 또는 /bin/false 로 지정
+# useradd sshd \
+#    -g sshd \
+#    -d /var/lib/sshd/ \
+#    -s /sbin/nologin
+
+wget -c ${OPENSSL_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/openssh.tar.gz && \
+tar -zxf ${TEMP_PATH}/openssh.tar.gz \
+   -C ${TEMP_PATH}
+
 
