@@ -567,8 +567,11 @@ OPENSSL_DOWNLOAD_URL=https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openss
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile
 
 # pam, selinux 옵션으로 컴파일시 필요
-yum install zlib-devel openssl-devel
+yum install -y \
+   pam-devel \
+   libselinux-devel
 
+# --with-privsep-path 에 지정할 새로운 디렉토리 생성 : /var/lib/sshd
 mkdir /var/lib/sshd && \
 chmod -R 700 /var/lib/sshd && \
 chown -R root:sys /var/lib/sshd
