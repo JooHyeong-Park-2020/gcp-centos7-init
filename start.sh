@@ -515,11 +515,12 @@ cd zlib
 make
 make install
 
-# libz.a , libz.so 파일들을 /usr/lib64 로 복사 : 모두 overwrite
-# yes | cp -rf libz.* /usr/lib64
-
 # 기존 설치된 zlib rpm 제거
 rpm -e zlib --nodeps
+
+# /usr/local/lib 에 설치된 libz.a , libz.so 파일들을 /usr/lib64 로 복사 : 모두 overwrite
+# yes | cp -rf /usr/local/lib/libz.* /usr/lib64
+
 
 # zlib ( libz ) 라이브러리 버전 변경 확인 명령어
 # ldconfig -v | grep libz
