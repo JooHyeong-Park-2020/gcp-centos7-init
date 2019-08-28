@@ -178,7 +178,7 @@ rpm -ivh ${TEMP_PATH}/epel-release.rpm
 
 ##############################################################################
 
-# /usr/local/lib , /usr/lib64 라이브러리 경로에 추가
+# /usr/local/lib , /usr/local/lib64 , /usr/lib64 라이브러리 경로에 추가
 
 # http://cr3denza.blogspot.com/2015/03/ldsoconf.html
 # https://www.thinkit.or.kr/linux/entry/ldconfig-%eb%8f%99%ec%a0%81-%eb%a7%81%ed%81%ac-%ec%84%a4%ec%a0%95-sbinldconfig
@@ -195,7 +195,7 @@ ldconfig -v
 
 ##############################################################################
 
-# https://gnupg.org/download/ 
+# https://gnupg.org/download/
 # https://gist.github.com/simbo1905/ba3e8af9a45435db6093aea35c6150e8
 
 # GnuPG 의존 라이브러리 설치
@@ -224,7 +224,8 @@ Pinentry_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.0.tar.b
 
 
 # GnuPG 의존 라이브러리 다운받을 temp 디렉토리 생성
-GNU_PG_TEMP_DOWNLOAD_PATH=${TEMP_PATH}/gnupg-temp
+# 이름이 gnupg- 로 시작하면 gunpg 압축 해제시 디렉토리명과 중복됨, 겹치지 않도록 할 것
+GNU_PG_TEMP_DOWNLOAD_PATH=${TEMP_PATH}/gnupg_temp
 mkdir -p ${GNU_PG_TEMP_DOWNLOAD_PATH}
 
 # zlib-devel : ntbTLS 설치시 필요
@@ -287,44 +288,56 @@ cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep pinentr
 # 	rng-tools 다운로드 경로 ( rpm ) : 6.3.1 ( 2018-07-14 )
 RNG_TOOLS_DOWNLOAD_URL=http://mirror.centos.org/centos/7/os/x86_64/Packages/rng-tools-6.3.1-3.el7.x86_64.rpm
 
-wget ${RNG_TOOLS_DOWNLOAD_URL} \
+wget -c ${RNG_TOOLS_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/rng-tools.rpm && \
+   -O ${TEMP_PATH}/rng-tools.rpm
 
 yum localinstall -y \
    ${TEMP_PATH}/rng-tools.rpm
-
-cat /proc/sys/kernel/random/entropy_avail
 
 # https://it.toolbox.com/blogs/edmonbegoli/how-to-generate-enough-entropy-for-gpg-key-generation-process-on-fedora-linux-041410
 # http://egloos.zum.com/dmlim/v/4360902
 # http://blog.naver.com/PostView.nhn?blogId=solvage&logNo=220852336686&parentCategoryNo=&categoryNo=24&viewDate=&isShowPopularPosts=true&from=search
 rngd -r /dev/random
 
-cat /proc/sys/kernel/random/entropy_avail
+# 키 생성시 필요한 엔트로피 수치 확인 명령어 : rngd -r /dev/random 실행 전후로 확인시 엔트로피 수치 증가 확인됨
+# cat /proc/sys/kernel/random/entropy_avail
 
 ##############################################################################
 
 # GnuPG 다운로드 경로 : 2.2.17 ( 2019-07-09 )
 GNU_PG_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2
 
-wget ${GNU_PG_DOWNLOAD_URL} \
+wget -c ${GNU_PG_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/gnupg.tar.bz2 && \
+   -O ${TEMP_PATH}/gnupg.tar.bz2
+
 tar -jxf ${TEMP_PATH}/gnupg.tar.bz2 \
    -C ${TEMP_PATH}
 
+# http://www.linuxfromscratch.org/blfs/view/svn/postlfs/gnupg.html
+
+# gpg-zip 설치하도록 Makefile 수정
+sed -e '/noinst_SCRIPTS = gpg-zip/c sbin_SCRIPTS += gpg-zip' \
+    -i ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gnupg-)/tools/Makefile.in
+
+#  prefix 는 기본값 /usr/local 과 동일하게 지정
 cd ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gnupg-) && \
-./configure && make && make install
+./configure \
+   --prefix=/usr/local \
+   --enable-symcryptrun \
+   --enable-g13
 
-#  라이브러리 경로 지정
+make
+make install
 
-# 아래 명령어를 실행하지 않는 경우 다음과 같은 에러 메시지 출력됨
-# gpg: error while loading shared libraries: libgcrypt.so.20: cannot open shared object file: No such file or directory
+# /etc/ld.so.conf 에 /usr/local/lib 경로 없는 경우 다음 명령어로 지정함
 # echo "/usr/local/lib" > /etc/ld.so.conf.d/gpg2.conf && ldconfig -v
 
-cd ..
+# 라이브러리 경로 미지정시 다음과 같은 에러 메시지 출력됨
+# gpg: error while loading shared libraries: libgcrypt.so.20: cannot open shared object file: No such file or directory
 
+cd ..
 
 ##############################################################################
 
@@ -374,7 +387,6 @@ wget ${PASS_DOWNLOAD_URL} \
 tar -xf ${TEMP_PATH}/pass.tar.xz \
    -C ${PASS_INSTALL_PATH} \
    --strip-components 1
-
 
 
 ##############################################################################
@@ -434,7 +446,7 @@ make install
 
 cd ..
 
-# openssl 실행 위한 lib 파일 복사
+# openssl 실행 위한 lib 파일 복사 :/etc/ld.so.conf 에 라이브러리 경로 지정했으면 불필요
 # http://mapoo.net/os/oslinux/openssl-source-install/
 # https://sarc.io/index.php/httpd/1252-openssl
 # cp /usr/local/lib64/libssl.so.1.1 \
@@ -476,15 +488,12 @@ cd pcre
 make
 make install
 
-# libpcre.so.* 파일들을 /usr/lib64 로 복사 : 모두 overwrite
-# yes | cp -rf  ${TEMP_PATH}/pcre/.libs/libpcre.so.* /usr/lib64
-
 # 기존 설치된 pcre rpm 제거
 rpm -e pcre --nodeps
 
-# -r 옵션 : 원본이 파일이면 그냥 복사되고 디렉터리라면 디렉터리 전체가 복사된다.
-# -d 옵션 : 복사할 원본이 심볼릭 링크일 때 심볼릭 자체를 복사한다. => 이건 -r 옵션으로도 적용되는 듯..
-# -f 옵션 : 복사할 대상이 이미 있으면 강제로 지우고 복사
+# -d 옵션 : 복사할 원본이 심볼릭 링크일 때 심볼릭 자체를 복사한다. => 이건 -r 옵션으로도 적용되어 제외함
+# -r 옵션 : 원본이 파일이면 그냥 복사되고 (심볼릭 링크 포함) 디렉터리라면 디렉터리 전체가 복사된다.
+# -f 옵션 : 복사할 대상이 이미 있으면 강제로 지우고 복사 => 구버전 라이브러리 파일이 남아있는 경우 overwrite
 yes | cp -rf /usr/local/lib/libpcre* /usr/lib64
 
 # pcre 라이브러리 버전 변경 확인 명령어
@@ -523,12 +532,12 @@ make install
 # 기존 설치된 구버전 zlib rpm 제거
 rpm -e zlib --nodeps
 
-# 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음 : 수동으로 제거
-# rm -rf /usr/lib64/libz.*
+# /usr/local/lib 에 설치된 libz.a , libz.so 파일들을 /usr/lib64 로 복사
+# 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음 : -f 옵션으로 overwrite
+# -r 옵션 : 원본이 파일이면 그냥 복사되고 (심볼릭 링크 포함) 디렉터리라면 디렉터리 전체가 복사된다.
+yes | cp -rf /usr/local/lib/libz.* /usr/lib64
 
-# /usr/local/lib 에 설치된 libz.a , libz.so 파일들을 /usr/lib64 로 복사 : 모두 overwrite
-# 다시 yum install libz 로 구버전 설치해도 라이브러리 파일들은 최신 버전을 바라본다.
-# yes | cp -rf /usr/local/lib/libz.* /usr/lib64
+# 위 명령어 실행 후 다시 yum install libz 로 구버전 설치해도 라이브러리 파일들은 최신 버전을 바라본다.
 
 # zlib ( libz ) 라이브러리 버전 변경 확인 명령어
 # ldconfig -v | grep libz
@@ -539,9 +548,14 @@ cd ..
 
 # openSSH 최신버전 설치
 
+# 최초 설치후 ssh -V 로 확인한 버전 : OpenSSH_7.4p1, OpenSSL 1.0.2k-fips  26 Jan 2017
+
 # openSSH 다운로드 경로 : 8.0 ( 2019-04-17 )
 OPENSSL_DOWNLOAD_URL=https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-8.0p1.tar.gz
 
 # https://www.tecmint.com/install-openssh-server-from-source-in-linux/
 # http://www.linuxfromscratch.org/blfs/view/systemd/postlfs/openssh.html
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile
+
+# yum install zlib-devel openssl-devel
+
