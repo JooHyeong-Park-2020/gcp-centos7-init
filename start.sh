@@ -532,6 +532,10 @@ make install
 # 기존 설치된 구버전 zlib rpm 제거
 rpm -e zlib --nodeps
 
+# 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음
+# cp 시 overwrite 가 안되는 케이스가 있어 미리 제거
+rm -rf /usr/lib64/libz.*
+
 # /usr/local/lib 에 설치된 libz.a , libz.so 파일들을 /usr/lib64 로 복사
 # 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음 : -f 옵션으로 overwrite
 # -r 옵션 : 원본이 파일이면 그냥 복사되고 (심볼릭 링크 포함) 디렉터리라면 디렉터리 전체가 복사된다.
