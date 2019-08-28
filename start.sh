@@ -212,13 +212,6 @@ yum install -y \
 yum remove -y \
    openssl
 
-cat >> /etc/ld.so.conf.d/openssl-x86_64.conf \
-<<EOF
-/usr/local/openssl/lib
-EOF
-
-ldconfig
-
 # rpm -e --nodeps openssl-libs
 
 wget ${OPENSSL_DOWNLOAD_URL} \
@@ -252,7 +245,7 @@ cd openssl
     shared \
     zlib \
     no-idea no-md2 no-mdc2 no-rc5 no-rc4 \
-    --prefix=/usr/local/openssl \
+    --prefix=/usr/local \
     --openssldir=/usr/local/openssl
 
 make
