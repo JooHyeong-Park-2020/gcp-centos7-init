@@ -182,6 +182,7 @@ rpm -ivh ${TEMP_PATH}/epel-release.rpm
 
 # http://cr3denza.blogspot.com/2015/03/ldsoconf.html
 # https://www.thinkit.or.kr/linux/entry/ldconfig-%eb%8f%99%ec%a0%81-%eb%a7%81%ed%81%ac-%ec%84%a4%ec%a0%95-sbinldconfig
+# https://sens.tistory.com/33
 
 cat >> /etc/ld.so.conf \
 <<EOF
