@@ -212,7 +212,7 @@ yum install -y \
 yum remove -y \
    openssl
 
-rpm -e --nodeps openssl-libs
+# rpm -e --nodeps openssl-libs
 
 wget ${OPENSSL_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
