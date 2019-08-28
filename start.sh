@@ -606,10 +606,11 @@ cd openssh
    --with-tcp-wrappers \
    --with-md5-passwords \
    --with-pam \
-   --with-selinux
+   --with-selinux \
+   --with-kerberos5
 
-make
-make install
+# make
+# make install
 
 # 기존 설치된 openssh rpm 제거
 # rpm -e --nodeps openssh
@@ -622,8 +623,8 @@ make install
 # rm -rf /etc/ssh/sshd_config.rpmsave
 
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile?category=563849
-cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
-   /etc/pamd.sshd
+# cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
+#    /etc/pamd.sshd
 
 # 8월 28 21:33:00 centos sshd[1338]: /etc/ssh/sshd_config line 79: Unsupported option GSSAPIAuthentication
 # 8월 28 21:33:00 centos sshd[1338]: /etc/ssh/sshd_config line 80: Unsupported option GSSAPICleanupCredentials
