@@ -208,11 +208,11 @@ yum install -y \
    zlib-devel \
    libssl-dev
 
-rpm -e --nodeps openssl-libs
-
 # 기존 openssl 제거
 yum remove -y \
    openssl
+
+rpm -e --nodeps openssl-libs
 
 wget ${OPENSSL_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
@@ -250,6 +250,14 @@ cd openssl
 
 make
 make install
+
+cat >> /etc/ld.so.conf.d/openssl-x86_64.conf \
+<<EOF
+/usr/local/openssl/lib
+/usr/local/openssl/lib64
+EOF
+
+ldconfig
 
 cd ..
 
