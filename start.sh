@@ -143,6 +143,7 @@ yum install -y \
    perl \
    gcc \
    gcc++ \
+   gcc-c++ \
    make \
    vim \
    gedit \
@@ -174,6 +175,22 @@ wget ${EPEL_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/epel-release.rpm && \
 rpm -ivh ${TEMP_PATH}/epel-release.rpm
+
+##############################################################################
+
+# /usr/local/lib , /usr/lib64 라이브러리 경로에 추가
+
+# http://cr3denza.blogspot.com/2015/03/ldsoconf.html
+# https://www.thinkit.or.kr/linux/entry/ldconfig-%eb%8f%99%ec%a0%81-%eb%a7%81%ed%81%ac-%ec%84%a4%ec%a0%95-sbinldconfig
+
+cat >> /etc/ld.so.conf \
+<<EOF
+/usr/local/lib
+/usr/local/lib64
+/usr/lib64
+EOF
+
+ldconfig -v
 
 ##############################################################################
 
@@ -209,8 +226,8 @@ Pinentry_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.0.tar.b
 GNU_PG_TEMP_DOWNLOAD_PATH=${TEMP_PATH}/gnupg-temp
 mkdir -p ${GNU_PG_TEMP_DOWNLOAD_PATH}
 
-# zlib-devel : ntbTLS 설치시 필요한 듯??
-# ncurses-devel : pinentry 설치시 필요한 듯??
+# zlib-devel : ntbTLS 설치시 필요
+# ncurses-devel : pinentry 설치시 필요
 yum install -y \
    zlib-devel \
    ncurses-devel
@@ -299,9 +316,14 @@ tar -jxf ${TEMP_PATH}/gnupg.tar.bz2 \
 cd ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gnupg-) && \
 ./configure && make && make install
 
+#  라이브러리 경로 지정
+
 # 아래 명령어를 실행하지 않는 경우 다음과 같은 에러 메시지 출력됨
 # gpg: error while loading shared libraries: libgcrypt.so.20: cannot open shared object file: No such file or directory
-echo "/usr/local/lib" > /etc/ld.so.conf.d/gpg2.conf && ldconfig -v
+# echo "/usr/local/lib" > /etc/ld.so.conf.d/gpg2.conf && ldconfig -v
+
+cd ..
+
 
 ##############################################################################
 
@@ -414,10 +436,10 @@ cd ..
 # openssl 실행 위한 lib 파일 복사
 # http://mapoo.net/os/oslinux/openssl-source-install/
 # https://sarc.io/index.php/httpd/1252-openssl
-cp /usr/local/lib64/libssl.so.1.1 \
-   /usr/lib64/libssl.so.1.1 && \
-cp /usr/local/lib64/libcrypto.so.1.1 \
-   /usr/lib64/libcrypto.so.1.1
+# cp /usr/local/lib64/libssl.so.1.1 \
+#    /usr/lib64/libssl.so.1.1 && \
+# cp /usr/local/lib64/libcrypto.so.1.1 \
+#    /usr/lib64/libcrypto.so.1.1
 
 ##############################################################################
 
@@ -427,9 +449,6 @@ cp /usr/local/lib64/libcrypto.so.1.1 \
 
 # PCRE 다운로드 경로 : 8.43 ( 2019-02-23 )
 PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
-
-# gcc-c++ 라이브러리 필요
-yum install gcc-c++ -y
 
 wget ${PCRE_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
@@ -457,14 +476,13 @@ make
 make install
 
 # libpcre.so.* 파일들을 /usr/lib64 로 복사 : 모두 overwrite
-yes | cp -rf  ${TEMP_PATH}/pcre/.libs/libpcre.so.* /usr/lib64
+# yes | cp -rf  ${TEMP_PATH}/pcre/.libs/libpcre.so.* /usr/lib64
 
 # 기존 설치된 pcre rpm 제거
 rpm -e pcre --nodeps
 
 # pcre 라이브러리 버전 변경 확인 명령어
 # ldconfig -v | grep pcre
-
 
 cd ..
 
@@ -497,7 +515,7 @@ make
 make install
 
 # libz.a , libz.so 파일들을 /usr/lib64 로 복사 : 모두 overwrite
-yes | cp -rf libz.* /usr/lib64
+# yes | cp -rf libz.* /usr/lib64
 
 # 기존 설치된 zlib rpm 제거
 rpm -e zlib --nodeps

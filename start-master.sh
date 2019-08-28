@@ -143,6 +143,7 @@ yum install -y \
    perl \
    gcc \
    gcc++ \
+   gcc-c++ \
    make \
    vim \
    gedit \
