@@ -482,6 +482,11 @@ make install
 # 기존 설치된 pcre rpm 제거
 rpm -e pcre --nodeps
 
+# -r 옵션 : 원본이 파일이면 그냥 복사되고 디렉터리라면 디렉터리 전체가 복사된다.
+# -d 옵션 : 복사할 원본이 심볼릭 링크일 때 심볼릭 자체를 복사한다. => 이건 -r 옵션으로도 적용되는 듯..
+# -f 옵션 : 복사할 대상이 이미 있으면 강제로 지우고 복사
+yes | cp -rf /usr/local/lib/libpcre* /usr/lib64
+
 # pcre 라이브러리 버전 변경 확인 명령어
 # ldconfig -v | grep pcre
 
@@ -515,25 +520,18 @@ cd zlib
 make
 make install
 
-# 기존 설치된 zlib rpm 제거
+# 기존 설치된 구버전 zlib rpm 제거
 rpm -e zlib --nodeps
 
-# /usr/local/lib 에 설치된 libz.a , libz.so 파일들을 /usr/lib64 로 복사 : 모두 overwrite
-# yes | cp -rf /usr/local/lib/libz.* /usr/lib64
+# 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음 : 수동으로 제거
+# rm -rf /usr/lib64/libz.*
 
+# /usr/local/lib 에 설치된 libz.a , libz.so 파일들을 /usr/lib64 로 복사 : 모두 overwrite
+# 다시 yum install libz 로 구버전 설치해도 라이브러리 파일들은 최신 버전을 바라본다.
+# yes | cp -rf /usr/local/lib/libz.* /usr/lib64
 
 # zlib ( libz ) 라이브러리 버전 변경 확인 명령어
 # ldconfig -v | grep libz
-
-
-# cat >> /etc/ld.so.conf \
-# <<EOF
-# /usr/lib64
-# EOF
-
-# 또는  echo "/usr/lib64" >> /etc/ld.so.conf
-
-# ldconfig
 
 cd ..
 
