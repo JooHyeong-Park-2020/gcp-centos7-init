@@ -599,6 +599,8 @@ cd openssh
 # --prefix : SSH 설치 경로, 기본값 /usr/local 로 지정함
 ./configure \
    --prefix=/usr/local \
+   --bindir=/usr/local \
+   --sbindir=/usr \
    --with-privsep-path=/var/lib/sshd \
    --sysconfdir=/etc/ssh \
    --with-tcp-wrappers \
