@@ -603,7 +603,6 @@ cd openssh
    --with-privsep-path=/var/lib/sshd \
    --sysconfdir=/etc/ssh \
    --with-zlib=/usr/local \
-   --with-tcp-wrappers \
    --with-md5-passwords \
    --with-pam \
    --with-selinux \
