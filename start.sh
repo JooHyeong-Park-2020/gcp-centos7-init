@@ -420,13 +420,15 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssl-) \
    ${TEMP_PATH}/openssl-*
 
 # https://www.lesstif.com/pages/viewpage.action?pageId=6291508
+# https://servern54l.tistory.com/entry/Server-OpenSSL-source-compile?category=563849
+
 # -prefix 옵션을 주지 않으면 기본적으로 /usr/local/ 밑에 나눠서 들어간다. 
 # header (.h)는 /usr/local/include/openssl, 
-# openssl 실행 파일은 /usr/local/bin
+# openssl 실행 파일은 /usr/local/bin 에 생성됨
 #   => 일반적으로 $PATH 에 기본 등록되는 경로이므로 별도 PATH 등록 불필요
 # library 는 /usr/local/lib/openssl 폴더에 설치된다. (고 한다..)
 #   => 근데 openssl 폴더가 없다??
-#   => 아래 설정으로 설치시에는 /usr/lib64 에 설치되는 것으로 확인됨
+#   => 아래 설정으로 설치시에는 /usr/lib64/openssl 에 설치되는 것으로 확인됨
 #      ( find / | grep openssl 명령어로 확인 )
 #   => GCP centos 에 뭔가 다른 설정이 있는 듯..
 
@@ -489,7 +491,7 @@ make
 make install
 
 # 기존 설치된 pcre rpm 제거
-rpm -e pcre --nodeps
+rpm -e --nodeps pcre
 
 # -d 옵션 : 복사할 원본이 심볼릭 링크일 때 심볼릭 자체를 복사한다. => 이건 -r 옵션으로도 적용되어 제외함
 # -r 옵션 : 원본이 파일이면 그냥 복사되고 (심볼릭 링크 포함) 디렉터리라면 디렉터리 전체가 복사된다.
@@ -530,7 +532,7 @@ make
 make install
 
 # 기존 설치된 구버전 zlib rpm 제거
-rpm -e zlib --nodeps
+rpm -e --nodeps zlib
 
 # 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음
 # cp 시 overwrite 가 안되는 케이스가 있어 미리 제거
@@ -564,7 +566,8 @@ OPENSSL_DOWNLOAD_URL=https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openss
 # http://www.linuxfromscratch.org/blfs/view/systemd/postlfs/openssh.html
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile
 
-# yum install zlib-devel openssl-devel
+# pam, selinux 옵션으로 컴파일시 필요
+yum install zlib-devel openssl-devel
 
 mkdir /var/lib/sshd && \
 chmod -R 700 /var/lib/sshd && \
@@ -583,5 +586,32 @@ wget -c ${OPENSSL_DOWNLOAD_URL} \
    -O ${TEMP_PATH}/openssh.tar.gz && \
 tar -zxf ${TEMP_PATH}/openssh.tar.gz \
    -C ${TEMP_PATH}
+
+rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssh-) \
+   ${TEMP_PATH}/openssh \
+   ${TEMP_PATH}/openssh-*
+
+cd openssh
+
+# --prefix : SSH 설치 경로, 기본값 /usr/local 로 지정함
+./configure \
+   --prefix=/usr/local \
+   --with-privsep-path=/var/lib/sshd \
+   --sysconfdir=/etc/ssh \
+   --with-tcp-wrappers \
+   --with-md5-passwords \
+   --with-pam \
+   --with-selinux
+
+make
+make install
+
+# rm -rf /etc/ssh/ssh_config.rpmsave
+# rm -rf /etc/ssh/sshd_config.rpmsave
+
+# 기존 설치된 openssh rpm 제거
+# rpm -e --nodeps openssh
+# rpm -e --nodeps openssh-clients
+# rpm -e --nodeps openssh-server
 
 
