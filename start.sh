@@ -609,12 +609,17 @@ cd openssh
 make
 make install
 
-# rm -rf /etc/ssh/ssh_config.rpmsave
-# rm -rf /etc/ssh/sshd_config.rpmsave
-
 # 기존 설치된 openssh rpm 제거
 # rpm -e --nodeps openssh
 # rpm -e --nodeps openssh-clients
 # rpm -e --nodeps openssh-server
 
+# openssh-clients 제거시 생성된 ssh_config.rpmsave, 
+# openssh-server 제거시 생성된 sshd_config.rpmsave 제거
+# rm -rf /etc/ssh/ssh_config.rpmsave
+# rm -rf /etc/ssh/sshd_config.rpmsave
+
+# https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile?category=563849
+cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
+   /etc/pamd.sshd
 
