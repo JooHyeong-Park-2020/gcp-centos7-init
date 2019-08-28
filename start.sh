@@ -558,7 +558,7 @@ cd ..
 # 최초 설치 후 sshd 계정 정보 : sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
 # 최초 설치 후 sshd 그룹 정보 : sshd:x:74:
 # 최초 설치 후 sshd 서비스 스크립트 경로 : /usr/lib/systemd/system/sshd.service
-
+# 최초 설치 후 sshd-keygen 서비스 스크립트 경로 : /usr/lib/systemd/system/sshd-keygen.service
 
 # openSSH 다운로드 경로 : 8.0 ( 2019-04-17 )
 OPENSSL_DOWNLOAD_URL=https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-8.0p1.tar.gz
