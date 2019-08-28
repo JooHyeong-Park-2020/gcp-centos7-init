@@ -204,14 +204,15 @@ OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
 # 참조 https://blanche-star.tistory.com/entry/APM-%EC%84%A4%EC%B9%98-openssl-%EC%B5%9C%EC%8B%A0%EB%B2%84%EC%A0%84%EC%84%A4%EC%B9%98%EC%86%8C%EC%8A%A4%EC%84%A4%EC%B9%98-shared%EC%84%A4%EC%B9%98
 # http://blog.naver.com/PostView.nhn?blogId=hanajava&logNo=221442593046&categoryNo=29&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView
 
+yum install -y \
+   zlib-devel \
+   libssl-dev
+
+rpm -e --nodeps openssl-libs
 
 # 기존 openssl 제거
 yum remove -y \
    openssl
-
-yum install -y \
-   zlib-devel \
-   libssl-dev
 
 wget ${OPENSSL_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
@@ -244,7 +245,7 @@ cd openssl
     shared \
     zlib \
     no-idea no-md2 no-mdc2 no-rc5 no-rc4 \
-    --prefix=/usr/local \
+    --prefix=/usr/local/openssl \
     --openssldir=/usr/local/openssl
 
 make
