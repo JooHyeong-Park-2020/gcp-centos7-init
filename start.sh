@@ -212,6 +212,13 @@ yum install -y \
 yum remove -y \
    openssl
 
+cat >> /etc/ld.so.conf.d/openssl-x86_64.conf \
+<<EOF
+/usr/local/openssl/lib
+EOF
+
+ldconfig
+
 # rpm -e --nodeps openssl-libs
 
 wget ${OPENSSL_DOWNLOAD_URL} \
@@ -251,13 +258,6 @@ cd openssl
 make
 make install
 
-cat >> /etc/ld.so.conf.d/openssl-x86_64.conf \
-<<EOF
-/usr/local/openssl/lib
-/usr/local/openssl/lib64
-EOF
-
-ldconfig
 
 cd ..
 
