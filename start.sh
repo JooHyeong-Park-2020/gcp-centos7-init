@@ -209,6 +209,10 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep zlib-) \
 # 기존 설치된 구버전 zlib rpm 제거
 rpm -e --nodeps zlib
 
+# 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음
+# cp 시 overwrite 가 안되는 케이스가 있어 미리 제거
+rm -rf /usr/lib64/libz.*
+
 cd zlib
 
 # http://www.linuxfromscratch.org/lfs/view/development/chapter06/zlib.html
@@ -220,10 +224,6 @@ cd zlib
 make
 make install
 make clean
-
-# 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음
-# cp 시 overwrite 가 안되는 케이스가 있어 미리 제거
-rm -rf /usr/lib64/libz.*
 
 # /usr/local/lib 에 설치된 libz.a , libz.so 파일들을 /usr/lib64 로 복사
 # 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음 : -f 옵션으로 overwrite
@@ -247,8 +247,7 @@ cd ..
 PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
 
 # zlib-devel : PCRE 컴파일 설치시 필요 => zlib 최신버전을 컴파일 설치했으면 불필요
-# yum install -y \
-#    zlib-devel
+# yum install -y zlib-devel
 
 wget ${PCRE_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
@@ -301,7 +300,7 @@ OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
 # 참조 https://blanche-star.tistory.com/entry/APM-%EC%84%A4%EC%B9%98-openssl-%EC%B5%9C%EC%8B%A0%EB%B2%84%EC%A0%84%EC%84%A4%EC%B9%98%EC%86%8C%EC%8A%A4%EC%84%A4%EC%B9%98-shared%EC%84%A4%EC%B9%98
 # http://blog.naver.com/PostView.nhn?blogId=hanajava&logNo=221442593046&categoryNo=29&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView
 
-# openssl-libs 는 못지움 : 바라보는 곳이 너무 많음
+# openssl-libs 는 못 지움 : 의존하는 곳이 너무 많음
 
 wget ${OPENSSL_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
@@ -362,6 +361,7 @@ cd ..
 # openSSH 최신버전 설치
 
 # 최초 설치후 ssh -V 로 확인한 버전 : OpenSSH_7.4p1, OpenSSL 1.0.2k-fips  26 Jan 2017
+
 # 최초 설치 후 sshd 계정 정보 : sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
 # 최초 설치 후 sshd 그룹 정보 : sshd:x:74:
 # 최초 설치 후 sshd 서비스 스크립트 경로 : /usr/lib/systemd/system/sshd.service
