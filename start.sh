@@ -423,6 +423,8 @@ cd ..
 
 ##############################################################################
 
+# https://www.aonenetworks.kr/official.php/home/info/975
+
 # /etc/ssh/sshd_config 에 보안 설정 추가
 cat >> /etc/ssh/sshd_config \
 <<EOF
@@ -435,9 +437,12 @@ MaxAuthTries 5
 
 EOF
 
-# firewall-cmd --permanent --zone=public --add-port=${SSH_CONNECTION_PORT}/tcp
-# firewall-cmd --reload
+firewall-cmd --permanent --zone=public --add-port=${SSH_CONNECTION_PORT}/tcp
+firewall-cmd --reload
 
-# semanage port -a -t ssh_port_t -p tcp ${SSH_CONNECTION_PORT}
+# https://zero-gravity.tistory.com/270
+semanage port -a -t ssh_port_t -p tcp ${SSH_CONNECTION_PORT}
 
-# systemctl restart sshd
+systemctl restart sshd
+
+##############################################################################
