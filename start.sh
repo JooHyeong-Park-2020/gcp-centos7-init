@@ -35,6 +35,8 @@ DEV_DOMAIN=${DEV_DOMAIN_PREFIX}.${REAL_DOMAIN}
 WEBDAV_DOMAIN_PREFIX=webdav
 WEBDAV_DOMAIN=${WEBDAV_DOMAIN_PREFIX}.${REAL_DOMAIN}
 
+SSH_CONNECTION_PORT=2435
+
 REAL_SERVER_LOCAL_PORT=8080
 DEV_SERVER_LOCAL_PORT=8081
 NEXUS_SERVER_LOCAL_PORT=8090
@@ -420,3 +422,21 @@ cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
 cd ..
 
 ##############################################################################
+
+# /etc/ssh/sshd_config 에 보안 설정 추가
+cat >> /etc/ssh/sshd_config \
+<<EOF
+#############################
+
+Port ${SSH_CONNECTION_PORT}
+Protocol 2
+
+MaxAuthTries 5
+
+EOF
+
+firewall-cmd --permanent --zone=public --add-port=${SSH_CONNECTION_PORT}/tcp
+firewall-cmd --reload
+
+semanage port -a -t ssh_port_t -p tcp ${SSH_CONNECTION_PORT}
+
