@@ -247,7 +247,7 @@ PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
 
 # zlib-devel : PCRE 컴파일 설치시 필요
 # yum install -y \
-   zlib-devel
+#    zlib-devel
 #    libssl-dev
 
 wget ${PCRE_DOWNLOAD_URL} \
