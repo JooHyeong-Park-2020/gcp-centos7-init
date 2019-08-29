@@ -141,7 +141,6 @@ yum install -y \
    net-tools \
    ntp \
    gcc \
-   gcc++ \
    gcc-c++ \
    make \
    expect \
@@ -188,7 +187,12 @@ cat >> /etc/ld.so.conf \
 /usr/lib64
 EOF
 
-ldconfig -v
+ldconfig
+
+# zlib-devel : PCRE 컴파일 설치시 필요
+yum install -y \
+   zlib-devel
+#    libssl-dev
 
 ##############################################################################
 
@@ -294,10 +298,6 @@ OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
 # OPENSSL 컴파일 설치
 # 참조 https://blanche-star.tistory.com/entry/APM-%EC%84%A4%EC%B9%98-openssl-%EC%B5%9C%EC%8B%A0%EB%B2%84%EC%A0%84%EC%84%A4%EC%B9%98%EC%86%8C%EC%8A%A4%EC%84%A4%EC%B9%98-shared%EC%84%A4%EC%B9%98
 # http://blog.naver.com/PostView.nhn?blogId=hanajava&logNo=221442593046&categoryNo=29&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView
-
-yum install -y \
-   zlib-devel \
-   libssl-dev
 
 # 기존 openssl 제거
 yum remove -y \
