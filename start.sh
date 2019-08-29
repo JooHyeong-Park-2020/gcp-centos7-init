@@ -189,58 +189,6 @@ EOF
 
 ldconfig
 
-# zlib-devel : PCRE 컴파일 설치시 필요
-yum install -y \
-   zlib-devel
-#    libssl-dev
-
-##############################################################################
-
-# PCRE 컴파일 버전 다운로드
-
-# http://blog.naver.com/PostView.nhn?blogId=apocalypsekr&logNo=150156152811
-
-# PCRE 다운로드 경로 : 8.43 ( 2019-02-23 )
-PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
-
-wget ${PCRE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/pcre.tar.gz && \
-tar -zxf ${TEMP_PATH}/pcre.tar.gz \
-   -C ${TEMP_PATH}
-
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep pcre-) \
-   ${TEMP_PATH}/pcre \
-   ${TEMP_PATH}/pcre-*
-
-cd pcre
-
-# prefix 는 기본값 /usr/local 과 동일하게 지정
-# http://www.linuxfromscratch.org/blfs/view/cvs/general/pcre.html
-./configure \
-   --prefix=/usr/local \
-   --enable-static \
-   --enable-utf8 \
-   --enable-unicode-properties \
-   --enable-pcre16 \
-   --enable-pcre32 \
-   --enable-pcregrep-libz
-make
-make install
-
-# 기존 설치된 pcre rpm 제거
-rpm -e --nodeps pcre
-
-# -d 옵션 : 복사할 원본이 심볼릭 링크일 때 심볼릭 자체를 복사한다. => 이건 -r 옵션으로도 적용되어 제외함
-# -r 옵션 : 원본이 파일이면 그냥 복사되고 (심볼릭 링크 포함) 디렉터리라면 디렉터리 전체가 복사된다.
-# -f 옵션 : 복사할 대상이 이미 있으면 강제로 지우고 복사 => 구버전 라이브러리 파일이 남아있는 경우 overwrite
-yes | cp -rf /usr/local/lib/libpcre* /usr/lib64
-
-# pcre 라이브러리 버전 변경 확인 명령어
-# ldconfig -v | grep pcre
-
-cd ..
-
 ##############################################################################
 
 # zlib 최신 버전 다운로드 / 갱신 설치
@@ -287,6 +235,59 @@ yes | cp -rf /usr/local/lib/libz.* /usr/lib64
 # ldconfig -v | grep libz
 
 cd ..
+
+##############################################################################
+
+# PCRE 컴파일 버전 다운로드
+
+# http://blog.naver.com/PostView.nhn?blogId=apocalypsekr&logNo=150156152811
+
+# PCRE 다운로드 경로 : 8.43 ( 2019-02-23 )
+PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
+
+# zlib-devel : PCRE 컴파일 설치시 필요
+# yum install -y \
+   zlib-devel
+#    libssl-dev
+
+wget ${PCRE_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/pcre.tar.gz && \
+tar -zxf ${TEMP_PATH}/pcre.tar.gz \
+   -C ${TEMP_PATH}
+
+rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep pcre-) \
+   ${TEMP_PATH}/pcre \
+   ${TEMP_PATH}/pcre-*
+
+cd pcre
+
+# prefix 는 기본값 /usr/local 과 동일하게 지정
+# http://www.linuxfromscratch.org/blfs/view/cvs/general/pcre.html
+./configure \
+   --prefix=/usr/local \
+   --enable-static \
+   --enable-utf8 \
+   --enable-unicode-properties \
+   --enable-pcre16 \
+   --enable-pcre32 \
+   --enable-pcregrep-libz
+make
+make install
+
+# 기존 설치된 pcre rpm 제거
+rpm -e --nodeps pcre
+
+# -d 옵션 : 복사할 원본이 심볼릭 링크일 때 심볼릭 자체를 복사한다. => 이건 -r 옵션으로도 적용되어 제외함
+# -r 옵션 : 원본이 파일이면 그냥 복사되고 (심볼릭 링크 포함) 디렉터리라면 디렉터리 전체가 복사된다.
+# -f 옵션 : 복사할 대상이 이미 있으면 강제로 지우고 복사 => 구버전 라이브러리 파일이 남아있는 경우 overwrite
+yes | cp -rf /usr/local/lib/libpcre* /usr/lib64
+
+# pcre 라이브러리 버전 변경 확인 명령어
+# ldconfig -v | grep pcre
+
+cd ..
+
 
 ##############################################################################
 
