@@ -140,13 +140,10 @@ yum install -y \
    bzip2 \
    net-tools \
    ntp \
-   perl \
    gcc \
    gcc++ \
    gcc-c++ \
    make \
-   vim \
-   gedit \
    expect \
    perl
 
@@ -192,75 +189,6 @@ cat >> /etc/ld.so.conf \
 EOF
 
 ldconfig -v
-
-##############################################################################
-
-# openssl 컴파일 버전 다운로드 / 설치 ( NGINX Dependencies : openssl, PCRE, ZLIB )
-
-# openssl 다운로드 경로 : 1.1.1c( 2019-05-28 )
-OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
-
-# OPENSSL 컴파일 설치
-# 참조 https://blanche-star.tistory.com/entry/APM-%EC%84%A4%EC%B9%98-openssl-%EC%B5%9C%EC%8B%A0%EB%B2%84%EC%A0%84%EC%84%A4%EC%B9%98%EC%86%8C%EC%8A%A4%EC%84%A4%EC%B9%98-shared%EC%84%A4%EC%B9%98
-# http://blog.naver.com/PostView.nhn?blogId=hanajava&logNo=221442593046&categoryNo=29&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView
-
-yum install -y \
-   zlib-devel \
-   libssl-dev
-
-# 기존 openssl 제거
-yum remove -y \
-   openssl
-
-# rpm -e --nodeps openssl-libs
-
-wget ${OPENSSL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/openssl.tar.gz && \
-tar -zxf ${TEMP_PATH}/openssl.tar.gz \
-   -C ${TEMP_PATH}
-
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssl-) \
-   ${TEMP_PATH}/openssl \
-   ${TEMP_PATH}/openssl-*
-
-# https://www.lesstif.com/pages/viewpage.action?pageId=6291508
-# https://servern54l.tistory.com/entry/Server-OpenSSL-source-compile?category=563849
-
-# -prefix 옵션을 주지 않으면 기본적으로 /usr/local/ 밑에 나눠서 들어간다. 
-# header (.h)는 /usr/local/include/openssl, 
-# openssl 실행 파일은 /usr/local/bin 에 생성됨
-#   => 일반적으로 $PATH 에 기본 등록되는 경로이므로 별도 PATH 등록 불필요
-# library 는 /usr/local/lib/openssl 폴더에 설치된다. (고 한다..)
-#   => 근데 openssl 폴더가 없다??
-#   => 아래 설정으로 설치시에는 /usr/lib64/openssl 에 설치되는 것으로 확인됨
-#      ( find / | grep openssl 명령어로 확인 )
-#   => GCP centos 에 뭔가 다른 설정이 있는 듯..
-
-cd openssl
-
-# Configure 의 C 가 대문자여야 실행됨
-./Configure \
-    linux-x86_64 \
-    shared \
-    zlib \
-    no-idea no-md2 no-mdc2 no-rc5 no-rc4 \
-    --prefix=/usr/local \
-    --openssldir=/usr/local/openssl
-
-make
-make install
-
-
-cd ..
-
-# openssl 실행 위한 lib 파일 복사 :/etc/ld.so.conf 에 라이브러리 경로 지정했으면 불필요
-# http://mapoo.net/os/oslinux/openssl-source-install/
-# https://sarc.io/index.php/httpd/1252-openssl
-# cp /usr/local/lib64/libssl.so.1.1 \
-#    /usr/lib64/libssl.so.1.1 && \
-# cp /usr/local/lib64/libcrypto.so.1.1 \
-#    /usr/lib64/libcrypto.so.1.1
 
 ##############################################################################
 
@@ -355,6 +283,75 @@ yes | cp -rf /usr/local/lib/libz.* /usr/lib64
 # ldconfig -v | grep libz
 
 cd ..
+
+##############################################################################
+
+# openssl 컴파일 버전 다운로드 / 설치
+
+# openssl 다운로드 경로 : 1.1.1c( 2019-05-28 )
+OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
+
+# OPENSSL 컴파일 설치
+# 참조 https://blanche-star.tistory.com/entry/APM-%EC%84%A4%EC%B9%98-openssl-%EC%B5%9C%EC%8B%A0%EB%B2%84%EC%A0%84%EC%84%A4%EC%B9%98%EC%86%8C%EC%8A%A4%EC%84%A4%EC%B9%98-shared%EC%84%A4%EC%B9%98
+# http://blog.naver.com/PostView.nhn?blogId=hanajava&logNo=221442593046&categoryNo=29&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView
+
+yum install -y \
+   zlib-devel \
+   libssl-dev
+
+# 기존 openssl 제거
+yum remove -y \
+   openssl
+
+# rpm -e --nodeps openssl-libs
+
+wget ${OPENSSL_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/openssl.tar.gz && \
+tar -zxf ${TEMP_PATH}/openssl.tar.gz \
+   -C ${TEMP_PATH}
+
+rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssl-) \
+   ${TEMP_PATH}/openssl \
+   ${TEMP_PATH}/openssl-*
+
+# https://www.lesstif.com/pages/viewpage.action?pageId=6291508
+# https://servern54l.tistory.com/entry/Server-OpenSSL-source-compile?category=563849
+
+# -prefix 옵션을 주지 않으면 기본적으로 /usr/local/ 밑에 나눠서 들어간다. 
+# header (.h)는 /usr/local/include/openssl, 
+# openssl 실행 파일은 /usr/local/bin 에 생성됨
+#   => 일반적으로 $PATH 에 기본 등록되는 경로이므로 별도 PATH 등록 불필요
+# library 는 /usr/local/lib/openssl 폴더에 설치된다. (고 한다..)
+#   => 근데 openssl 폴더가 없다??
+#   => 아래 설정으로 설치시에는 /usr/lib64/openssl 에 설치되는 것으로 확인됨
+#      ( find / | grep openssl 명령어로 확인 )
+#   => GCP centos 에 뭔가 다른 설정이 있는 듯..
+
+cd openssl
+
+# Configure 의 C 가 대문자여야 실행됨
+./Configure \
+    linux-x86_64 \
+    shared \
+    zlib \
+    no-idea no-md2 no-mdc2 no-rc5 no-rc4 \
+    --prefix=/usr/local \
+    --openssldir=/usr/local/openssl
+
+make
+make install
+
+
+cd ..
+
+# openssl 실행 위한 lib 파일 복사 :/etc/ld.so.conf 에 라이브러리 경로 지정했으면 불필요
+# http://mapoo.net/os/oslinux/openssl-source-install/
+# https://sarc.io/index.php/httpd/1252-openssl
+# cp /usr/local/lib64/libssl.so.1.1 \
+#    /usr/lib64/libssl.so.1.1 && \
+# cp /usr/local/lib64/libcrypto.so.1.1 \
+#    /usr/lib64/libcrypto.so.1.1
 
 ##############################################################################
 
