@@ -206,6 +206,9 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep zlib-) \
    ${TEMP_PATH}/zlib \
    ${TEMP_PATH}/zlib-*
 
+# 기존 설치된 구버전 zlib rpm 제거
+rpm -e --nodeps zlib
+
 cd zlib
 
 # http://www.linuxfromscratch.org/lfs/view/development/chapter06/zlib.html
@@ -216,9 +219,7 @@ cd zlib
    --prefix=/usr/local
 make
 make install
-
-# 기존 설치된 구버전 zlib rpm 제거
-rpm -e --nodeps zlib
+make clean
 
 # 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음
 # cp 시 overwrite 가 안되는 케이스가 있어 미리 제거
@@ -245,7 +246,7 @@ cd ..
 # PCRE 다운로드 경로 : 8.43 ( 2019-02-23 )
 PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
 
-# zlib-devel : PCRE 컴파일 설치시 필요 => zlib 최신버전을 컴파일 설치시에는 불필요
+# zlib-devel : PCRE 컴파일 설치시 필요 => zlib 최신버전을 컴파일 설치했으면 불필요
 # yum install -y \
 #    zlib-devel
 
@@ -258,6 +259,9 @@ tar -zxf ${TEMP_PATH}/pcre.tar.gz \
 rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep pcre-) \
    ${TEMP_PATH}/pcre \
    ${TEMP_PATH}/pcre-*
+
+# 기존 설치된 pcre rpm 제거
+rpm -e --nodeps pcre
 
 cd pcre
 
@@ -273,9 +277,7 @@ cd pcre
    --enable-pcregrep-libz
 make
 make install
-
-# 기존 설치된 pcre rpm 제거
-rpm -e --nodeps pcre
+make clean
 
 # -d 옵션 : 복사할 원본이 심볼릭 링크일 때 심볼릭 자체를 복사한다. => 이건 -r 옵션으로도 적용되어 제외함
 # -r 옵션 : 원본이 파일이면 그냥 복사되고 (심볼릭 링크 포함) 디렉터리라면 디렉터리 전체가 복사된다.
@@ -299,10 +301,6 @@ OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
 # 참조 https://blanche-star.tistory.com/entry/APM-%EC%84%A4%EC%B9%98-openssl-%EC%B5%9C%EC%8B%A0%EB%B2%84%EC%A0%84%EC%84%A4%EC%B9%98%EC%86%8C%EC%8A%A4%EC%84%A4%EC%B9%98-shared%EC%84%A4%EC%B9%98
 # http://blog.naver.com/PostView.nhn?blogId=hanajava&logNo=221442593046&categoryNo=29&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView
 
-# 기존 openssl 제거
-yum remove -y \
-   openssl
-
 # openssl-libs 는 못지움 : 바라보는 곳이 너무 많음
 
 wget ${OPENSSL_DOWNLOAD_URL} \
@@ -314,6 +312,9 @@ tar -zxf ${TEMP_PATH}/openssl.tar.gz \
 rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssl-) \
    ${TEMP_PATH}/openssl \
    ${TEMP_PATH}/openssl-*
+
+# 기존 openssl 제거
+rpm -e --nodeps openssl
 
 # https://www.lesstif.com/pages/viewpage.action?pageId=6291508
 # https://servern54l.tistory.com/entry/Server-OpenSSL-source-compile?category=563849
@@ -341,6 +342,7 @@ cd openssl
 
 make
 make install
+make clean
 
 # 구버전 openssl 실행파일 경로에 최신 버전 openssl 심볼릭 링크 생성 
 ln -s /usr/local/bin/openssl /usr/bin/openssl
@@ -378,11 +380,6 @@ yum install -y \
    libselinux-devel \
    krb5-devel
 
-# --with-privsep-path 에 지정할 새로운 디렉토리 생성 : /var/lib/sshd
-mkdir /var/lib/sshd && \
-chmod -R 700 /var/lib/sshd && \
-chown -R root:sys /var/lib/sshd
-
 wget -c ${OPENSSL_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/openssh.tar.gz && \
@@ -395,9 +392,7 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssh-) \
 
 # 기존 설치된 openssh rpm, openssh-clients 제거
 # openssh-server 는 못 지움 : ssh 접속이 안됨
-rpm -e --nodeps \
-   openssh \
-   openssh-clients
+rpm -e --nodeps openssh openssh-clients
 
 # openssh-clients 제거시 생성된 ssh_config.rpmsave 제거
 rm -rf /etc/ssh/ssh_config.rpmsave
@@ -407,9 +402,7 @@ cd openssh
 # --prefix : SSH 설치 경로, 기본값 /usr/local 로 지정함
 ./configure \
    --prefix=/usr/local \
-   --with-privsep-path=/var/lib/sshd \
    --sysconfdir=/etc/ssh \
-   --with-zlib=/usr/local \
    --with-md5-passwords \
    --with-pam \
    --with-selinux \
@@ -421,4 +414,9 @@ make install
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile?category=563849
 cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
    /etc/pamd.sshd
+
+cd ..
+
+##############################################################################
+
 
