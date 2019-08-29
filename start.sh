@@ -435,8 +435,9 @@ MaxAuthTries 5
 
 EOF
 
-firewall-cmd --permanent --zone=public --add-port=${SSH_CONNECTION_PORT}/tcp
-firewall-cmd --reload
+# firewall-cmd --permanent --zone=public --add-port=${SSH_CONNECTION_PORT}/tcp
+# firewall-cmd --reload
 
-semanage port -a -t ssh_port_t -p tcp ${SSH_CONNECTION_PORT}
+# semanage port -a -t ssh_port_t -p tcp ${SSH_CONNECTION_PORT}
 
+# systemctl restart sshd
