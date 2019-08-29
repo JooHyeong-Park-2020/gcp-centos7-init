@@ -303,6 +303,8 @@ OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
 yum remove -y \
    openssl
 
+# openssl-libs 는 못지움 : 바라보는 곳이 너무 많음
+
 wget ${OPENSSL_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/openssl.tar.gz && \
@@ -391,6 +393,15 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssh-) \
    ${TEMP_PATH}/openssh \
    ${TEMP_PATH}/openssh-*
 
+# 기존 설치된 openssh rpm, openssh-clients 제거
+# openssh-server 는 못 지움 : ssh 접속이 안됨
+rpm -e --nodeps \
+   openssh \
+   openssh-clients
+
+# openssh-clients 제거시 생성된 ssh_config.rpmsave 제거
+rm -rf /etc/ssh/ssh_config.rpmsave
+
 cd openssh
 
 # --prefix : SSH 설치 경로, 기본값 /usr/local 로 지정함
@@ -404,23 +415,10 @@ cd openssh
    --with-selinux \
    --with-kerberos5
 
-# make
-# make install
-
-# 기존 설치된 openssh rpm 제거
-rpm -e --nodeps openssh
-# rpm -e --nodeps openssh-clients
-# rpm -e --nodeps openssh-server
-
-# openssh-clients 제거시 생성된 ssh_config.rpmsave, 
-# openssh-server 제거시 생성된 sshd_config.rpmsave 제거
-# rm -rf /etc/ssh/ssh_config.rpmsave
-# rm -rf /etc/ssh/sshd_config.rpmsave
+make
+make install
 
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile?category=563849
 cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
    /etc/pamd.sshd
-
-# 8월 28 21:33:00 centos sshd[1338]: /etc/ssh/sshd_config line 79: Unsupported option GSSAPIAuthentication
-# 8월 28 21:33:00 centos sshd[1338]: /etc/ssh/sshd_config line 80: Unsupported option GSSAPICleanupCredentials
 
