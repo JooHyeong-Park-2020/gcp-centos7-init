@@ -245,10 +245,9 @@ cd ..
 # PCRE 다운로드 경로 : 8.43 ( 2019-02-23 )
 PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
 
-# zlib-devel : PCRE 컴파일 설치시 필요
+# zlib-devel : PCRE 컴파일 설치시 필요 => zlib 최신버전을 컴파일 설치시에는 불필요
 # yum install -y \
 #    zlib-devel
-#    libssl-dev
 
 wget ${PCRE_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
