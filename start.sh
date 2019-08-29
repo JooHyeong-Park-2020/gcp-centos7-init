@@ -411,6 +411,7 @@ cd openssh
 
 make
 make install
+make clean
 
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile?category=563849
 cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
