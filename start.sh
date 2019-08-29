@@ -218,15 +218,13 @@ make
 make install
 make clean
 
-
 # 기존 설치된 구버전 zlib rpm 제거
+# 최신 버전 컴파일 설치시 zlib 를 참조하므로 컴파일 설치 완료 후 구 버전을 제거해야 함
 rpm -e --nodeps zlib
 
 # 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음
 # cp 시 overwrite 가 안되는 케이스가 있어 미리 제거
 rm -rf /usr/lib64/libz.*
-
-
 
 # /usr/local/lib 에 설치된 libz.a , libz.so 파일들을 /usr/lib64 로 복사
 # 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음 : -f 옵션으로 overwrite
@@ -262,9 +260,6 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep pcre-) \
    ${TEMP_PATH}/pcre \
    ${TEMP_PATH}/pcre-*
 
-# 기존 설치된 pcre rpm 제거
-rpm -e --nodeps pcre
-
 cd pcre
 
 # prefix 는 기본값 /usr/local 과 동일하게 지정
@@ -280,6 +275,10 @@ cd pcre
 make
 make install
 make clean
+
+# 기존 설치된 pcre rpm 제거
+# 최신 버전 컴파일 설치시 pcre 를 참조하므로 컴파일 설치 완료 후 구 버전을 제거해야 함
+rpm -e --nodeps pcre
 
 # -d 옵션 : 복사할 원본이 심볼릭 링크일 때 심볼릭 자체를 복사한다. => 이건 -r 옵션으로도 적용되어 제외함
 # -r 옵션 : 원본이 파일이면 그냥 복사되고 (심볼릭 링크 포함) 디렉터리라면 디렉터리 전체가 복사된다.
@@ -303,7 +302,6 @@ OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
 # 참조 https://blanche-star.tistory.com/entry/APM-%EC%84%A4%EC%B9%98-openssl-%EC%B5%9C%EC%8B%A0%EB%B2%84%EC%A0%84%EC%84%A4%EC%B9%98%EC%86%8C%EC%8A%A4%EC%84%A4%EC%B9%98-shared%EC%84%A4%EC%B9%98
 # http://blog.naver.com/PostView.nhn?blogId=hanajava&logNo=221442593046&categoryNo=29&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView
 
-# openssl-libs 는 못 지움 : 의존하는 곳이 너무 많음
 
 wget ${OPENSSL_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
@@ -315,7 +313,7 @@ rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssl-) \
    ${TEMP_PATH}/openssl \
    ${TEMP_PATH}/openssl-*
 
-# 기존 openssl 제거
+# 기존 openssl 제거: openssl-libs 는 못 지움, 의존하는 곳이 너무 많음
 rpm -e --nodeps openssl
 
 # https://www.lesstif.com/pages/viewpage.action?pageId=6291508
