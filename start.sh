@@ -303,8 +303,6 @@ OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
 yum remove -y \
    openssl
 
-# rpm -e --nodeps openssl-libs
-
 wget ${OPENSSL_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/openssl.tar.gz && \
@@ -342,6 +340,8 @@ cd openssl
 make
 make install
 
+# 구버전 openssl 실행파일 경로에 최신 버전 openssl 심볼릭 링크 생성 
+ln -s /usr/local/bin/openssl /usr/bin/openssl
 
 cd ..
 
@@ -380,14 +380,6 @@ yum install -y \
 mkdir /var/lib/sshd && \
 chmod -R 700 /var/lib/sshd && \
 chown -R root:sys /var/lib/sshd
-   
-# -g : 기존 그룹이 있을 경우 해당 그룹으로 지정 => sshd 그룹은 최초 설치시 이미 존재함
-# -d : 사용자 홈 디렉토리 경로 지정 
-# -s : 쉘 사용권한이 없는 계정 생성시 /sbin/nologin 또는 /bin/false 로 지정
-# useradd sshd \
-#    -g sshd \
-#    -d /var/lib/sshd/ \
-#    -s /sbin/nologin
 
 wget -c ${OPENSSL_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
@@ -416,7 +408,7 @@ cd openssh
 # make install
 
 # 기존 설치된 openssh rpm 제거
-# rpm -e --nodeps openssh
+rpm -e --nodeps openssh
 # rpm -e --nodeps openssh-clients
 # rpm -e --nodeps openssh-server
 
@@ -426,8 +418,8 @@ cd openssh
 # rm -rf /etc/ssh/sshd_config.rpmsave
 
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile?category=563849
-# cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
-#    /etc/pamd.sshd
+cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
+   /etc/pamd.sshd
 
 # 8월 28 21:33:00 centos sshd[1338]: /etc/ssh/sshd_config line 79: Unsupported option GSSAPIAuthentication
 # 8월 28 21:33:00 centos sshd[1338]: /etc/ssh/sshd_config line 80: Unsupported option GSSAPICleanupCredentials

@@ -3,6 +3,7 @@
 /etc/pki/tls/misc
 /etc/pki/tls/openssl.cnf
 /etc/pki/tls/private
+
 /usr/lib64/.libcrypto.so.1.0.2k.hmac
 /usr/lib64/.libcrypto.so.10.hmac
 /usr/lib64/.libssl.so.1.0.2k.hmac
@@ -11,6 +12,7 @@
 /usr/lib64/libcrypto.so.10
 /usr/lib64/libssl.so.1.0.2k
 /usr/lib64/libssl.so.10
+
 /usr/lib64/openssl
 /usr/lib64/openssl/engines
 /usr/lib64/openssl/engines/lib4758cca.so
