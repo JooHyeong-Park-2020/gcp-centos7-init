@@ -446,3 +446,36 @@ semanage port -a -t ssh_port_t -p tcp ${SSH_CONNECTION_PORT}
 systemctl restart sshd
 
 ##############################################################################
+
+# VSFTPD 다운로드 경로 : V3.0.3 ( 2015-07 )
+VSFTPD_DOWNLOAD_URL=https://security.appspot.com/downloads/vsftpd-3.0.3.tar.gz
+
+# DB4 rpm 다운로드 경로
+DB4_DOWNLOAD_URL=http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/l/libdb4-4.8.30-13.el7.x86_64.rpm
+
+# DB4-UTILS rpm 다운로드 경로
+DB4_UTILS_DOWNLOAD_URL=http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/l/libdb4-utils-4.8.30-13.el7.x86_64.rpm
+
+# VSFTPD 다운로드 / 압축 해제
+wget ${VSFTPD_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/vsftpd.tar.gz && \
+tar -zxf ${TEMP_PATH}/vsftpd.tar.gz \
+   -C ${TEMP_PATH}
+
+rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep vsftpd-) \
+   ${TEMP_PATH}/vsftpd \
+   ${TEMP_PATH}/vsftpd-*
+
+# DB4, DB4-UTILS 다운로드 / 설치
+wget ${DB4_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/db4.rpm && \
+wget ${DB4_UTILS_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/db4-utils.rpm
+
+yum localinstall -y \
+   ${TEMP_PATH}/db4.rpm \
+   ${TEMP_PATH}/db4-utils.rpm
+
