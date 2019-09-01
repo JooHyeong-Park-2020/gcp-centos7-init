@@ -490,6 +490,11 @@ systemctl restart sshd
 
 # Docker 설치 / 서비스 등록
 
+# container-selinux : docker 설치시 의존 패키지임, 선설치 필요
+
+# container-selinux 다운로드 경로 : container-selinux-2.107-1 ( 2019-08-05 )
+CONTAINEDR_SELINUX_DOWNLOAD_URL=http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.107-1.el7_6.noarch.rpm
+
 # Docker-ce 다운로드 경로 : docker-ce-18.09.7-3 ( 2019-06-27 )
 DOCKER_CE_DOWNLOAD_URL=https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-18.09.7-3.el7.x86_64.rpm
 
@@ -516,6 +521,9 @@ yum remove -y \
 rm -rf /var/lib/docker && \
 rm -rf /etc/yum.repos.d/docker-ce.repo
 
+wget ${CONTAINEDR_SELINUX_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/container-selinux.rpm && \
 wget ${DOCKER_CE_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/docker-ce.rpm && \
@@ -526,7 +534,11 @@ wget ${CONTAINEDR_IO_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/containerd.io.rpm
 
-rpm -Uvh -y \
+# 도커 설치 전 의존 패키지 먼저 설치
+rpm -Uvh \
+   ${TEMP_PATH}/container-selinux.rpm
+
+rpm -Uvh \
    ${TEMP_PATH}/docker-ce.rpm \
    ${TEMP_PATH}/docker-ce-cli.rpm \
    ${TEMP_PATH}/containerd.io.rpm
@@ -548,10 +560,10 @@ systemctl start docker
 # VSFTPD 다운로드 경로 : V3.0.3 ( 2015-07 )
 VSFTPD_DOWNLOAD_URL=https://security.appspot.com/downloads/vsftpd-3.0.3.tar.gz
 
-# DB4 rpm 다운로드 경로
+# DB4 rpm 다운로드 경로 : 4.8.30-13
 DB4_DOWNLOAD_URL=http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/l/libdb4-4.8.30-13.el7.x86_64.rpm
 
-# DB4-UTILS rpm 다운로드 경로
+# DB4-UTILS rpm 다운로드 경로 : 4.8.30-13
 DB4_UTILS_DOWNLOAD_URL=http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/l/libdb4-utils-4.8.30-13.el7.x86_64.rpm
 
 # VSFTPD 다운로드 / 압축 해제
@@ -573,7 +585,244 @@ wget ${DB4_UTILS_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/db4-utils.rpm
 
-rpm -Uvh -y \
+rpm -Uvh \
    ${TEMP_PATH}/db4.rpm \
    ${TEMP_PATH}/db4-utils.rpm
+
+##############################################################################
+
+# Redis 설치
+
+# Redis Binary 다운로드 경로 : Redis 5.0.5 ( 2019-05-15 )
+REDIS_DOWNLOAD_URL=http://download.redis.io/releases/redis-5.0.5.tar.gz
+
+# REDIS_USER 생성
+useradd ${REDIS_USER} \
+   --shell /sbin/nologin \
+   --no-create-home
+
+# DB_USER_GROUP 에 REDIS_USER 추가
+usermod -aG ${DB_USER_GROUP} ${REDIS_USER}
+
+# Redis 설치 / 디렉토리 / 포트
+REDIS_INSTALL_DIRECTORY_NAME=redis-MASTER
+REDIS_DATA_DIRECTORY_NAME=redis-MASTER-data
+REDIS_LOG_DIRECTORY_NAME=redis-MASTER-log
+REDIS_PORT=6379
+
+REDIS_INSTALL_PATH=${DATABASE_MAIN_PATH}/${REDIS_INSTALL_DIRECTORY_NAME}
+REDIS_DATA_PATH=${DATABASE_MAIN_PATH}/${REDIS_DATA_DIRECTORY_NAME}
+REDIS_LOG_PATH=${REDIS_INSTALL_PATH}/${REDIS_LOG_DIRECTORY_NAME}
+REDIS_BIN_PATH=${REDIS_INSTALL_PATH}/bin
+REDIS_PID_PATH=${REDIS_INSTALL_PATH}/pid
+
+mkdir -p ${REDIS_INSTALL_PATH}
+mkdir -p ${REDIS_DATA_PATH}
+mkdir -p ${REDIS_LOG_PATH}
+mkdir -p ${REDIS_BIN_PATH}
+mkdir -p ${REDIS_PID_PATH}
+
+REDIS_CONFIG_FILE_PATH=${REDIS_INSTALL_PATH}/redis.conf
+REDIS_LOG_FILE_PATH=${REDIS_LOG_PATH}/redis.log
+REDIS_EXEC_FILE_PATH=${REDIS_BIN_PATH}/redis-server
+REDIS_CLI_EXEC_FILE_PATH=${REDIS_BIN_PATH}/redis-cli
+REDIS_PID_FILE_PATH=${REDIS_PID_PATH}/redis.pid
+
+wget ${REDIS_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/redis.tar.gz && \
+tar -zxf ${TEMP_PATH}/redis.tar.gz \
+   -C ${TEMP_PATH}
+
+rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep redis-) \
+   ${TEMP_PATH}/redis \
+   ${TEMP_PATH}/redis-*
+
+cd redis
+
+make
+
+make PREFIX=${REDIS_INSTALL_PATH} install
+
+cd ..
+
+cp -r /tmp/redis/* \
+    ${REDIS_INSTALL_PATH}
+
+echo -e \ "${REDIS_PORT}\n\
+    ${REDIS_CONFIG_FILE_PATH}\n\
+    ${REDIS_LOG_FILE_PATH}\n\
+    ${REDIS_DATA_PATH}\n\
+    ${REDIS_EXEC_FILE_PATH}\n
+    ${REDIS_CLI_EXEC_FILE_PATH}\n" | \
+    ${REDIS_INSTALL_PATH}/utils/install_server.sh
+
+cat > ${REDIS_CONFIG_FILE_PATH} \
+<<EOF
+# default : localhost(127.0.0.1)에서만 접근
+# bind 0.0.0.0 라고 설정하거나 bind 부분을 주석처리(#) : 모든 ip에서 접근 가능
+bind 127.0.0.1   
+
+protected-mode yes
+
+port 6379
+
+tcp-backlog 511
+
+# 연결된 클라이언트의 idle 대기 시간 설정을 초 단위로 한다. 
+# 해당 시간동안 송 수신이 발생하지 않으면 클라이언트의 연결을 끊는다. 
+# 0으로 설정하면 사용하지 않음.
+timeout 0  
+
+tcp-keepalive 300
+
+# By default Redis does not run as a daemon. Use 'yes' if you need it.
+# Note that Redis will write a pid file in /var/run/redis.pid when daemonized.
+
+daemonize yes
+
+#   supervised no      - no supervision interaction
+#   supervised upstart - signal upstart by putting Redis into SIGSTOP mode
+#   supervised systemd - signal systemd by writing READY=1 to $NOTIFY_SOCKET
+#   supervised auto    - detect upstart or systemd method based on
+#                        UPSTART_JOB or NOTIFY_SOCKET environment variables
+
+supervised systemd
+
+pidfile ${REDIS_PID_FILE_PATH}
+
+# 인스턴스 동작 중에 출력하는 로그의 레벨을 지정 함. 
+# debug/verbose,notice,warning 중에 선택 할 수 있음)
+loglevel notice
+
+# 로그가 저장되는 경로와 파일명을 지정함
+logfile ${REDIS_LOG_FILE_PATH}
+databases 16
+always-show-logo yes
+
+save 900 1
+save 300 10
+save 60 10000
+
+stop-writes-on-bgsave-error yes
+rdbcompression yes
+rdbchecksum yes
+dbfilename dump.rdb
+dir ${REDIS_DATA_PATH}
+
+replica-serve-stale-data yes
+replica-read-only yes
+repl-diskless-sync no
+repl-diskless-sync-delay 5
+repl-disable-tcp-nodelay no
+replica-priority 100
+
+lazyfree-lazy-eviction no
+lazyfree-lazy-expire no
+lazyfree-lazy-server-del no
+replica-lazy-flush no
+
+appendonly no
+
+# The name of the append only file (default: "appendonly.aof")
+appendfilename "appendonly.aof"
+
+# appendfsync always
+appendfsync everysec
+# appendfsync no
+
+no-appendfsync-on-rewrite no
+
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+
+aof-load-truncated yes
+
+aof-use-rdb-preamble yes
+
+lua-time-limit 5000
+
+slowlog-log-slower-than 10000
+
+slowlog-max-len 128
+
+latency-monitor-threshold 0
+
+notify-keyspace-events ""
+
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+
+list-max-ziplist-size -2
+
+list-compress-depth 0
+
+set-max-intset-entries 512
+
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+
+hll-sparse-max-bytes 3000
+
+stream-node-max-bytes 4096
+stream-node-max-entries 100
+
+activerehashing yes
+
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit replica 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
+
+hz 10
+
+dynamic-hz yes
+aof-rewrite-incremental-fsync yes
+
+rdb-save-incremental-fsync yes
+
+EOF
+
+cat > /usr/lib/systemd/system/${NEW_USER}_${REDIS_INSTALL_DIRECTORY_NAME}.service \
+<<EOF
+[Unit]
+Description=${NEW_USER}_${REDIS_INSTALL_DIRECTORY_NAME}
+After=syslog.target network.target
+
+[Service]
+Type=notify 
+User=${REDIS_USER}
+Group=${DB_USER_GROUP}
+# PIDFile=${REDIS_PID_FILE_PATH}
+TimeoutStartSec=0
+TimeoutStopSec=0
+PermissionsStartOnly=true
+ExecStart=${REDIS_EXEC_FILE_PATH} ${REDIS_CONFIG_FILE_PATH} --supervised systemd
+ExecStop=${REDIS_CLI_EXEC_FILE_PATH} shutdown
+ExecStopPost=/bin/rm -f ${REDIS_PID_FILE_PATH}
+
+[Install]
+WantedBy=multi-user.target graphical.target
+EOF
+
+systemctl daemon-reload
+systemctl enable ${NEW_USER}_${REDIS_INSTALL_DIRECTORY_NAME}
+
+chown -R ${REDIS_USER}:${DB_USER_GROUP} \
+   ${REDIS_INSTALL_PATH}
+
+chown -R ${REDIS_USER}:${DB_USER_GROUP} \
+   ${REDIS_DATA_PATH}
+
+##############################################################################
+
+# Redis Desktop Manager 설치
+
+# Redis Desktop Manager 다운로드 경로 : 2019.3 ( 2019-08-02 )
+REDIS_DESKTOP_MANAGER_DOWNLOAD_URL=https://github.com/uglide/RedisDesktopManager/archive/2019.3.tar.gz
+
+wget ${REDIS_DESKTOP_MANAGER_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/redisDesktopManager.tar.gz && \
+tar -zxf ${TEMP_PATH}/redisDesktopManager.tar.gz \
+   -C ${TEMP_PATH}
 

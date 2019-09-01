@@ -496,6 +496,11 @@ ln -sf ${GIT_MAIN_PATH}/${GIT_INSTALL_DIRECTORY_NAME}/bin/git \
 
 # Docker 설치 / 서비스 등록
 
+# container-selinux : docker 설치시 의존 패키지임, 선설치 필요
+
+# container-selinux 다운로드 경로 : container-selinux-2.107-1 ( 2019-08-05 )
+CONTAINEDR_SELINUX_DOWNLOAD_URL=http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.107-1.el7_6.noarch.rpm
+
 # Docker-ce 다운로드 경로 : docker-ce-18.09.7-3 ( 2019-06-27 )
 DOCKER_CE_DOWNLOAD_URL=https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-18.09.7-3.el7.x86_64.rpm
 
@@ -522,6 +527,9 @@ yum remove -y \
 rm -rf /var/lib/docker && \
 rm -rf /etc/yum.repos.d/docker-ce.repo
 
+wget ${CONTAINEDR_SELINUX_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/container-selinux.rpm && \
 wget ${DOCKER_CE_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/docker-ce.rpm && \
@@ -532,7 +540,11 @@ wget ${CONTAINEDR_IO_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/containerd.io.rpm
 
-yum localinstall -y \
+# 도커 설치 전 의존 패키지 먼저 설치
+rpm -Uvh \
+   ${TEMP_PATH}/container-selinux.rpm
+
+rpm -Uvh \
    ${TEMP_PATH}/docker-ce.rpm \
    ${TEMP_PATH}/docker-ce-cli.rpm \
    ${TEMP_PATH}/containerd.io.rpm
