@@ -174,7 +174,7 @@ LC_ALL=ko_KR.UTF-8
 EOF
 
 # yum 업데이트 / 기본 패키지 설치
-yum update -y && \
+# yum update -y && \
 yum install -y \
    wget \
    bind-utils \
