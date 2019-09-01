@@ -1,50 +1,105 @@
 #!/bin/bash
 #
 # sudo passwd => 최초 vm 생성 후 root 계정 암호 설정
-# su root => root 계정 접속
-# vi ./start.sh => i 클릭 후 전체 내용 복붙, esc 클릭, : 클릭, wq 클릭
-# chmod o+x ./start.sh  => 실행 권한 부여
-# ./start.sh developer 1200 dev dev  => 다음으로 실행
+# su root => root 계정 
 
+#################################################################
+# 신규 사용자 계정 설정
+#################################################################
 NEW_GROUP=developer
 NEW_GROUP_ID=1200
 NEW_USER=dev
 NEW_USER_PASSWORD=dev
 
-MARIADB_USER=${NEW_USER}_mysql
-REDIS_USER=${NEW_USER}_redis
-NGINX_USER=${NEW_USER}_nginx
-TOMCAT_USER=${NEW_USER}_tomcat
-NEXUS_USER=${NEW_USER}_nexus
-NODEJS_USER=${NEW_USER}_nodejs
 
-DB_USER_GROUP=${NEW_USER}_db_group
+######################################
+# Centos 서버 설정
+######################################
+# 설치시 사용할 임시 작업 디렉토리 경로
+TEMP_PATH=/tmp
+
+SSH_CONNECTION_PORT=2435
+DOCKER_GROUP_ID=1205
+
+
+######################################
+# 개발환경 디렉토리 설정 : 개발관련 tool
+######################################
+# 개발환경 디렉토리 경로
+DEV_TOOLS_PATH=/${NEW_USER}_tools           # NEW_USER : NEW_USER_GROUO 소유
+
+# 개발환경 디렉토리 내 개발 tool 설치 경로
+GIT_MAIN_PATH=${DEV_TOOLS_PATH}/GIT
+STS_WORKSPACE_PATH=${DEV_TOOLS_PATH}/WORKSPACE
+BUILD_MAIN_PATH=${DEV_TOOLS_PATH}/BUILD
+DEPENDENCY_MAIN_PATH=${DEV_TOOLS_PATH}/DEPENDENCY
+UTILS_MAIN_PATH=${DEV_TOOLS_PATH}/UTILS
+
+######################################
+# DEPENDENCY_MAIN_PATH 내 저장소별 디렉토리 : Maven, Gradle, Npm 설치시 지정
+######################################
+
+######################################
+# 라이브러리 디렉토리 설정
+######################################
+# Maven, Gradle, Npm 라이브러리 경로
+LIBRARY_MAIN_PATH=/${NEW_USER}_lib          # NEW_USER : NEW_USER_GROUP 소유
+                                            # 다른 사용자 읽기/실행 가능
+
+
+######################################
+# Nginx 관련 설정
+######################################
 NGINX_USER_GROUP=${NEW_USER}_nginx_group
+NGINX_USER=${NEW_USER}_nginx
+
+STATIC_FILE_MAIN_PATH=/${NEW_USER}_static   # NEW_USER : NGINX_USER_GROUP 소유
+
+
+######################################
+# 웹서버 관련 설정
+######################################
 SERVER_USER_GROUP=${NEW_USER}_server_group
 
-NEW_DB_SCHEMA_NAME=demo
+TOMCAT_USER=${NEW_USER}_tomcat
+NODEJS_USER=${NEW_USER}_nodejs
+NEXUS_USER=${NEW_USER}_nexus
 
+SERVER_MAIN_PATH=/${NEW_USER}_server      # NEW_USER : SERVER_USER_GROUP 소유
+                                          # 디렉토리 내에서 서버마다 다시 소유자 달라짐
+
+
+######################################
+# 도메인 / 접속 포트 관련 설정
+######################################
 REAL_DOMAIN=jhpark.gq
-
-NEXUS_DOMAIN_PREFIX=nexus
-NEXUS_DOMAIN=${NEXUS_DOMAIN_PREFIX}.${REAL_DOMAIN}
+REAL_SERVER_LOCAL_PORT=8080
 
 DEV_DOMAIN_PREFIX=dev
 DEV_DOMAIN=${DEV_DOMAIN_PREFIX}.${REAL_DOMAIN}
+DEV_SERVER_LOCAL_PORT=8081
+
+NEXUS_DOMAIN_PREFIX=nexus
+NEXUS_DOMAIN=${NEXUS_DOMAIN_PREFIX}.${REAL_DOMAIN}
+NEXUS_SERVER_LOCAL_PORT=8090
 
 WEBDAV_DOMAIN_PREFIX=webdav
 WEBDAV_DOMAIN=${WEBDAV_DOMAIN_PREFIX}.${REAL_DOMAIN}
 
-SSH_CONNECTION_PORT=2435
 
-REAL_SERVER_LOCAL_PORT=8080
-DEV_SERVER_LOCAL_PORT=8081
-NEXUS_SERVER_LOCAL_PORT=8090
+######################################
+# 데이터베이스 관련 설정
+######################################
+DB_USER_GROUP=${NEW_USER}_db_group
 
-DOCKER_GROUP_ID=1205
+MARIADB_USER=${NEW_USER}_mysql
+REDIS_USER=${NEW_USER}_redis
 
-# 설치시 사용할 임시 작업 디렉토리 경로
-TEMP_PATH=/tmp
+NEW_DB_SCHEMA_NAME=demo
+
+DATABASE_MAIN_PATH=/${NEW_USER}_db     # NEW_USER : DB_USER_GROUP 소유
+                                       # 디렉토리 내에서 DB 마다 다시 소유자 달라짐
+
 
 ##############################################################################
 
@@ -57,62 +112,48 @@ echo ${NEW_USER_PASSWORD} | passwd ${NEW_USER} --stdin
 mkdir -p /home/${NEW_USER}/bin
 
 # DB_USER_GROUP, NGINX_USER_GROUP, SERVER_USER_GROUP 생성
-groupadd ${DB_USER_GROUP} && \
-groupadd ${NGINX_USER_GROUP} && \
+groupadd ${DB_USER_GROUP}
+groupadd ${NGINX_USER_GROUP}
 groupadd ${SERVER_USER_GROUP}
 
 # NEW_USER 를 각 그룹에 추가
-usermod -aG ${DB_USER_GROUP} ${NEW_USER} && \
-usermod -aG ${NGINX_USER_GROUP} ${NEW_USER} && \
+usermod -aG ${DB_USER_GROUP} ${NEW_USER}
+usermod -aG ${NGINX_USER_GROUP} ${NEW_USER}
 usermod -aG ${SERVER_USER_GROUP} ${NEW_USER}
 
 ##############################################################################
 
-# 개발환경 디렉토리 경로
-DEV_TOOLS_PATH=/dev_tools           # NEW_USER : NEW_USER_GROUO 소유
-
-DATABASE_MAIN_PATH=/dev_db          # NEW_USER : DB_USER_GROUP 소유
-                                    # 디렉토리 내에서 다시 소유자 달라짐
-
-LIBRARY_MAIN_PATH=/dev_lib          # NEW_USER : NEW_USER_GROUO 소유
-                                    # 다른 사용자 읽기/실행 가능
-
-SERVER_MAIN_PATH=/dev_server        # NEW_USER : SERVER_USER_GROUP 소유
-                                    # 디렉토리 내에서 다시 소유자 달라짐
-
-STATIC_FILE_MAIN_PATH=/dev_static   # NEW_USER : NGINX_USER_GROUP 소유
-
+# 개발환경 디렉토리 생성
 mkdir -p ${DEV_TOOLS_PATH}
-mkdir -p ${DATABASE_MAIN_PATH}
-mkdir -p ${LIBRARY_MAIN_PATH}
-mkdir -p ${SERVER_MAIN_PATH}
-mkdir -p ${STATIC_FILE_MAIN_PATH}
 
-##############################################################################
-
-# DEV_TOOLS_PATH 내 설치 경로
-GIT_MAIN_PATH=${DEV_TOOLS_PATH}/GIT
-STS_WORKSPACE_PATH=${DEV_TOOLS_PATH}/WORKSPACE
-BUILD_MAIN_PATH=${DEV_TOOLS_PATH}/BUILD
-DEPENDENCY_MAIN_PATH=${DEV_TOOLS_PATH}/DEPENDENCY
-UTILS_MAIN_PATH=${DEV_TOOLS_PATH}/UTILS
-
+# 개발환경 디렉토리 내 개발 tool 별 디렉토리 생성
 mkdir -p ${GIT_MAIN_PATH}
 mkdir -p ${STS_WORKSPACE_PATH}
 mkdir -p ${BUILD_MAIN_PATH}
 mkdir -p ${DEPENDENCY_MAIN_PATH}
 mkdir -p ${UTILS_MAIN_PATH}
 
-##############################################################################
-
 chown -R ${NEW_USER}:${NEW_GROUP} ${DEV_TOOLS_PATH}
+
+# 데이터베이스 설치 디렉토리 생성
+mkdir -p ${DATABASE_MAIN_PATH}
 chown -R ${NEW_USER}:${DB_USER_GROUP} ${DATABASE_MAIN_PATH}
-chown -R ${NEW_USER}:${NEW_GROUP} ${LIBRARY_MAIN_PATH}
-chown -R ${NEW_USER}:${SERVER_USER_GROUP} ${SERVER_MAIN_PATH}
+
+# 라이브러리 설치 디렉토리 생성
+mkdir -p ${LIBRARY_MAIN_PATH}
+chown -R ${NEW_USER}:${SERVER_USER_GROUP} ${LIBRARY_MAIN_PATH}
+
+# 라이브러리 디렉토리는 모든 사용자가 읽기/실행 가능, 단 쓰기는 소유자만 가능
+chmod 755 ${LIBRARY_MAIN_PATH}
+
+# 정적 파일 저장 디렉토리 생성
+mkdir -p ${STATIC_FILE_MAIN_PATH}
 chown -R ${NEW_USER}:${NGINX_USER_GROUP} ${STATIC_FILE_MAIN_PATH}
 
-# LIBRARY_MAIN_PATH 는 모든 사용자가 읽기/실행 가능, 단 쓰기는 소유자만 가능
-chmod 755 ${LIBRARY_MAIN_PATH}
+# 웹서버 설치 디렉토리 생성
+mkdir -p ${SERVER_MAIN_PATH}
+chown -R ${NEW_USER}:${SERVER_USER_GROUP} ${SERVER_MAIN_PATH}
+
 
 ##############################################################################
 
@@ -221,7 +262,7 @@ make install
 make clean
 
 # 기존 설치된 구버전 zlib rpm 제거
-# 최신 버전 컴파일 설치시 zlib 를 참조하므로 컴파일 설치 완료 후 구 버전을 제거해야 함
+# 최신 버전 컴파일 설치시 기존 zlib 를 참조하므로 컴파일 설치 완료 후 구 버전을 제거해야 함
 rpm -e --nodeps zlib
 
 # 구버전 zlib 제거해도 /usr/lib64 에 기존 라이브러리 파일이 남아있음
@@ -279,7 +320,7 @@ make install
 make clean
 
 # 기존 설치된 pcre rpm 제거
-# 최신 버전 컴파일 설치시 pcre 를 참조하므로 컴파일 설치 완료 후 구 버전을 제거해야 함
+# 최신 버전 컴파일 설치시 기존 pcre 를 참조하므로 컴파일 설치 완료 후 구 버전을 제거해야 함
 rpm -e --nodeps pcre
 
 # -d 옵션 : 복사할 원본이 심볼릭 링크일 때 심볼릭 자체를 복사한다. => 이건 -r 옵션으로도 적용되어 제외함
@@ -447,6 +488,63 @@ systemctl restart sshd
 
 ##############################################################################
 
+# Docker 설치 / 서비스 등록
+
+# Docker-ce 다운로드 경로 : docker-ce-18.09.7-3 ( 2019-06-27 )
+DOCKER_CE_DOWNLOAD_URL=https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-18.09.7-3.el7.x86_64.rpm
+
+# Docker-ce-cli 다운로드 경로 : docker-ce-cli-18.09.7-3 ( 2019-06-27 )
+DOCKER_CE_CLI_DOWNLOAD_URL=https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-cli-18.09.7-3.el7.x86_64.rpm
+
+# containerd.io 다운로드 경로 : containerd.io-1.2.6-3.3 ( 2019-06-27 )
+CONTAINEDR_IO_DOWNLOAD_URL=https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
+
+# 기존 Docker 제거
+yum remove -y \
+   docker \
+   docker-client \
+   docker-client-latest \
+   docker-common \
+   docker-latest \
+   docker-latest-logrotate \
+   docker-logrotate \
+   docker-selinux \
+   docker-engine-selinux \
+   container-selinux \
+   docker-engine \
+   docker-ce && \
+rm -rf /var/lib/docker && \
+rm -rf /etc/yum.repos.d/docker-ce.repo
+
+wget ${DOCKER_CE_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/docker-ce.rpm && \
+wget ${DOCKER_CE_CLI_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/docker-ce-cli.rpm && \
+wget ${CONTAINEDR_IO_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/containerd.io.rpm
+
+rpm -Uvh -y \
+   ${TEMP_PATH}/docker-ce.rpm \
+   ${TEMP_PATH}/docker-ce-cli.rpm \
+   ${TEMP_PATH}/containerd.io.rpm
+
+# docker 그룹 추가 : 보통 도커 설치시 자동으로 추가됨
+# groupadd docker
+
+# docker 그룹의 gid 를 ${DOCKER_GROUP_ID} 로 변경
+groupmod -g ${DOCKER_GROUP_ID} docker
+
+# docker 그룹에 사용자 추가
+usermod -aG docker ${NEW_USER}
+
+systemctl enable docker && \
+systemctl start docker
+
+##############################################################################
+
 # VSFTPD 다운로드 경로 : V3.0.3 ( 2015-07 )
 VSFTPD_DOWNLOAD_URL=https://security.appspot.com/downloads/vsftpd-3.0.3.tar.gz
 
@@ -475,7 +573,7 @@ wget ${DB4_UTILS_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
    -O ${TEMP_PATH}/db4-utils.rpm
 
-yum localinstall -y \
+rpm -Uvh -y \
    ${TEMP_PATH}/db4.rpm \
    ${TEMP_PATH}/db4-utils.rpm
 
