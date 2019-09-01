@@ -591,6 +591,55 @@ rpm -Uvh \
 
 ##############################################################################
 
+# 사용자 전용 GIT 설치
+
+# Git 다운로드 경로 : git-2.22.0 ( 2019-06-07 )
+GIT_DOWNLOAD_URL=https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.22.0.tar.gz
+
+# GIT_MAIN_PATH 내 git 설치 디렉토리
+GIT_INSTALL_DIRECTORY_NAME=git
+
+# yum 으로 설치된 기존 git 삭제
+yum remove -y \
+   git
+
+# GIT 의존 패키지 설치
+# 설치 참조 : https://git-scm.com/book/ko/v1/%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-Git-%EC%84%A4%EC%B9%98
+yum install -y \
+   curl-devel \
+   expat-devel \
+   gettext-devel \
+   openssl-devel \
+   zlib-devel
+
+wget ${GIT_DOWNLOAD_URL} \
+   -P ${TEMP_PATH} \
+   -O ${TEMP_PATH}/git.tar.gz && \
+tar -zxf ${TEMP_PATH}/git.tar.gz \
+   -C ${TEMP_PATH}
+
+rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep git-) \
+   ${TEMP_PATH}/git \
+   ${TEMP_PATH}/git-*
+
+cd git
+
+make \
+   prefix=${GIT_MAIN_PATH}/${GIT_INSTALL_DIRECTORY_NAME} \
+   all
+
+make \
+   prefix=${GIT_MAIN_PATH}/${GIT_INSTALL_DIRECTORY_NAME} \
+   install
+
+cd ..
+
+# GIT 심볼릭 링크를 사용자 bin 디렉토리에 추가
+ln -sf ${GIT_MAIN_PATH}/${GIT_INSTALL_DIRECTORY_NAME}/bin/git \
+   /home/${NEW_USER}/bin/git
+
+##############################################################################
+
 # Redis 설치
 
 # Redis Binary 다운로드 경로 : Redis 5.0.5 ( 2019-05-15 )
@@ -822,7 +871,13 @@ REDIS_DESKTOP_MANAGER_DOWNLOAD_URL=https://github.com/uglide/RedisDesktopManager
 
 wget ${REDIS_DESKTOP_MANAGER_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/redisDesktopManager.tar.gz && \
-tar -zxf ${TEMP_PATH}/redisDesktopManager.tar.gz \
+   -O ${TEMP_PATH}/RedisDesktopManager.tar.gz && \
+tar -zxf ${TEMP_PATH}/RedisDesktopManager.tar.gz \
    -C ${TEMP_PATH}
 
+rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep RedisDesktopManager-) \
+   ${TEMP_PATH}/redisDesktopManager \
+   ${TEMP_PATH}/RedisDesktopManager-*
+
+# cd redisDesktopManager/src
+# ./configure
