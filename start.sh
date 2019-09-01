@@ -866,8 +866,8 @@ chown -R ${REDIS_USER}:${DB_USER_GROUP} \
 
 # Redis Desktop Manager 설치
 
-# Redis Desktop Manager 다운로드 경로 : 2019.3 ( 2019-08-02 )
-REDIS_DESKTOP_MANAGER_DOWNLOAD_URL=https://github.com/uglide/RedisDesktopManager/archive/2019.3.tar.gz
+# Redis Desktop Manager 다운로드 경로 : 2019.2 ( 2019-07-17 )
+REDIS_DESKTOP_MANAGER_DOWNLOAD_URL=https://github.com/uglide/RedisDesktopManager/archive/2019.2.tar.gz
 
 wget ${REDIS_DESKTOP_MANAGER_DOWNLOAD_URL} \
    -P ${TEMP_PATH} \
