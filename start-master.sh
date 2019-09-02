@@ -117,19 +117,6 @@ chmod 755 ${LIBRARY_MAIN_PATH}
 # 임시 작업 디렉토리로 이동
 cd ${TEMP_PATH}
 
-# 기존 시간대 설정 파일 백업 / 시간대 변경
-mv /etc/localtime /etc/localtime_org && \
-ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-
-# 언어 설정
-localedef -i ko_KR -f UTF-8 ko_KR.UTF-8 && \
-export LC_ALL=ko_KR.UTF-8 && \
-cat > /etc/locale.conf \
-<<EOF
-LANG=ko_KR.UTF-8
-LC_ALL=ko_KR.UTF-8
-EOF
-
 # yum 업데이트 / 기본 패키지 설치
 yum update -y && \
 yum install -y \
@@ -149,6 +136,21 @@ yum install -y \
    gedit \
    expect \
    perl
+
+##############################################################################
+
+# 언어 설정
+localedef -i ko_KR -f UTF-8 ko_KR.UTF-8 && \
+export LC_ALL=ko_KR.UTF-8 && \
+cat > /etc/locale.conf \
+<<EOF
+LANG=ko_KR.UTF-8
+LC_ALL=ko_KR.UTF-8
+EOF
+
+# 기존 시간대 설정 파일 백업 / 시간대 변경
+mv /etc/localtime /etc/localtime_org && \
+ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
 # 시간 동기화  https://www.manualfactory.net/10147
 cat > /etc/ntp.conf \

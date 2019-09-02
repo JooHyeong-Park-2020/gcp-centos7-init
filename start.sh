@@ -123,7 +123,7 @@ usermod -aG ${SERVER_USER_GROUP} ${NEW_USER}
 
 ##############################################################################
 
-# 개발환경 디렉토리 생성
+# 개발환경 디렉토리 생성 / 디렉토리별 권한 부여
 mkdir -p ${DEV_TOOLS_PATH}
 
 # 개발환경 디렉토리 내 개발 tool 별 디렉토리 생성
@@ -864,24 +864,3 @@ chown -R ${REDIS_USER}:${DB_USER_GROUP} \
 
 ##############################################################################
 
-# Redis Desktop Manager 설치
-
-# Redis Desktop Manager 다운로드 경로 : 2019.3 ( 2019-08-02 )
-REDIS_DESKTOP_MANAGER_DOWNLOAD_URL=https://github.com/uglide/RedisDesktopManager/archive/2019.3.tar.gz
-
-wget ${REDIS_DESKTOP_MANAGER_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/RedisDesktopManager.tar.gz && \
-tar -zxf ${TEMP_PATH}/RedisDesktopManager.tar.gz \
-   -C ${TEMP_PATH}
-
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep RedisDesktopManager-) \
-   ${TEMP_PATH}/rdm \
-   ${TEMP_PATH}/RedisDesktopManager-*
-
-cd rdm/src
-
-git clone https://chromium.googlesource.com/linux-syscall-support \
-   ../3rdparty/gbreakpad/src/third_party/lss
-
-# ./configure
