@@ -14,7 +14,7 @@ scriptList=("directorty,ownership" "yum,epel")
 
 mkdir -p ${TEMP_PATH}/${directoryName}
 
-curl ${GIT_REPO_PATH}/${directoryName}/\(main\)\ initServer.sh \
+curl "${GIT_REPO_PATH}/${directoryName}/(main) initServer.sh" \
     > ${TEMP_PATH}/${directoryName}/\(main\)\ initServer.sh
 
 chmod 700 ${TEMP_PATH}/${directoryName}/\(main\)\ initServer.sh
