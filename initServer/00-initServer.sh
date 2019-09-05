@@ -9,10 +9,7 @@
 # 7. 
 
 directoryName=$1
-declare -a scriptList
-scriptList=$2
-
-echo scriptList
+scriptList=("${!2}")
 
 # scriptList=( "$@" )
 
