@@ -14,7 +14,7 @@ directoryName=$1
 scriptList=( "$@" )
 
 echo $2
-echo ( "$@" )
+echo scriptList
 echo ("${!2}")
 
 function executeScript()
