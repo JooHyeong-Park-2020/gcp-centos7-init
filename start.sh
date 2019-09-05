@@ -11,8 +11,8 @@ directoryName=centos7-initServer
 
 mkdir -p ${TEMP_PATH}/${directoryName}
 
-curl ${GIT_REPO_PATH}/${directoryName}/(main)%20initServer.sh \
-    >> ${TEMP_PATH}/${directoryName}/(main)%20initServer.sh
+curl ${GIT_REPO_PATH}/${directoryName}/0-initServer.sh \
+    >> ${TEMP_PATH}/${directoryName}/0-initServer.sh
 
-chmod 700 ${TEMP_PATH}/${directoryName}/(main)%20initServer.sh
-${TEMP_PATH}/${directoryName}/(main)%20initServer.sh
+chmod 700 ${TEMP_PATH}/${directoryName}/0-initServer.sh
+${TEMP_PATH}/${directoryName}/0-initServer.sh
