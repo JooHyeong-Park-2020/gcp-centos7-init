@@ -13,12 +13,6 @@ directoryName=$1
 # declare -a scriptList=$2
 scriptList=( "$@" )
 
-scriptList2=("${!2}")
-
-echo $2
-echo $scriptList
-echo $scriptList2
-
 function executeScript()
 {
     local scriptName=$1
