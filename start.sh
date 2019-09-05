@@ -5,7 +5,9 @@ GIT_REPO_PATH=https://raw.githubusercontent.com/JooHyeong-Park-2020/gcp-centos7-
 curl ${GIT_REPO_PATH}/settingInfo.sh \
     > ./settingInfo.sh
 
-source ./settingInfo.sh
+cp ./settingInfo.sh ${TEMP_PATH}/settingInfo.sh
+
+source ${TEMP_PATH}/settingInfo.sh
 
 cd ${TEMP_PATH}
 
@@ -14,7 +16,7 @@ directoryName=centos7-initServer
 mkdir -p ${TEMP_PATH}/${directoryName}
 
 curl ${GIT_REPO_PATH}/${directoryName}/0-initServer.sh \
-    >> ${TEMP_PATH}/${directoryName}/0-initServer.sh
+    > ${TEMP_PATH}/${directoryName}/0-initServer.sh
 
 chmod 700 ${TEMP_PATH}/${directoryName}/0-initServer.sh
-${TEMP_PATH}/${directoryName}/0-initServer.sh ${directoryName}
+${TEMP_PATH}/${directoryName}/0-initServer.sh ${GIT_REPO_PATH} ${directoryName}

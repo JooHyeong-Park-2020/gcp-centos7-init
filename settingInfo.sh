@@ -15,6 +15,8 @@ NEW_USER_PASSWORD=dev
 # 설치시 사용할 임시 작업 디렉토리 경로
 TEMP_PATH=/tmp
 
+export TEMP_PATH
+
 SSH_CONNECTION_PORT=2435
 DOCKER_GROUP_ID=1205
 
@@ -96,10 +98,5 @@ NEW_DB_SCHEMA_NAME=demo
 
 DATABASE_MAIN_PATH=/${NEW_USER}_db     # NEW_USER : DB_USER_GROUP 소유
                                        # 디렉토리 내에서 DB 마다 다시 소유자 달라짐
-
-##############################################################################
-
-# 임시 작업 디렉토리로 이동
-cd ${TEMP_PATH}
 
 ##############################################################################

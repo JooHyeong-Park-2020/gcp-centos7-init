@@ -8,12 +8,14 @@
 # 6. openssh,sshd_config.sh
 # 7. 
 
-directoryName=$1
+gitRepoPath=$1
+directoryName=$2
 
 function executeScript()
 {
-    local gitRepoPath=https://raw.githubusercontent.com/JooHyeong-Park-2020/gcp-centos7-init/master
     local scriptName=$1
+
+    source ${TEMP_PATH}/settingInfo.sh
 
     curl ${gitRepoPath}/${directoryName}/${scriptName}.sh \
         > ${TEMP_PATH}/${directoryName}/${scriptName}.sh
