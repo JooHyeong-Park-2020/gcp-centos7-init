@@ -8,8 +8,7 @@
 # 6. openssh,sshd_config.sh
 # 7. 
 
-gitRepoPath=$1
-directoryName=$2
+directoryName=$1
 
 function executeScript()
 {
@@ -17,7 +16,7 @@ function executeScript()
 
     source ${TEMP_PATH}/settingInfo.sh
 
-    curl ${gitRepoPath}/${directoryName}/${scriptName}.sh \
+    curl ${GIT_REPO_PATH}/${directoryName}/${scriptName}.sh \
         > ${TEMP_PATH}/${directoryName}/${scriptName}.sh
     chmod 700 ${TEMP_PATH}/${directoryName}/${scriptName}.sh
     ${TEMP_PATH}/${directoryName}/${scriptName}.sh

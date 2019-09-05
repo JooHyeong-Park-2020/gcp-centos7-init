@@ -13,9 +13,9 @@ directoryName=initServer
 
 mkdir -p ${TEMP_PATH}/${directoryName}
 
-curl ${GIT_REPO_PATH}/${directoryName}/0-initServer.sh \
-    > ${TEMP_PATH}/${directoryName}/0-initServer.sh
+curl ${GIT_REPO_PATH}/${directoryName}/(main)\ initServer.sh \
+    > ${TEMP_PATH}/${directoryName}/(main)\ initServer.sh
 
-chmod 700 ${TEMP_PATH}/${directoryName}/0-initServer.sh
+chmod 700 ${TEMP_PATH}/${directoryName}/(main)\ initServer.sh
 
-${TEMP_PATH}/${directoryName}/0-initServer.sh ${directoryName}
+${TEMP_PATH}/${directoryName}/(main)\ initServer.sh ${directoryName}
