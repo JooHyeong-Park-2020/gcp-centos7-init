@@ -11,6 +11,8 @@
 directoryName=$1
 scriptList=("${!2}")
 
+# scriptList=( "$@" )
+
 function executeScript()
 {
     local scriptName=$1
