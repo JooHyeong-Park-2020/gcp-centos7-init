@@ -12,8 +12,8 @@ dName=centos7-initServer
 
 mkdir -p ${TEMP_PATH}/${dName}
 
-function executeScript(){
-
+function executeScript()
+{
     local gitRepoPath=https://raw.githubusercontent.com/JooHyeong-Park-2020/gcp-centos7-init/master
     local directoryName=$1
     local scriptName=$2
