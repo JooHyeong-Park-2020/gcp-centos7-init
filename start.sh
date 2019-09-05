@@ -19,4 +19,4 @@ curl "${GIT_REPO_PATH}/${directoryName}/00-${directoryName}.sh" \
 
 chmod 700 ${TEMP_PATH}/${directoryName}/00-${directoryName}.sh
 
-${TEMP_PATH}/${directoryName}/00-${directoryName}.sh ${directoryName} ${scriptList[@]}
+${TEMP_PATH}/${directoryName}/00-${directoryName}.sh ${directoryName} "${scriptList[@]}"
