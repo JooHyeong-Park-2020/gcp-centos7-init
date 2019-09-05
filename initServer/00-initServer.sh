@@ -28,6 +28,8 @@ for script in ${scriptList[@]}
 
 do
 
+echo "-----"$script" 실행-------"
+
 executeScript $script
 
 done
