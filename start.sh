@@ -3,7 +3,7 @@
 GIT_REPO_PATH=https://raw.githubusercontent.com/JooHyeong-Park-2020/gcp-centos7-init/master
 
 curl ${GIT_REPO_PATH}/settingInfo.sh \
-    >> ./settingInfo.sh
+    > ./settingInfo.sh
 
 source ./settingInfo.sh
 
