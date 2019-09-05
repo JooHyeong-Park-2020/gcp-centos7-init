@@ -7,7 +7,7 @@ curl ${GIT_REPO_PATH}/settingInfo.sh \
 
 source ./settingInfo.sh
 
-local directoryName=centos7-initServer
+directoryName=centos7-initServer
 
 mkdir -p ${TEMP_PATH}/${directoryName}
 
