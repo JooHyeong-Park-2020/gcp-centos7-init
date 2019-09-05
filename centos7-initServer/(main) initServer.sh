@@ -5,15 +5,26 @@
 # 3. time,language,libraryPath.sh
 # 4. zlib,pcre,openssl.sh
 # 5. openssh,sshPort.sh
-# 6. 
+# 6. openssh,sshd_config.sh
 # 7. 
 
+local directoryName=centos7-initServer
 
-./directorty,ownership.sh
-./yum,epel.sh
-./time,language,libraryPath.sh
-./zlib,pcre,openssl.sh
-./openssh,sshPort.sh
+mkdir -p ${TEMP_PATH}/${directoryName}
+
+function executeScript( directoryName, scriptName ){
+
+    local gitRepoPath=https://raw.githubusercontent.com/JooHyeong-Park-2020/gcp-centos7-init/master
+
+    curl ${gitRepoPath}/${directoryName}/${scriptName}.sh \
+        >> ${TEMP_PATH}/${directoryName}/${scriptName}.sh
+    chmod 700 ${TEMP_PATH}/${directoryName}/${scriptName}.sh
+    ${TEMP_PATH}/${directoryName}/${scriptName}.sh
+
+}
+
+executeScript( ${directoryName}, 'directorty,ownership' )
+executeScript( ${directoryName}, 'yum,epel' )
 
 
 ##############################################################################
