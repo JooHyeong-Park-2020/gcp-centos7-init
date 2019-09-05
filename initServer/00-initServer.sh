@@ -12,6 +12,8 @@ directoryName=$1
 declare -a scriptList
 scriptList=$2
 
+echo scriptList
+
 # scriptList=( "$@" )
 
 function executeScript()
