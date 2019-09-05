@@ -19,4 +19,4 @@ curl ${GIT_REPO_PATH}/${directoryName}/\(main\)\ initServer.sh \
 
 chmod 700 ${TEMP_PATH}/${directoryName}/\(main\)\ initServer.sh
 
-${TEMP_PATH}/${directoryName}/(main)\ initServer.sh ${directoryName} ${scriptList}
+${TEMP_PATH}/${directoryName}/\(main)\ initServer.sh ${directoryName} ${scriptList}
