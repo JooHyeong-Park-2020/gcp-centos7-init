@@ -8,7 +8,7 @@
 # 6. openssh,sshd_config.sh
 # 7. 
 
-local directoryName=centos7-initServer
+directoryName=centos7-initServer
 
 mkdir -p ${TEMP_PATH}/${directoryName}
 
