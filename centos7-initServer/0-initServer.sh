@@ -8,15 +8,15 @@
 # 6. openssh,sshd_config.sh
 # 7. 
 
-directoryName=centos7-initServer
+dName=centos7-initServer
 
-mkdir -p ${TEMP_PATH}/${directoryName}
+mkdir -p ${TEMP_PATH}/${dName}
 
 function executeScript(){
 
     local gitRepoPath=https://raw.githubusercontent.com/JooHyeong-Park-2020/gcp-centos7-init/master
     local directoryName=$1
-    local directoryName=$2
+    local scriptName=$2
 
     curl ${gitRepoPath}/${directoryName}/${scriptName}.sh \
         >> ${TEMP_PATH}/${directoryName}/${scriptName}.sh
@@ -25,8 +25,8 @@ function executeScript(){
 
 }
 
-executeScript ${directoryName} "directorty%2Cownership"
-executeScript ${directoryName} "yum%2Cepel"
+executeScript ${dName} "directorty%2Cownership"
+executeScript ${dName} "yum%2Cepel"
 
 
 ##############################################################################
