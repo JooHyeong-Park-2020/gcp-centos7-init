@@ -10,7 +10,7 @@ source ${TEMP_PATH}/${SETTING_INFO}.sh
 cd ${TEMP_PATH}
 
 directoryName=initServer
-scriptList=("directorty,ownership" "yum,epel")
+scriptList=("directorty,ownership" "yum,epel" "time,language,libraryPath")
 
 mkdir -p ${TEMP_PATH}/${directoryName}
 

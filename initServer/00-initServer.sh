@@ -24,13 +24,13 @@ function executeScript()
 
 }
 
-for script in ${scriptList[@]}
+for scriptName in ${scriptList[@]}
 
 do
 
-echo "-----"$script" 실행-------"
+echo "-----"$scriptName" 실행-------"
 
-executeScript $script
+executeScript $scriptName
 
 done
 
