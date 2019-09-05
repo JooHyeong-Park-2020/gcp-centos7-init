@@ -7,6 +7,8 @@ curl ${GIT_REPO_PATH}/settingInfo.sh \
 
 source ./settingInfo.sh
 
+cd ${TEMP_PATH}
+
 directoryName=centos7-initServer
 
 mkdir -p ${TEMP_PATH}/${directoryName}
@@ -15,4 +17,4 @@ curl ${GIT_REPO_PATH}/${directoryName}/0-initServer.sh \
     >> ${TEMP_PATH}/${directoryName}/0-initServer.sh
 
 chmod 700 ${TEMP_PATH}/${directoryName}/0-initServer.sh
-${TEMP_PATH}/${directoryName}/0-initServer.sh
+${TEMP_PATH}/${directoryName}/0-initServer.sh ${directoryName}
