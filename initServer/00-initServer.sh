@@ -24,6 +24,8 @@ function executeScript()
 
 }
 
+echo $2
+
 for scriptName in ${scriptList[@]}
 
 do
