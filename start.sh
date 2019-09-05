@@ -1,17 +1,15 @@
 # CENTOS 서버 세팅 정보 load / 작업 디렉토리로 이동
 
-GIT_REPO_PATH=https://raw.githubusercontent.com/JooHyeong-Park-2020/gcp-centos7-init/master
+curl ${GIT_REPO_PATH}/settingInfo/${SETTING_INFO}.sh \
+    > ./${SETTING_INFO}.sh
 
-curl ${GIT_REPO_PATH}/settingInfo.sh \
-    > ./settingInfo.sh
+cp ./${SETTING_INFO}.sh ${TEMP_PATH}/${SETTING_INFO}.sh
 
-cp ./settingInfo.sh ${TEMP_PATH}/settingInfo.sh
-
-source ${TEMP_PATH}/settingInfo.sh
+source ${TEMP_PATH}/${SETTING_INFO}.sh
 
 cd ${TEMP_PATH}
 
-directoryName=centos7-initServer
+directoryName=initServer
 
 mkdir -p ${TEMP_PATH}/${directoryName}
 
@@ -19,4 +17,5 @@ curl ${GIT_REPO_PATH}/${directoryName}/0-initServer.sh \
     > ${TEMP_PATH}/${directoryName}/0-initServer.sh
 
 chmod 700 ${TEMP_PATH}/${directoryName}/0-initServer.sh
-${TEMP_PATH}/${directoryName}/0-initServer.sh ${GIT_REPO_PATH} ${directoryName}
+
+${TEMP_PATH}/${directoryName}/0-initServer.sh ${directoryName}
