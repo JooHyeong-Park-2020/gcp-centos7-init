@@ -10,8 +10,10 @@
 
 directoryName=$1
 # scriptList=("${!2}")
-# declare -a scriptList=$2
+declare -a scriptList2=$2
 scriptList=( "$@" )
+
+echo "scriptList2  "$scriptList2
 
 function executeScript()
 {
