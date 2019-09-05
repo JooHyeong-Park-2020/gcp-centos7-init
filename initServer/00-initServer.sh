@@ -13,6 +13,10 @@ directoryName=$1
 # declare -a scriptList=$2
 scriptList=( "$@" )
 
+echo $2
+echo ( "$@" )
+echo ("${!2}")
+
 function executeScript()
 {
     local scriptName=$1
@@ -25,8 +29,6 @@ function executeScript()
     ${TEMP_PATH}/${directoryName}/${scriptName}.sh
 
 }
-
-echo $2
 
 for scriptName in ${scriptList[@]}
 
