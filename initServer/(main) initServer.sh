@@ -9,6 +9,7 @@
 # 7. 
 
 directoryName=$1
+scriptList=$2
 
 function executeScript()
 {
@@ -23,9 +24,13 @@ function executeScript()
 
 }
 
-executeScript "directorty,ownership"
-executeScript "yum,epel"
+for script in ${scriptList[@]}
 
+do
+
+executeScript $script
+
+done
 
 ##############################################################################
 
