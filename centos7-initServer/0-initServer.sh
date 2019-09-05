@@ -23,8 +23,8 @@ function executeScript( directoryName, scriptName ){
 
 }
 
-executeScript( ${directoryName}, 'directorty%2Cownership' )
-executeScript( ${directoryName}, 'yum%2Cepel' )
+executeScript( ${directoryName}, "directorty%2Cownership" )
+executeScript( ${directoryName}, "yum%2Cepel" )
 
 
 ##############################################################################
