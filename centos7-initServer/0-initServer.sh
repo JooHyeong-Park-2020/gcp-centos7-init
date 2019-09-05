@@ -12,9 +12,11 @@ directoryName=centos7-initServer
 
 mkdir -p ${TEMP_PATH}/${directoryName}
 
-function executeScript( directoryName, scriptName ){
+function executeScript(){
 
     local gitRepoPath=https://raw.githubusercontent.com/JooHyeong-Park-2020/gcp-centos7-init/master
+    local directoryName=$1
+    local directoryName=$2
 
     curl ${gitRepoPath}/${directoryName}/${scriptName}.sh \
         >> ${TEMP_PATH}/${directoryName}/${scriptName}.sh
@@ -23,8 +25,8 @@ function executeScript( directoryName, scriptName ){
 
 }
 
-executeScript( ${directoryName}, "directorty%2Cownership" )
-executeScript( ${directoryName}, "yum%2Cepel" )
+executeScript ${directoryName} "directorty%2Cownership"
+executeScript ${directoryName} "yum%2Cepel"
 
 
 ##############################################################################
