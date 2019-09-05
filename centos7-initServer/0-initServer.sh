@@ -19,7 +19,7 @@ function executeScript()
     local scriptName=$2
 
     curl ${gitRepoPath}/${directoryName}/${scriptName}.sh \
-        >> ${TEMP_PATH}/${directoryName}/${scriptName}.sh
+        > ${TEMP_PATH}/${directoryName}/${scriptName}.sh
     chmod 700 ${TEMP_PATH}/${directoryName}/${scriptName}.sh
     ${TEMP_PATH}/${directoryName}/${scriptName}.sh
 
