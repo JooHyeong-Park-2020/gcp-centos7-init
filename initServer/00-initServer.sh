@@ -9,7 +9,7 @@
 # 7. 
 
 directoryName=$1
-scriptList=$2
+scriptList=( "$@" )
 
 function executeScript()
 {
