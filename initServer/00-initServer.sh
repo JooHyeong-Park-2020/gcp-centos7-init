@@ -15,7 +15,7 @@ function executeScript()
 {
     local scriptName=$1
 
-    source ${TEMP_PATH}/settingInfo.sh
+    source ${TEMP_PATH}/${SETTING_INFO_NAME}.sh
 
     curl ${GIT_REPO_PATH}/${directoryName}/${scriptName}.sh \
         > ${TEMP_PATH}/${directoryName}/${scriptName}.sh

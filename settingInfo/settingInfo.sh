@@ -12,11 +12,6 @@ NEW_USER_PASSWORD=dev
 ######################################
 # Centos 서버 설정
 ######################################
-# 설치시 사용할 임시 작업 디렉토리 경로
-TEMP_PATH=/tmp
-
-export TEMP_PATH
-
 SSH_CONNECTION_PORT=2435
 DOCKER_GROUP_ID=1205
 
