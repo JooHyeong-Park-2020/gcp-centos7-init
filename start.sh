@@ -33,7 +33,7 @@ for workName in ${workList[@]}; do
     echo "--------------"$workName" 실행--------------"
     mkdir -p ${TEMP_PATH}/${workName}
 
-    scriptList="$workName__scriptList"
+    scriptList="$workName_scriptList"
 
     for scriptName in $scriptList; do
 
