@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# CENTOS 서버 세팅 정보 load / 작업 디렉토리로 이동
-# source ${TEMP_PATH}/${SETTING_INFO}.sh
+# CENTOS 서버 세팅 정보 load
+source ${TEMP_PATH}/${SETTING_INFO}.sh
 
 
 ##############################################################################
