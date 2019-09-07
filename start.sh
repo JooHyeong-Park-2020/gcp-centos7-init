@@ -27,7 +27,7 @@ for workName in ${workList[@]}; do
 
     mkdir -p ${TEMP_PATH}/${workName}
 
-    scriptList="${workName_scriptList[@]}"
+    scriptList=${workName_scriptList[@]}
 
     for scriptName in $scriptList; do
 
