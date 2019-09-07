@@ -1,4 +1,6 @@
-# CENTOS 서버 세팅 정보 load / 작업 디렉토리로 이동
+#!/bin/bash
+
+# CENTOS 서버 세팅 정보 down 후 작업 디렉토리에 복사 / 작업 디렉토리로 이동
 
 curl ${GIT_REPO_PATH}/settingInfo/${SETTING_INFO_NAME}.sh \
     > ./${SETTING_INFO_NAME}.sh
@@ -9,14 +11,22 @@ source ${TEMP_PATH}/${SETTING_INFO_NAME}.sh
 
 cd ${TEMP_PATH}
 
-directoryName=initServer
-scriptList=("directorty,ownership" "yum,epel" "time,language,libraryPath")
+# 
+workName=initServer
 
-mkdir -p ${TEMP_PATH}/${directoryName}
+scriptList=( \
+    "userDirectorty,ownerShip" \
+    "yum,epel" \
+    "time,language,libraryPath" \
+    "zlib,pcre,openssl" \
+    "openssh,sshd_config" \
+)
 
-curl "${GIT_REPO_PATH}/${directoryName}/00-${directoryName}.sh" \
-    > ${TEMP_PATH}/${directoryName}/00-${directoryName}.sh
+mkdir -p ${TEMP_PATH}/${workName}
 
-chmod 700 ${TEMP_PATH}/${directoryName}/00-${directoryName}.sh
+curl "${GIT_REPO_PATH}/${workName}/00-${workName}.sh" \
+    > ${TEMP_PATH}/${workName}/00-${workName}.sh
 
-${TEMP_PATH}/${directoryName}/00-${directoryName}.sh ${directoryName} "${scriptList[@]}"
+chmod 700 ${TEMP_PATH}/${workName}/00-${workName}.sh
+
+${TEMP_PATH}/${workName}/00-${workName}.sh ${workName} "${scriptList[@]}"

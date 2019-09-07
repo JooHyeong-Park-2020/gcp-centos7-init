@@ -1,5 +1,71 @@
 #!/bin/bash
 
+
+workList=( \
+    "initServer" \
+    "tools" \
+    "db" \
+    "server" \
+    "domain" \
+    "https_letsEncrypt" \
+    "bash_profile" \
+    "ownerShip,cleanUp" \
+)
+
+# initServer 세팅시 실행 스크립트 목록
+initServer_scriptList=( \
+    "userDirectorty,ownerShip" \
+    "yum,epel" \
+    "time,language,libraryPath" \
+    "zlib,pcre,openssl" \
+    "openssh,sshd_config" \
+    "GnuPG" \
+    "RDP" \
+    "D2CodingFont" \
+    "chrome" \
+    "docker" \
+)
+
+# 개발 tools 세팅시 실행 스크립트 목록
+tools_scriptList=( \
+    "git" \
+    "openjdk" \
+    "maven" \
+    "gradle" \
+    "firefox" \
+    "rClone" \
+    "postMan" \
+    "sts,lombok" \
+    "visualStudioCode" \
+    "intelliJ" \
+    "dBeaver" \
+)
+
+# db 세팅시 실행 스크립트 목록
+tools_scriptList=( \
+    "mariadb" \
+    "redis"
+)
+
+# server 세팅시 실행 스크립트 목록
+server_scriptList=( \
+    "tomcat" \
+    "nodeJs,npm" \
+    "nexus" \
+    "nginx"
+)
+
+# 도메인 세팅시 실행 스크립트 목록
+domain_scriptList=( \
+    "domain"
+)
+
+# letsEncrypt 로 https 인증시 실행 스크립트 목록
+https_letsEncrypt_scriptList=( \
+    "letsEncrypt"
+)
+
+
 #################################################################
 # 신규 사용자 계정 설정
 #################################################################
