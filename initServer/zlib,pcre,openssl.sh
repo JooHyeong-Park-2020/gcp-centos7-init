@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # CENTOS 서버 세팅 정보 load / 작업 디렉토리로 이동
-source ${TEMP_PATH}/${SETTING_INFO}.sh
+source ${WORK_DIR}/${SETTING_INFO}.sh
 
 
 ##############################################################################
@@ -12,14 +12,14 @@ source ${TEMP_PATH}/${SETTING_INFO}.sh
 ZLIB_DOWNLOAD_URL=http://zlib.net/zlib-1.2.11.tar.gz
 
 wget -c ${ZLIB_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/zlib.tar.gz && \
-tar -zxf ${TEMP_PATH}/zlib.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/zlib.tar.gz && \
+tar -zxf ${WORK_DIR}/zlib.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep zlib-) \
-   ${TEMP_PATH}/zlib \
-   ${TEMP_PATH}/zlib-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep zlib-) \
+   ${WORK_DIR}/zlib \
+   ${WORK_DIR}/zlib-*
 
 cd zlib
 
@@ -66,14 +66,14 @@ PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
 # yum install -y zlib-devel
 
 wget ${PCRE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/pcre.tar.gz && \
-tar -zxf ${TEMP_PATH}/pcre.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/pcre.tar.gz && \
+tar -zxf ${WORK_DIR}/pcre.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep pcre-) \
-   ${TEMP_PATH}/pcre \
-   ${TEMP_PATH}/pcre-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep pcre-) \
+   ${WORK_DIR}/pcre \
+   ${WORK_DIR}/pcre-*
 
 cd pcre
 
@@ -118,14 +118,14 @@ OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
 
 
 wget ${OPENSSL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/openssl.tar.gz && \
-tar -zxf ${TEMP_PATH}/openssl.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/openssl.tar.gz && \
+tar -zxf ${WORK_DIR}/openssl.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssl-) \
-   ${TEMP_PATH}/openssl \
-   ${TEMP_PATH}/openssl-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep openssl-) \
+   ${WORK_DIR}/openssl \
+   ${WORK_DIR}/openssl-*
 
 # 기존 openssl 제거: openssl-libs 는 못 지움, 의존하는 곳이 너무 많음
 rpm -e --nodeps openssl

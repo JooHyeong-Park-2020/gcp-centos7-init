@@ -42,7 +42,7 @@ NEXUS_SERVER_LOCAL_PORT=8090
 DOCKER_GROUP_ID=1205
 
 # 설치시 사용할 임시 작업 디렉토리 경로
-TEMP_PATH=/tmp
+WORK_DIR=/tmp
 
 ##############################################################################
 
@@ -115,7 +115,7 @@ chmod 755 ${LIBRARY_MAIN_PATH}
 ##############################################################################
 
 # 임시 작업 디렉토리로 이동
-cd ${TEMP_PATH}
+cd ${WORK_DIR}
 
 # 기존 시간대 설정 파일 백업 / 시간대 변경
 mv /etc/localtime /etc/localtime_org && \
@@ -172,9 +172,9 @@ systemctl enable ntpd
 EPEL_DOWNLOAD_URL=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 wget ${EPEL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/epel-release.rpm && \
-rpm -ivh ${TEMP_PATH}/epel-release.rpm
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/epel-release.rpm && \
+rpm -ivh ${WORK_DIR}/epel-release.rpm
 
 ##############################################################################
 
@@ -225,7 +225,7 @@ Pinentry_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.0.tar.b
 
 # GnuPG 의존 라이브러리 다운받을 temp 디렉토리 생성
 # 이름이 gnupg- 로 시작하면 gunpg 압축 해제시 디렉토리명과 중복됨, 겹치지 않도록 할 것
-GNU_PG_TEMP_DOWNLOAD_PATH=${TEMP_PATH}/gnupg_temp
+GNU_PG_TEMP_DOWNLOAD_PATH=${WORK_DIR}/gnupg_temp
 mkdir -p ${GNU_PG_TEMP_DOWNLOAD_PATH}
 
 # zlib-devel : ntbTLS 설치시 필요
@@ -289,11 +289,11 @@ cd ${GNU_PG_TEMP_DOWNLOAD_PATH}/$(ls ${GNU_PG_TEMP_DOWNLOAD_PATH} | grep pinentr
 RNG_TOOLS_DOWNLOAD_URL=http://mirror.centos.org/centos/7/os/x86_64/Packages/rng-tools-6.3.1-3.el7.x86_64.rpm
 
 wget -c ${RNG_TOOLS_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/rng-tools.rpm
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/rng-tools.rpm
 
 yum localinstall -y \
-   ${TEMP_PATH}/rng-tools.rpm
+   ${WORK_DIR}/rng-tools.rpm
 
 # https://it.toolbox.com/blogs/edmonbegoli/how-to-generate-enough-entropy-for-gpg-key-generation-process-on-fedora-linux-041410
 # http://egloos.zum.com/dmlim/v/4360902
@@ -309,20 +309,20 @@ rngd -r /dev/random
 GNU_PG_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2
 
 wget -c ${GNU_PG_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/gnupg.tar.bz2
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/gnupg.tar.bz2
 
-tar -jxf ${TEMP_PATH}/gnupg.tar.bz2 \
-   -C ${TEMP_PATH}
+tar -jxf ${WORK_DIR}/gnupg.tar.bz2 \
+   -C ${WORK_DIR}
 
 # http://www.linuxfromscratch.org/blfs/view/svn/postlfs/gnupg.html
 
 # gpg-zip 설치하도록 Makefile 수정
 sed -e '/noinst_SCRIPTS = gpg-zip/c sbin_SCRIPTS += gpg-zip' \
-    -i ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gnupg-)/tools/Makefile.in
+    -i ${WORK_DIR}/$(ls ${WORK_DIR} | grep gnupg-)/tools/Makefile.in
 
 #  prefix 는 기본값 /usr/local 과 동일하게 지정
-cd ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gnupg-) && \
+cd ${WORK_DIR}/$(ls ${WORK_DIR} | grep gnupg-) && \
 ./configure \
    --prefix=/usr/local \
    --enable-symcryptrun \
@@ -345,7 +345,7 @@ cd ..
 # https://johngrib.github.io/wiki/gpg/
 # https://www.gnupg.org/documentation/manuals/gnupg-devel/Unattended-GPG-key-generation.html
 
-cat > ${TEMP_PATH}/gen-key-script \
+cat > ${WORK_DIR}/gen-key-script \
 <<EOF
 %echo Generating a basic OpenPGP key
 Key-Type: DSA
@@ -362,11 +362,11 @@ Passphrase: abc
 %echo done
 EOF
 
-# chown dev:developer ${TEMP_PATH}/gen-key-script
+# chown dev:developer ${WORK_DIR}/gen-key-script
 
 # sudo -i -u dev bash << EOF
 # whoami
-# gpg --verbose --batch --gen-key ${TEMP_PATH}/gen-key-script
+# gpg --verbose --batch --gen-key ${WORK_DIR}/gen-key-script
 # EOF
 
 ##############################################################################
@@ -382,9 +382,9 @@ mkdir -p ${PASS_INSTALL_PATH}
 
 # -xf 옵션으로 풀 것
 wget ${PASS_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/pass.tar.xz && \
-tar -xf ${TEMP_PATH}/pass.tar.xz \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/pass.tar.xz && \
+tar -xf ${WORK_DIR}/pass.tar.xz \
    -C ${PASS_INSTALL_PATH} \
    --strip-components 1
 

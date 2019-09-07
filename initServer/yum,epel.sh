@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # CENTOS 서버 세팅 정보 load
-source ${TEMP_PATH}/${SETTING_INFO}.sh
+source ${WORK_DIR}/${SETTING_INFO}.sh
 
 
 ##############################################################################
@@ -30,8 +30,8 @@ yum install -y \
 EPEL_DOWNLOAD_URL=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 wget ${EPEL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/epel-release.rpm && \
-rpm -ivh ${TEMP_PATH}/epel-release.rpm
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/epel-release.rpm && \
+rpm -ivh ${WORK_DIR}/epel-release.rpm
 
 ##############################################################################

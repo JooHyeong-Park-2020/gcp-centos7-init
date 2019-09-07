@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # CENTOS 서버 세팅 정보 load
-source ${TEMP_PATH}/${SETTING_INFO}.sh
+source ${WORK_DIR}/${SETTING_INFO}.sh
 
 
 ##############################################################################

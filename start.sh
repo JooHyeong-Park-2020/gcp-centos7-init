@@ -5,11 +5,11 @@
 curl ${GIT_REPO_PATH}/${SETTING_INFO_DIRECTORY_PATH}/${SETTING_INFO_NAME}.sh \
     > ./${SETTING_INFO_NAME}.sh
 
-cp ./${SETTING_INFO_NAME}.sh ${TEMP_PATH}/${SETTING_INFO_NAME}.sh
+cp ./${SETTING_INFO_NAME}.sh ${WORK_DIR}/${SETTING_INFO_NAME}.sh
 
-source ${TEMP_PATH}/${SETTING_INFO_NAME}.sh
+source ${WORK_DIR}/${SETTING_INFO_NAME}.sh
 
-cd ${TEMP_PATH}
+cd ${WORK_DIR}
 
 ######################################
 
@@ -17,7 +17,7 @@ SCRIPT_LIST_POSTFIX=_scriptList
 
 for workName in ${workList[@]}; do
 
-    mkdir -p ${TEMP_PATH}/${workName}
+    mkdir -p ${WORK_DIR}/${workName}
 
     eval scriptList=\( \${${workName}${SCRIPT_LIST_POSTFIX}[@]} \)
 
@@ -26,11 +26,11 @@ for workName in ${workList[@]}; do
         echo "---------"${scriptName}"---------"
 
         curl ${GIT_REPO_PATH}/${workName}/${scriptName}.sh \
-            > ${TEMP_PATH}/${workName}/${scriptName}.sh
+            > ${WORK_DIR}/${workName}/${scriptName}.sh
 
-        chmod 700 ${TEMP_PATH}/${workName}/${scriptName}.sh
+        chmod 700 ${WORK_DIR}/${workName}/${scriptName}.sh
 
-        ${TEMP_PATH}/${workName}/${scriptName}.sh
+        ${WORK_DIR}/${workName}/${scriptName}.sh
 
     done
 

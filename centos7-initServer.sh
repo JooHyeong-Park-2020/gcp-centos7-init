@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # CENTOS 서버 세팅 정보 load / 작업 디렉토리로 이동
-source ${TEMP_PATH}/settingInfo.sh
+source ${WORK_DIR}/settingInfo.sh
 
 
 ##############################################################################
@@ -60,7 +60,7 @@ chown -R ${NEW_USER}:${SERVER_USER_GROUP} ${SERVER_MAIN_PATH}
 ##############################################################################
 
 # 임시 작업 디렉토리로 이동
-cd ${TEMP_PATH}
+cd ${WORK_DIR}
 
 ##############################################################################
 
@@ -88,9 +88,9 @@ yum install -y \
 EPEL_DOWNLOAD_URL=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 wget ${EPEL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/epel-release.rpm && \
-rpm -ivh ${TEMP_PATH}/epel-release.rpm
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/epel-release.rpm && \
+rpm -ivh ${WORK_DIR}/epel-release.rpm
 
 ##############################################################################
 
@@ -149,14 +149,14 @@ ldconfig
 ZLIB_DOWNLOAD_URL=http://zlib.net/zlib-1.2.11.tar.gz
 
 wget -c ${ZLIB_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/zlib.tar.gz && \
-tar -zxf ${TEMP_PATH}/zlib.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/zlib.tar.gz && \
+tar -zxf ${WORK_DIR}/zlib.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep zlib-) \
-   ${TEMP_PATH}/zlib \
-   ${TEMP_PATH}/zlib-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep zlib-) \
+   ${WORK_DIR}/zlib \
+   ${WORK_DIR}/zlib-*
 
 cd zlib
 
@@ -203,14 +203,14 @@ PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
 # yum install -y zlib-devel
 
 wget ${PCRE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/pcre.tar.gz && \
-tar -zxf ${TEMP_PATH}/pcre.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/pcre.tar.gz && \
+tar -zxf ${WORK_DIR}/pcre.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep pcre-) \
-   ${TEMP_PATH}/pcre \
-   ${TEMP_PATH}/pcre-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep pcre-) \
+   ${WORK_DIR}/pcre \
+   ${WORK_DIR}/pcre-*
 
 cd pcre
 
@@ -255,14 +255,14 @@ OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
 
 
 wget ${OPENSSL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/openssl.tar.gz && \
-tar -zxf ${TEMP_PATH}/openssl.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/openssl.tar.gz && \
+tar -zxf ${WORK_DIR}/openssl.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssl-) \
-   ${TEMP_PATH}/openssl \
-   ${TEMP_PATH}/openssl-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep openssl-) \
+   ${WORK_DIR}/openssl \
+   ${WORK_DIR}/openssl-*
 
 # 기존 openssl 제거: openssl-libs 는 못 지움, 의존하는 곳이 너무 많음
 rpm -e --nodeps openssl
@@ -335,14 +335,14 @@ yum install -y \
    krb5-devel
 
 wget -c ${OPENSSL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/openssh.tar.gz && \
-tar -zxf ${TEMP_PATH}/openssh.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/openssh.tar.gz && \
+tar -zxf ${WORK_DIR}/openssh.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssh-) \
-   ${TEMP_PATH}/openssh \
-   ${TEMP_PATH}/openssh-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep openssh-) \
+   ${WORK_DIR}/openssh \
+   ${WORK_DIR}/openssh-*
 
 # 기존 설치된 openssh rpm, openssh-clients 제거
 # openssh-server 는 못 지움 : ssh 접속이 안됨
@@ -367,7 +367,7 @@ make install
 make clean
 
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile?category=563849
-cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
+cp ${WORK_DIR}/openssh/contrib/sshd.pam.generic \
    /etc/pamd.sshd
 
 cd ..
@@ -446,13 +446,13 @@ systemctl start xrdp.service
 D2CODING_FONT_DOWNLOAD_URL=https://github.com/naver/d2codingfont/releases/download/VER1.3.2/D2Coding-Ver1.3.2-20180524.zip
 
 wget ${D2CODING_FONT_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/D2Coding.zip && \
-mkdir -p ${TEMP_PATH}/D2Coding && \
-unzip ${TEMP_PATH}/D2Coding.zip \
-   -d ${TEMP_PATH}/D2Coding && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/D2Coding.zip && \
+mkdir -p ${WORK_DIR}/D2Coding && \
+unzip ${WORK_DIR}/D2Coding.zip \
+   -d ${WORK_DIR}/D2Coding && \
 mkdir -p /usr/share/fonts/D2Coding && \
-cp ${TEMP_PATH}/D2Coding/D2Coding/* \
+cp ${WORK_DIR}/D2Coding/D2Coding/* \
    /usr/share/fonts/D2Coding/ && \
 fc-cache -f -v
 

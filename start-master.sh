@@ -16,7 +16,7 @@ NEW_USER_PASSWORD=dev
 # Centos 서버 설정
 ######################################
 # 설치시 사용할 임시 작업 디렉토리 경로
-TEMP_PATH=/tmp
+WORK_DIR=/tmp
 
 SSH_CONNECTION_PORT=2435
 DOCKER_GROUP_ID=1205
@@ -157,7 +157,7 @@ chown -R ${NEW_USER}:${SERVER_USER_GROUP} ${SERVER_MAIN_PATH}
 ##############################################################################
 
 # 임시 작업 디렉토리로 이동
-cd ${TEMP_PATH}
+cd ${WORK_DIR}
 
 # 기존 시간대 설정 파일 백업 / 시간대 변경
 mv /etc/localtime /etc/localtime_org && \
@@ -210,9 +210,9 @@ systemctl enable ntpd
 EPEL_DOWNLOAD_URL=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 wget ${EPEL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/epel-release.rpm && \
-rpm -ivh ${TEMP_PATH}/epel-release.rpm
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/epel-release.rpm && \
+rpm -ivh ${WORK_DIR}/epel-release.rpm
 
 ##############################################################################
 
@@ -239,14 +239,14 @@ ldconfig
 ZLIB_DOWNLOAD_URL=http://zlib.net/zlib-1.2.11.tar.gz
 
 wget -c ${ZLIB_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/zlib.tar.gz && \
-tar -zxf ${TEMP_PATH}/zlib.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/zlib.tar.gz && \
+tar -zxf ${WORK_DIR}/zlib.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep zlib-) \
-   ${TEMP_PATH}/zlib \
-   ${TEMP_PATH}/zlib-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep zlib-) \
+   ${WORK_DIR}/zlib \
+   ${WORK_DIR}/zlib-*
 
 cd zlib
 
@@ -293,14 +293,14 @@ PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
 # yum install -y zlib-devel
 
 wget ${PCRE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/pcre.tar.gz && \
-tar -zxf ${TEMP_PATH}/pcre.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/pcre.tar.gz && \
+tar -zxf ${WORK_DIR}/pcre.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep pcre-) \
-   ${TEMP_PATH}/pcre \
-   ${TEMP_PATH}/pcre-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep pcre-) \
+   ${WORK_DIR}/pcre \
+   ${WORK_DIR}/pcre-*
 
 cd pcre
 
@@ -345,14 +345,14 @@ OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
 
 
 wget ${OPENSSL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/openssl.tar.gz && \
-tar -zxf ${TEMP_PATH}/openssl.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/openssl.tar.gz && \
+tar -zxf ${WORK_DIR}/openssl.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssl-) \
-   ${TEMP_PATH}/openssl \
-   ${TEMP_PATH}/openssl-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep openssl-) \
+   ${WORK_DIR}/openssl \
+   ${WORK_DIR}/openssl-*
 
 # 기존 openssl 제거: openssl-libs 는 못 지움, 의존하는 곳이 너무 많음
 rpm -e --nodeps openssl
@@ -423,14 +423,14 @@ yum install -y \
    krb5-devel
 
 wget -c ${OPENSSL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/openssh.tar.gz && \
-tar -zxf ${TEMP_PATH}/openssh.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/openssh.tar.gz && \
+tar -zxf ${WORK_DIR}/openssh.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssh-) \
-   ${TEMP_PATH}/openssh \
-   ${TEMP_PATH}/openssh-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep openssh-) \
+   ${WORK_DIR}/openssh \
+   ${WORK_DIR}/openssh-*
 
 # 기존 설치된 openssh rpm, openssh-clients 제거
 # openssh-server 는 못 지움 : ssh 접속이 안됨
@@ -455,7 +455,7 @@ make install
 make clean
 
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile?category=563849
-cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
+cp ${WORK_DIR}/openssh/contrib/sshd.pam.generic \
    /etc/pamd.sshd
 
 cd ..
@@ -534,13 +534,13 @@ systemctl start xrdp.service
 D2CODING_FONT_DOWNLOAD_URL=https://github.com/naver/d2codingfont/releases/download/VER1.3.2/D2Coding-Ver1.3.2-20180524.zip
 
 wget ${D2CODING_FONT_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/D2Coding.zip && \
-mkdir -p ${TEMP_PATH}/D2Coding && \
-unzip ${TEMP_PATH}/D2Coding.zip \
-   -d ${TEMP_PATH}/D2Coding && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/D2Coding.zip && \
+mkdir -p ${WORK_DIR}/D2Coding && \
+unzip ${WORK_DIR}/D2Coding.zip \
+   -d ${WORK_DIR}/D2Coding && \
 mkdir -p /usr/share/fonts/D2Coding && \
-cp ${TEMP_PATH}/D2Coding/D2Coding/* \
+cp ${WORK_DIR}/D2Coding/D2Coding/* \
    /usr/share/fonts/D2Coding/ && \
 fc-cache -f -v
 
@@ -575,9 +575,9 @@ FIREFOX_INSTALL_PATH=${UTILS_MAIN_PATH}/${FIREFOX_INSTALL_DIRECTORY_NAME}
 mkdir -p ${FIREFOX_INSTALL_PATH}
 
 wget ${FIREFOX_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/firefox.tar.bz2 && \
-tar -jxf ${TEMP_PATH}/firefox.tar.bz2 \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/firefox.tar.bz2 && \
+tar -jxf ${WORK_DIR}/firefox.tar.bz2 \
    -C ${FIREFOX_INSTALL_PATH} \
    --strip-components 1
 
@@ -604,10 +604,10 @@ RCLONE_INSTALL_PATH=${UTILS_MAIN_PATH}/${RCLONE_INSTALL_DIRECTORY_NAME}
 mkdir -p ${RCLONE_INSTALL_PATH}
 
 wget ${RCLONE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/rclone.zip && \
-unzip ${TEMP_PATH}/rclone.zip && \
-mv ${TEMP_PATH}/$( ls ${TEMP_PATH} | grep rclone- )/* \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/rclone.zip && \
+unzip ${WORK_DIR}/rclone.zip && \
+mv ${WORK_DIR}/$( ls ${WORK_DIR} | grep rclone- )/* \
    ${RCLONE_INSTALL_PATH}
 
 # rclone 심볼릭 링크를 사용자 bin 디렉토리에 추가
@@ -628,9 +628,9 @@ mkdir -p ${POSTMAN_INSTALL_PATH}
 
 # postman 다운로드 / POSTMAN_INSTALL_PATH 에 설치
 wget ${POSTMAN_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/postman.tar.gz && \
-tar -zxf ${TEMP_PATH}/postman.tar.gz \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/postman.tar.gz && \
+tar -zxf ${WORK_DIR}/postman.tar.gz \
    -C ${POSTMAN_INSTALL_PATH} \
    --strip-components 1
 
@@ -676,7 +676,7 @@ GPGME_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gpgme/gpgme-1.13.1.tar.bz2
 #     a graphical frontend to GnuPG
 GPA_DOWNLOAD_URL=https://gnupg.org/ftp/gcrypt/gpa/gpa-0.10.0.tar.bz2
 
-GNU_PG_TEMP_DOWNLOAD_PATH=${TEMP_PATH}/gnupg-temp
+GNU_PG_TEMP_DOWNLOAD_PATH=${WORK_DIR}/gnupg-temp
 
 mkdir -p ${GNU_PG_TEMP_DOWNLOAD_PATH}
 
@@ -723,14 +723,14 @@ GNU_PG_INSTALL_PATH=${UTILS_MAIN_PATH}/${GNU_PG_INSTALL_DIRECTORY_NAME}
 mkdir -p ${GNU_PG_INSTALL_PATH}
 
 wget ${GNU_PG_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/gnupg.tar.bz2 && \
-tar -jxf ${TEMP_PATH}/gnupg.tar.bz2 \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/gnupg.tar.bz2 && \
+tar -jxf ${WORK_DIR}/gnupg.tar.bz2 \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gnupg-) \
-   ${TEMP_PATH}/gnupg \
-   ${TEMP_PATH}/gnupg-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep gnupg-) \
+   ${WORK_DIR}/gnupg \
+   ${WORK_DIR}/gnupg-*
 
 cd gnupg
 
@@ -760,14 +760,14 @@ yum install -y \
    zlib-devel
 
 wget ${GIT_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/git.tar.gz && \
-tar -zxf ${TEMP_PATH}/git.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/git.tar.gz && \
+tar -zxf ${WORK_DIR}/git.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep git-) \
-   ${TEMP_PATH}/git \
-   ${TEMP_PATH}/git-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep git-) \
+   ${WORK_DIR}/git \
+   ${WORK_DIR}/git-*
 
 cd git
 
@@ -791,10 +791,10 @@ ln -sf ${GIT_MAIN_PATH}/${GIT_INSTALL_DIRECTORY_NAME}/bin/git \
 # yum remove -y \
 #     git && \
 # wget http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-release-7-2.noarch.rpm \
-#     -P "${TEMP_PATH}" \
-#     -O "${TEMP_PATH}/git-release.rpm" && \
+#     -P "${WORK_DIR}" \
+#     -O "${WORK_DIR}/git-release.rpm" && \
 # rpm -ivh \
-#     ${TEMP_PATH}/git-release.rpm && \
+#     ${WORK_DIR}/git-release.rpm && \
 # yum install -y \
 #     git
 
@@ -834,26 +834,26 @@ rm -rf /var/lib/docker && \
 rm -rf /etc/yum.repos.d/docker-ce.repo
 
 wget ${CONTAINEDR_SELINUX_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/container-selinux.rpm && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/container-selinux.rpm && \
 wget ${DOCKER_CE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/docker-ce.rpm && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/docker-ce.rpm && \
 wget ${DOCKER_CE_CLI_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/docker-ce-cli.rpm && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/docker-ce-cli.rpm && \
 wget ${CONTAINEDR_IO_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/containerd.io.rpm
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/containerd.io.rpm
 
 # 도커 설치 전 의존 패키지 먼저 설치
 rpm -Uvh \
-   ${TEMP_PATH}/container-selinux.rpm
+   ${WORK_DIR}/container-selinux.rpm
 
 rpm -Uvh \
-   ${TEMP_PATH}/docker-ce.rpm \
-   ${TEMP_PATH}/docker-ce-cli.rpm \
-   ${TEMP_PATH}/containerd.io.rpm
+   ${WORK_DIR}/docker-ce.rpm \
+   ${WORK_DIR}/docker-ce-cli.rpm \
+   ${WORK_DIR}/containerd.io.rpm
 
 # docker 그룹 추가 : 보통 도커 설치시 자동으로 추가됨
 # groupadd docker
@@ -905,25 +905,25 @@ mkdir -p ${OPENJDK_12_JAVA_HOME_PATH}
 
 # OPENJDK 1.8 다운로드 / OPENJDK_8_JAVA_HOME_PATH 에 설치
 wget ${OPENJDK_8_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/jdk1_8.tar.gz && \
-tar -zxf ${TEMP_PATH}/jdk1_8.tar.gz \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/jdk1_8.tar.gz && \
+tar -zxf ${WORK_DIR}/jdk1_8.tar.gz \
    -C ${OPENJDK_8_JAVA_HOME_PATH} \
    --strip-components 1
 
 # OPENJDK 1.11 다운로드 / OPENJDK_11_JAVA_HOME_PATH 에 설치
 wget ${OPENJDK_11_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/jdk1_11.tar.gz && \
-tar -zxf ${TEMP_PATH}/jdk1_11.tar.gz \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/jdk1_11.tar.gz && \
+tar -zxf ${WORK_DIR}/jdk1_11.tar.gz \
    -C ${OPENJDK_11_JAVA_HOME_PATH} \
    --strip-components 1
 
 # OPENJDK 1.12 다운로드 / OPENJDK_12_JAVA_HOME_PATH 에 설치
 wget ${OPENJDK_12_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/jdk1_12.tar.gz && \
-tar -zxf ${TEMP_PATH}/jdk1_12.tar.gz \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/jdk1_12.tar.gz && \
+tar -zxf ${WORK_DIR}/jdk1_12.tar.gz \
    -C ${OPENJDK_12_JAVA_HOME_PATH} \
    --strip-components 1
 
@@ -955,9 +955,9 @@ STS_INSTALL_PATH=${DEV_TOOLS_PATH}/${STS_INSTALL_DIRECTORY_NAME}
 mkdir -p ${STS_INSTALL_PATH}
 
 wget ${STS_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/sts.tar.gz && \
-tar -zxf ${TEMP_PATH}/sts.tar.gz \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/sts.tar.gz && \
+tar -zxf ${WORK_DIR}/sts.tar.gz \
    -C ${STS_INSTALL_PATH} \
    --strip-components 1
 
@@ -1000,11 +1000,11 @@ EOF
 LOMBOK_DOWNLOAD_URL=https://projectlombok.org/downloads/lombok-1.18.0.jar
 
 wget ${LOMBOK_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/lombok.jar && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/lombok.jar && \
 
 ${OPENJDK_LINK_PATH}/bin/java -jar \
-   ${TEMP_PATH}/lombok.jar install \
+   ${WORK_DIR}/lombok.jar install \
    ${STS_INSTALL_PATH}/SpringToolSuite4.ini
 
 ##############################################################################
@@ -1015,10 +1015,10 @@ ${OPENJDK_LINK_PATH}/bin/java -jar \
 VSCODE_DOWNLOAD_URL=https://update.code.visualstudio.com/1.35.1/linux-x64/stable
 
 wget ${VSCODE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/vscode.tar.gz && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/vscode.tar.gz && \
 mkdir -p ${DEV_TOOLS_PATH}/VSCODE && \
-tar -zxf ${TEMP_PATH}/vscode.tar.gz \
+tar -zxf ${WORK_DIR}/vscode.tar.gz \
    -C ${DEV_TOOLS_PATH}/VSCODE \
    --strip-components 1
 
@@ -1035,10 +1035,10 @@ mkdir -p ${DEV_TOOLS_PATH}/VSCODE/data/user-data
 INTELLIJ_DOWNLOAD_URL=https://download.jetbrains.com/idea/ideaIC-2019.1.3-no-jbr.tar.gz
 
 wget ${INTELLIJ_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/intellij.tar.gz && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/intellij.tar.gz && \
 mkdir -p ${DEV_TOOLS_PATH}/INTELLI_J && \
-tar -zxf ${TEMP_PATH}/intellij.tar.gz \
+tar -zxf ${WORK_DIR}/intellij.tar.gz \
    -C ${DEV_TOOLS_PATH}/INTELLI_J \
    --strip-components 1
 
@@ -1050,10 +1050,10 @@ tar -zxf ${TEMP_PATH}/intellij.tar.gz \
 DBEAVER_DOWNLOAD_URL=https://github.com/dbeaver/dbeaver/releases/download/6.1.0/dbeaver-ce-6.1.0-linux.gtk.x86_64.tar.gz
 
 wget ${DBEAVER_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/dbeaver.tar.gz && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/dbeaver.tar.gz && \
 mkdir -p ${DEV_TOOLS_PATH}/DBEAVER-ce && \
-tar -zxf ${TEMP_PATH}/dbeaver.tar.gz \
+tar -zxf ${WORK_DIR}/dbeaver.tar.gz \
    -C ${DEV_TOOLS_PATH}/DBEAVER-ce \
    --strip-components 1
 
@@ -1076,9 +1076,9 @@ mkdir -p ${MAVEN_INSTALL_PATH}
 mkdir -p ${MAVEN_REPOSITORY_PATH}
 
 wget ${MAVEN_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/maven.tar.gz && \
-tar -zxf ${TEMP_PATH}/maven.tar.gz \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/maven.tar.gz && \
+tar -zxf ${WORK_DIR}/maven.tar.gz \
    -C ${MAVEN_INSTALL_PATH} \
    --strip-components 1
 
@@ -1104,10 +1104,10 @@ mkdir -p ${GRADLE_REPOSITORY_PATH}
 shopt -s dotglob
 
 wget ${GRADLE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/gradle.zip && \
-unzip ${TEMP_PATH}/gradle.zip && \
-mv ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep gradle-)/* \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/gradle.zip && \
+unzip ${WORK_DIR}/gradle.zip && \
+mv ${WORK_DIR}/$(ls ${WORK_DIR} | grep gradle-)/* \
    ${GRADLE_INSTALL_PATH}
 
 ##############################################################################
@@ -1148,18 +1148,18 @@ MARIA_DB_TEMP_DIRECTORY_NAME=mariaDB-MASTER-tmp
 MARIA_DB_INSTALL_PATH=${DATABASE_MAIN_PATH}/${MARIA_DB_INSTALL_DIRECTORY_NAME}
 MARIA_DB_DATA_PATH=${DATABASE_MAIN_PATH}/${MARIA_DB_DATA_DIRECTORY_NAME}
 MARIA_DB_LOG_PATH=${MARIA_DB_INSTALL_PATH}/${MARIA_DB_LOG_DIRECTORY_NAME}
-MARIA_DB_TEMP_PATH=${MARIA_DB_INSTALL_PATH}/${MARIA_DB_TEMP_DIRECTORY_NAME}
+MARIA_DB_WORK_DIR=${MARIA_DB_INSTALL_PATH}/${MARIA_DB_TEMP_DIRECTORY_NAME}
 
 mkdir -p ${MARIA_DB_INSTALL_PATH}
 mkdir -p ${MARIA_DB_DATA_PATH}
 mkdir -p ${MARIA_DB_LOG_PATH}
-mkdir -p ${MARIA_DB_TEMP_PATH}
+mkdir -p ${MARIA_DB_WORK_DIR}
 
 wget ${MARIA_DB_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/mariadb-binary.tar.gz
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/mariadb-binary.tar.gz
 
-tar -zxf ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep mariadb-) \
+tar -zxf ${WORK_DIR}/$(ls ${WORK_DIR} | grep mariadb-) \
    -C ${MARIA_DB_INSTALL_PATH} \
    --strip-components 1
 
@@ -1174,9 +1174,9 @@ core-file
 port = 3306
 basedir = ${MARIA_DB_INSTALL_PATH}
 datadir = ${MARIA_DB_DATA_PATH}
-tmpdir = ${MARIA_DB_TEMP_PATH}
-socket = ${MARIA_DB_TEMP_PATH}/mysqld.sock
-pid-file = ${MARIA_DB_TEMP_PATH}/mysqld.pid
+tmpdir = ${MARIA_DB_WORK_DIR}
+socket = ${MARIA_DB_WORK_DIR}/mysqld.sock
+pid-file = ${MARIA_DB_WORK_DIR}/mysqld.pid
 log-error = ${MARIA_DB_LOG_PATH}/error.log
 # log = ${MARIA_DB_LOG_PATH}/query.log
 default_storage_engine='InnoDB'
@@ -1198,7 +1198,7 @@ show-warnings
 
 [client]
 port   = 3306
-socket = ${MARIA_DB_TEMP_PATH}/mysqld.sock
+socket = ${MARIA_DB_WORK_DIR}/mysqld.sock
 default-character-set=utf8mb4
 EOF
 
@@ -1239,7 +1239,7 @@ EOF
 )
 
 ${MARIA_DB_INSTALL_PATH}/bin/mysql \
-   -S ${MARIA_DB_TEMP_PATH}/mysqld.sock \
+   -S ${MARIA_DB_WORK_DIR}/mysqld.sock \
    -uroot -p${ROOT_USER_PASSWORD} << EOF
 ${INIT_SQL}
 EOF
@@ -1254,11 +1254,11 @@ After=syslog.target network.target
 Type=forking
 User=${MARIADB_USER}
 Group=${DB_USER_GROUP}
-PIDFile=${MARIA_DB_TEMP_PATH}/mysqld.pid
+PIDFile=${MARIA_DB_WORK_DIR}/mysqld.pid
 TimeoutStartSec=0
 TimeoutStopSec=0
 ExecStart=${MARIA_DB_INSTALL_PATH}/bin/mysqld_safe --defaults-file=${MARIA_DB_INSTALL_PATH}/data/my.cnf --user=${MARIADB_USER}
-ExecStop=${MARIA_DB_INSTALL_PATH}/bin/mysqladmin -S ${MARIA_DB_TEMP_PATH}/mysqld.sock -uroot -p shutdown
+ExecStop=${MARIA_DB_INSTALL_PATH}/bin/mysqladmin -S ${MARIA_DB_WORK_DIR}/mysqld.sock -uroot -p shutdown
 
 [Install]
 WantedBy=multi-user.target graphical.target
@@ -1313,14 +1313,14 @@ REDIS_CLI_EXEC_FILE_PATH=${REDIS_BIN_PATH}/redis-cli
 REDIS_PID_FILE_PATH=${REDIS_PID_PATH}/redis.pid
 
 wget ${REDIS_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/redis.tar.gz && \
-tar -zxf ${TEMP_PATH}/redis.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/redis.tar.gz && \
+tar -zxf ${WORK_DIR}/redis.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep redis-) \
-   ${TEMP_PATH}/redis \
-   ${TEMP_PATH}/redis-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep redis-) \
+   ${WORK_DIR}/redis \
+   ${WORK_DIR}/redis-*
 
 cd redis
 
@@ -1529,9 +1529,9 @@ TOMCAT_MANAGER_PASSWORD=admin123
 mkdir -p ${TOMCAT_PID_PATH}
 
 wget ${TOMCAT_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/tomcat.tar.gz && \
-tar -zxf ${TEMP_PATH}/tomcat.tar.gz \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/tomcat.tar.gz && \
+tar -zxf ${WORK_DIR}/tomcat.tar.gz \
    -C ${TOMCAT_INSTALL_PATH} \
    --strip-components 1
 
@@ -1656,9 +1656,9 @@ mkdir -p ${NODEJS_INSTALL_PATH}
 
 # -xf 옵션으로 풀 것 : gzip 포맷 아님
 wget ${NODEJS_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/nodejs.tar.gz && \
-tar -xf ${TEMP_PATH}/nodejs.tar.gz \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/nodejs.tar.gz && \
+tar -xf ${WORK_DIR}/nodejs.tar.gz \
    -C ${NODEJS_INSTALL_PATH} \
    --strip-components 1
 
@@ -1700,20 +1700,20 @@ mkdir -p ${NEXUS_DATA_PATH}
 mkdir -p ${NEXUS_PID_PATH}
 
 wget ${NEXUS_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/nexus.tar.gz && \
-tar -zxf ${TEMP_PATH}/nexus.tar.gz \
-   -C ${TEMP_PATH} \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/nexus.tar.gz && \
+tar -zxf ${WORK_DIR}/nexus.tar.gz \
+   -C ${WORK_DIR} \
 
 # 숨김파일도 이동 처리되도록 설정
 shopt -s dotglob
 
 # nexus-버전명 디렉토리 내 모든 파일을 NEXUS_PATH 으로 이동
-mv ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep nexus-)/* \
+mv ${WORK_DIR}/$(ls ${WORK_DIR} | grep nexus-)/* \
    ${NEXUS_PATH}
 
 # sonatype-work 디렉토리 내 모든 파일을 NEXUS_DATA_PATH 으로 이동
-mv ${TEMP_PATH}/sonatype-work/* \
+mv ${WORK_DIR}/sonatype-work/* \
    ${NEXUS_DATA_PATH}
 
 # ${NEXUS_PATH}/bin/nexus 내 INSTALL4J_JAVA_HOME_OVERRIDE 설정
@@ -1833,14 +1833,14 @@ yum install -y \
    libssl-dev
 
 wget ${OPENSSL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/openssl.tar.gz && \
-tar -zxf ${TEMP_PATH}/openssl.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/openssl.tar.gz && \
+tar -zxf ${WORK_DIR}/openssl.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssl-) \
-   ${TEMP_PATH}/openssl \
-   ${TEMP_PATH}/openssl-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep openssl-) \
+   ${WORK_DIR}/openssl \
+   ${WORK_DIR}/openssl-*
 
 # https://www.lesstif.com/pages/viewpage.action?pageId=6291508
 # -prefix 옵션을 주지 않으면 기본적으로 /usr/local/ 밑에 나눠서 들어간다. 
@@ -1887,14 +1887,14 @@ yum remove -y \
    pcre
 
 wget ${PCRE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/pcre.tar.gz && \
-tar -zxf ${TEMP_PATH}/pcre.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/pcre.tar.gz && \
+tar -zxf ${WORK_DIR}/pcre.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep pcre-) \
-   ${TEMP_PATH}/pcre \
-   ${TEMP_PATH}/pcre-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep pcre-) \
+   ${WORK_DIR}/pcre \
+   ${WORK_DIR}/pcre-*
 
 cd pcre
 
@@ -1917,14 +1917,14 @@ yum remove -y \
    zlib
 
 wget ${ZLIB_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/zlib.tar.gz && \
-tar -zxf ${TEMP_PATH}/zlib.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/zlib.tar.gz && \
+tar -zxf ${WORK_DIR}/zlib.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep zlib-) \
-   ${TEMP_PATH}/zlib \
-   ${TEMP_PATH}/zlib-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep zlib-) \
+   ${WORK_DIR}/zlib \
+   ${WORK_DIR}/zlib-*
 
 cd zlib
 
@@ -1970,7 +1970,7 @@ NGINX_INSTALL_DIRECTORY_NAME=nginx-MASTER
 NGINX_PATH=${SERVER_MAIN_PATH}/${NGINX_INSTALL_DIRECTORY_NAME}
 NGINX_ACCESS_LOG_PATH=${NGINX_PATH}/log/access
 NGINX_ERROR_LOG_PATH=${NGINX_PATH}/log/error
-NGINX_TEMP_PATH=${NGINX_PATH}/temp
+NGINX_WORK_DIR=${NGINX_PATH}/temp
 NGINX_SBIN_PATH=${NGINX_PATH}/sbin
 NGINX_RUN_PATH=${NGINX_PATH}/run
 NGINX_MODULES_PATH=${NGINX_PATH}/modules
@@ -1981,7 +1981,7 @@ NGINX_SITES_AVAILABLE_PATH=${NGINX_PATH}/sites-available
 mkdir -p ${NGINX_PATH}
 mkdir -p ${NGINX_ACCESS_LOG_PATH}
 mkdir -p ${NGINX_ERROR_LOG_PATH}
-mkdir -p ${NGINX_TEMP_PATH}
+mkdir -p ${NGINX_WORK_DIR}
 mkdir -p ${NGINX_SBIN_PATH}
 mkdir -p ${NGINX_RUN_PATH}
 mkdir -p ${NGINX_MODULES_PATH}
@@ -2006,36 +2006,36 @@ yum install -y \
    gperftools-devel
 
 wget ${NGINX_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/nginx.tar.gz && \
-tar -zxf ${TEMP_PATH}/nginx.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/nginx.tar.gz && \
+tar -zxf ${WORK_DIR}/nginx.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep nginx-) \
-   ${TEMP_PATH}/nginx \
-   ${TEMP_PATH}/nginx-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep nginx-) \
+   ${WORK_DIR}/nginx \
+   ${WORK_DIR}/nginx-*
 
-# nginx-dav-ext-module : ${TEMP_PATH}/nginx/nginx-dav-ext-module 경로에 모듈 다운로드
+# nginx-dav-ext-module : ${WORK_DIR}/nginx/nginx-dav-ext-module 경로에 모듈 다운로드
 wget ${NGINX_DAV_EXT_MODULE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH}/nginx \
-   -O ${TEMP_PATH}/nginx/nginx-dav-ext-module.tar.gz && \
-tar -zxf ${TEMP_PATH}/nginx/nginx-dav-ext-module.tar.gz \
-   -C ${TEMP_PATH}/nginx
+   -P ${WORK_DIR}/nginx \
+   -O ${WORK_DIR}/nginx/nginx-dav-ext-module.tar.gz && \
+tar -zxf ${WORK_DIR}/nginx/nginx-dav-ext-module.tar.gz \
+   -C ${WORK_DIR}/nginx
 
-rename ${TEMP_PATH}/nginx/$(ls ${TEMP_PATH}/nginx | grep nginx-dav-ext-module-) \
-   ${TEMP_PATH}/nginx/nginx-dav-ext-module \
-   ${TEMP_PATH}/nginx/nginx-dav-ext-module-*
+rename ${WORK_DIR}/nginx/$(ls ${WORK_DIR}/nginx | grep nginx-dav-ext-module-) \
+   ${WORK_DIR}/nginx/nginx-dav-ext-module \
+   ${WORK_DIR}/nginx/nginx-dav-ext-module-*
 
-# nginx-rtmp-module : ${TEMP_PATH}/nginx/nginx-rtmp-module 경로에 모듈 다운로드
+# nginx-rtmp-module : ${WORK_DIR}/nginx/nginx-rtmp-module 경로에 모듈 다운로드
 wget ${NGINX_RTMP_MODULE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH}/nginx \
-   -O ${TEMP_PATH}/nginx/nginx-rtmp-module.tar.gz && \
-tar -zxf ${TEMP_PATH}/nginx/nginx-rtmp-module.tar.gz \
-   -C ${TEMP_PATH}/nginx
+   -P ${WORK_DIR}/nginx \
+   -O ${WORK_DIR}/nginx/nginx-rtmp-module.tar.gz && \
+tar -zxf ${WORK_DIR}/nginx/nginx-rtmp-module.tar.gz \
+   -C ${WORK_DIR}/nginx
 
-rename ${TEMP_PATH}/nginx/$(ls ${TEMP_PATH}/nginx | grep nginx-rtmp-module-) \
-   ${TEMP_PATH}/nginx/nginx-rtmp-module \
-   ${TEMP_PATH}/nginx/nginx-rtmp-module-*
+rename ${WORK_DIR}/nginx/$(ls ${WORK_DIR}/nginx | grep nginx-rtmp-module-) \
+   ${WORK_DIR}/nginx/nginx-rtmp-module \
+   ${WORK_DIR}/nginx/nginx-rtmp-module-*
 
 cd nginx
 
@@ -2051,14 +2051,14 @@ cd nginx
 --pid-path=${NGINX_RUN_PATH}/nginx.pid \
 --lock-path=${NGINX_RUN_PATH}/nginx.lock \
 --modules-path=${NGINX_MODULES_PATH} \
---http-client-body-temp-path=${NGINX_TEMP_PATH}/client_temp \
---http-proxy-temp-path=${NGINX_TEMP_PATH}/proxy_temp \
---http-fastcgi-temp-path=${NGINX_TEMP_PATH}/fastcgi_temp \
---http-uwsgi-temp-path=${NGINX_TEMP_PATH}/uwsgi_temp \
---http-scgi-temp-path=${NGINX_TEMP_PATH}/scgi_temp \
---with-openssl=${TEMP_PATH}/openssl \
---with-pcre=${TEMP_PATH}/pcre \
---with-zlib=${TEMP_PATH}/zlib \
+--http-client-body-temp-path=${NGINX_WORK_DIR}/client_temp \
+--http-proxy-temp-path=${NGINX_WORK_DIR}/proxy_temp \
+--http-fastcgi-temp-path=${NGINX_WORK_DIR}/fastcgi_temp \
+--http-uwsgi-temp-path=${NGINX_WORK_DIR}/uwsgi_temp \
+--http-scgi-temp-path=${NGINX_WORK_DIR}/scgi_temp \
+--with-openssl=${WORK_DIR}/openssl \
+--with-pcre=${WORK_DIR}/pcre \
+--with-zlib=${WORK_DIR}/zlib \
 --add-module=./nginx-rtmp-module \
 --with-http_ssl_module \
 --with-http_v2_module \
@@ -2323,7 +2323,7 @@ cp ${NGINX_PATH}/html/50x.html \
 
 # STATIC_FILE_MAIN_PATH 내 WEBDAV 관련 임시 디렉토리 생성 : 모든 WEBDAV 저장소가 공용으로 사용
 NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME=WEBDAV-temp
-NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME}
+NGINX_WEBDAV_CLIENT_BODY_WORK_DIR=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_CLIENT_BODY_TEMP_DIRECTORY_NAME}
 
 # STATIC_FILE_MAIN_PATH 내 WEBDAV 관련 디렉토리 생성
 NGINX_WEBDAV_MAIN_DIRECTORY_NAME=WEBDAV-MAIN
@@ -2331,7 +2331,7 @@ NGINX_WEBDAV_MAIN_PATH=${STATIC_FILE_MAIN_PATH}/${NGINX_WEBDAV_MAIN_DIRECTORY_NA
 NGINX_WEBDAV_MAIN_REPO_URL=main
 
 mkdir -p ${NGINX_WEBDAV_MAIN_PATH}
-mkdir -p ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH}
+mkdir -p ${NGINX_WEBDAV_CLIENT_BODY_WORK_DIR}
 
 # 톰캣에 수동 배포 위해 TOMCAT_INSTALL_PATH 의 webapps 심볼릭 링크 생성
 TOMCAT_WEBAPPS_PATH=${TOMCAT_INSTALL_PATH}/webapps
@@ -2411,7 +2411,7 @@ server {
    dav_access             user:rw  group:rw  all:r;
    autoindex              on;
 
-   client_body_temp_path  ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH};
+   client_body_temp_path  ${NGINX_WEBDAV_CLIENT_BODY_WORK_DIR};
    create_full_put_path   on;
    client_max_body_size   0;
 
@@ -2498,7 +2498,7 @@ chown -R ${NGINX_USER}:${NGINX_USER_GROUP} \
    ${NGINX_WEBDAV_MAIN_PATH}
 
 chown -R ${NGINX_USER}:${NGINX_USER_GROUP} \
-   ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH}
+   ${NGINX_WEBDAV_CLIENT_BODY_WORK_DIR}
 
 cat > /usr/lib/systemd/system/${NEW_USER}_${NGINX_INSTALL_DIRECTORY_NAME}.service \
 <<EOF
@@ -2792,7 +2792,7 @@ server {
    dav_access             user:rw group:rw all:r;
    autoindex              on;
 
-   client_body_temp_path  ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH};
+   client_body_temp_path  ${NGINX_WEBDAV_CLIENT_BODY_WORK_DIR};
    create_full_put_path   on;
    client_max_body_size   0;
 
@@ -3009,7 +3009,7 @@ yum update -y && \
    yum upgrade && \
    yum clean all && \
    rm -rf /var/cache/yum/* 
-#   \ rm -rf ${TEMP_PATH}/*
+#   \ rm -rf ${WORK_DIR}/*
 
 # 개발환경 디렉토리의 소유자/그룹 일괄 변경
 chown -R ${NEW_USER}:${NEW_GROUP} \
@@ -3028,6 +3028,6 @@ chown -R ${NGINX_USER}:${NGINX_USER_GROUP} \
    ${NGINX_WEBDAV_MAIN_PATH}
 
 chown -R ${NGINX_USER}:${NGINX_USER_GROUP} \
-   ${NGINX_WEBDAV_CLIENT_BODY_TEMP_PATH}
+   ${NGINX_WEBDAV_CLIENT_BODY_WORK_DIR}
 
 # reboot

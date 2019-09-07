@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# CENTOS 서버 세팅 정보 load / 작업 디렉토리로 이동
-source ${TEMP_PATH}/${SETTING_INFO}.sh
+# CENTOS 서버 세팅 정보 load
+source ${WORK_DIR}/${SETTING_INFO}.sh
 
 
 ##############################################################################
@@ -29,14 +29,14 @@ yum install -y \
    krb5-devel
 
 wget -c ${OPENSSL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/openssh.tar.gz && \
-tar -zxf ${TEMP_PATH}/openssh.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/openssh.tar.gz && \
+tar -zxf ${WORK_DIR}/openssh.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssh-) \
-   ${TEMP_PATH}/openssh \
-   ${TEMP_PATH}/openssh-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep openssh-) \
+   ${WORK_DIR}/openssh \
+   ${WORK_DIR}/openssh-*
 
 # 기존 설치된 openssh rpm, openssh-clients 제거
 # openssh-server 는 못 지움 : ssh 접속이 안됨
@@ -61,7 +61,7 @@ make install
 make clean
 
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile?category=563849
-cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
+cp ${WORK_DIR}/openssh/contrib/sshd.pam.generic \
    /etc/pamd.sshd
 
 cd ..

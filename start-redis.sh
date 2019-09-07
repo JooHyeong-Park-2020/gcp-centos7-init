@@ -44,7 +44,7 @@ NEXUS_SERVER_LOCAL_PORT=8090
 DOCKER_GROUP_ID=1205
 
 # 설치시 사용할 임시 작업 디렉토리 경로
-TEMP_PATH=/tmp
+WORK_DIR=/tmp
 
 ##############################################################################
 
@@ -117,7 +117,7 @@ chmod 755 ${LIBRARY_MAIN_PATH}
 ##############################################################################
 
 # 임시 작업 디렉토리로 이동
-cd ${TEMP_PATH}
+cd ${WORK_DIR}
 
 # 기존 시간대 설정 파일 백업 / 시간대 변경
 mv /etc/localtime /etc/localtime_org && \
@@ -170,9 +170,9 @@ systemctl enable ntpd
 EPEL_DOWNLOAD_URL=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 wget ${EPEL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/epel-release.rpm && \
-rpm -ivh ${TEMP_PATH}/epel-release.rpm
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/epel-release.rpm && \
+rpm -ivh ${WORK_DIR}/epel-release.rpm
 
 ##############################################################################
 

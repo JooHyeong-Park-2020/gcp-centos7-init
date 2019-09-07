@@ -16,7 +16,7 @@ NEW_USER_PASSWORD=dev
 # Centos 서버 설정
 ######################################
 # 설치시 사용할 임시 작업 디렉토리 경로
-TEMP_PATH=/tmp
+WORK_DIR=/tmp
 
 SSH_CONNECTION_PORT=2435
 DOCKER_GROUP_ID=1205
@@ -158,7 +158,7 @@ chown -R ${NEW_USER}:${SERVER_USER_GROUP} ${SERVER_MAIN_PATH}
 ##############################################################################
 
 # 임시 작업 디렉토리로 이동
-cd ${TEMP_PATH}
+cd ${WORK_DIR}
 
 # 기존 시간대 설정 파일 백업 / 시간대 변경
 mv /etc/localtime /etc/localtime_org && \
@@ -211,9 +211,9 @@ systemctl enable ntpd
 EPEL_DOWNLOAD_URL=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 wget ${EPEL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/epel-release.rpm && \
-rpm -ivh ${TEMP_PATH}/epel-release.rpm
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/epel-release.rpm && \
+rpm -ivh ${WORK_DIR}/epel-release.rpm
 
 ##############################################################################
 
@@ -240,14 +240,14 @@ ldconfig
 ZLIB_DOWNLOAD_URL=http://zlib.net/zlib-1.2.11.tar.gz
 
 wget -c ${ZLIB_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/zlib.tar.gz && \
-tar -zxf ${TEMP_PATH}/zlib.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/zlib.tar.gz && \
+tar -zxf ${WORK_DIR}/zlib.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep zlib-) \
-   ${TEMP_PATH}/zlib \
-   ${TEMP_PATH}/zlib-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep zlib-) \
+   ${WORK_DIR}/zlib \
+   ${WORK_DIR}/zlib-*
 
 cd zlib
 
@@ -294,14 +294,14 @@ PCRE_DOWNLOAD_URL=https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
 # yum install -y zlib-devel
 
 wget ${PCRE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/pcre.tar.gz && \
-tar -zxf ${TEMP_PATH}/pcre.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/pcre.tar.gz && \
+tar -zxf ${WORK_DIR}/pcre.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep pcre-) \
-   ${TEMP_PATH}/pcre \
-   ${TEMP_PATH}/pcre-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep pcre-) \
+   ${WORK_DIR}/pcre \
+   ${WORK_DIR}/pcre-*
 
 cd pcre
 
@@ -347,14 +347,14 @@ OPENSSL_DOWNLOAD_URL=https://www.openssl.org/source/openssl-1.1.1c.tar.gz
 
 
 wget ${OPENSSL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/openssl.tar.gz && \
-tar -zxf ${TEMP_PATH}/openssl.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/openssl.tar.gz && \
+tar -zxf ${WORK_DIR}/openssl.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssl-) \
-   ${TEMP_PATH}/openssl \
-   ${TEMP_PATH}/openssl-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep openssl-) \
+   ${WORK_DIR}/openssl \
+   ${WORK_DIR}/openssl-*
 
 # 기존 openssl 제거: openssl-libs 는 못 지움, 의존하는 곳이 너무 많음
 rpm -e --nodeps openssl
@@ -425,14 +425,14 @@ yum install -y \
    krb5-devel
 
 wget -c ${OPENSSL_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/openssh.tar.gz && \
-tar -zxf ${TEMP_PATH}/openssh.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/openssh.tar.gz && \
+tar -zxf ${WORK_DIR}/openssh.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep openssh-) \
-   ${TEMP_PATH}/openssh \
-   ${TEMP_PATH}/openssh-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep openssh-) \
+   ${WORK_DIR}/openssh \
+   ${WORK_DIR}/openssh-*
 
 # 기존 설치된 openssh rpm, openssh-clients 제거
 # openssh-server 는 못 지움 : ssh 접속이 안됨
@@ -457,7 +457,7 @@ make install
 make clean
 
 # https://servern54l.tistory.com/entry/Linux-Server-OpenSSH-Source-Compile?category=563849
-cp ${TEMP_PATH}/openssh/contrib/sshd.pam.generic \
+cp ${WORK_DIR}/openssh/contrib/sshd.pam.generic \
    /etc/pamd.sshd
 
 cd ..
@@ -522,26 +522,26 @@ rm -rf /var/lib/docker && \
 rm -rf /etc/yum.repos.d/docker-ce.repo
 
 wget ${CONTAINEDR_SELINUX_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/container-selinux.rpm && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/container-selinux.rpm && \
 wget ${DOCKER_CE_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/docker-ce.rpm && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/docker-ce.rpm && \
 wget ${DOCKER_CE_CLI_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/docker-ce-cli.rpm && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/docker-ce-cli.rpm && \
 wget ${CONTAINEDR_IO_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/containerd.io.rpm
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/containerd.io.rpm
 
 # 도커 설치 전 의존 패키지 먼저 설치
 rpm -Uvh \
-   ${TEMP_PATH}/container-selinux.rpm
+   ${WORK_DIR}/container-selinux.rpm
 
 rpm -Uvh \
-   ${TEMP_PATH}/docker-ce.rpm \
-   ${TEMP_PATH}/docker-ce-cli.rpm \
-   ${TEMP_PATH}/containerd.io.rpm
+   ${WORK_DIR}/docker-ce.rpm \
+   ${WORK_DIR}/docker-ce-cli.rpm \
+   ${WORK_DIR}/containerd.io.rpm
 
 # docker 그룹 추가 : 보통 도커 설치시 자동으로 추가됨
 # groupadd docker
@@ -568,26 +568,26 @@ DB4_UTILS_DOWNLOAD_URL=http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/
 
 # VSFTPD 다운로드 / 압축 해제
 wget ${VSFTPD_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/vsftpd.tar.gz && \
-tar -zxf ${TEMP_PATH}/vsftpd.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/vsftpd.tar.gz && \
+tar -zxf ${WORK_DIR}/vsftpd.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep vsftpd-) \
-   ${TEMP_PATH}/vsftpd \
-   ${TEMP_PATH}/vsftpd-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep vsftpd-) \
+   ${WORK_DIR}/vsftpd \
+   ${WORK_DIR}/vsftpd-*
 
 # DB4, DB4-UTILS 다운로드 / 설치
 wget ${DB4_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/db4.rpm && \
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/db4.rpm && \
 wget ${DB4_UTILS_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/db4-utils.rpm
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/db4-utils.rpm
 
 rpm -Uvh \
-   ${TEMP_PATH}/db4.rpm \
-   ${TEMP_PATH}/db4-utils.rpm
+   ${WORK_DIR}/db4.rpm \
+   ${WORK_DIR}/db4-utils.rpm
 
 ##############################################################################
 
@@ -613,14 +613,14 @@ yum install -y \
    zlib-devel
 
 wget ${GIT_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/git.tar.gz && \
-tar -zxf ${TEMP_PATH}/git.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/git.tar.gz && \
+tar -zxf ${WORK_DIR}/git.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep git-) \
-   ${TEMP_PATH}/git \
-   ${TEMP_PATH}/git-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep git-) \
+   ${WORK_DIR}/git \
+   ${WORK_DIR}/git-*
 
 cd git
 
@@ -678,14 +678,14 @@ REDIS_CLI_EXEC_FILE_PATH=${REDIS_BIN_PATH}/redis-cli
 REDIS_PID_FILE_PATH=${REDIS_PID_PATH}/redis.pid
 
 wget ${REDIS_DOWNLOAD_URL} \
-   -P ${TEMP_PATH} \
-   -O ${TEMP_PATH}/redis.tar.gz && \
-tar -zxf ${TEMP_PATH}/redis.tar.gz \
-   -C ${TEMP_PATH}
+   -P ${WORK_DIR} \
+   -O ${WORK_DIR}/redis.tar.gz && \
+tar -zxf ${WORK_DIR}/redis.tar.gz \
+   -C ${WORK_DIR}
 
-rename ${TEMP_PATH}/$(ls ${TEMP_PATH} | grep redis-) \
-   ${TEMP_PATH}/redis \
-   ${TEMP_PATH}/redis-*
+rename ${WORK_DIR}/$(ls ${WORK_DIR} | grep redis-) \
+   ${WORK_DIR}/redis \
+   ${WORK_DIR}/redis-*
 
 cd redis
 
