@@ -13,15 +13,15 @@ cd ${TEMP_PATH}
 
 ######################################
 
+SCRIPT_LIST_POSTFIX=_scriptList
+
 for workName in ${workList[@]}; do
 
     mkdir -p ${TEMP_PATH}/${workName}
 
-    scriptList=${!$workName_scriptList[@]}
+    eval scriptList=\( \${${workName}${SCRIPT_LIST_POSTFIX}[@]} \)
 
     for scriptName in $scriptList; do
-
-        echo "-----"$workName "--" $scriptName" 실행-----"
 
         curl ${GIT_REPO_PATH}/${workName}/${scriptName}.sh \
             > ${TEMP_PATH}/${workName}/${scriptName}.sh
