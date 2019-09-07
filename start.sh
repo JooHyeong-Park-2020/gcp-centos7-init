@@ -2,9 +2,7 @@
 
 # CENTOS 서버 세팅 정보 down 후 작업 디렉토리에 복사 / 작업 디렉토리로 이동
 
-SETTING_INFO_DIRECTORY_NAME=_centos7_settingInfo
-
-curl ${GIT_REPO_PATH}/${SETTING_INFO_DIRECTORY_NAME}/${SETTING_INFO_NAME}.sh \
+curl ${GIT_REPO_PATH}/${SETTING_INFO_DIRECTORY_PATH}/${SETTING_INFO_NAME}.sh \
     > ./${SETTING_INFO_NAME}.sh
 
 cp ./${SETTING_INFO_NAME}.sh ${TEMP_PATH}/${SETTING_INFO_NAME}.sh
