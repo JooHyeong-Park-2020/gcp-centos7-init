@@ -30,7 +30,7 @@ for workName in ${workList[@]}; do
 
         chmod 700 ${TEMP_PATH}/${workName}/${scriptName}.sh
 
-        ${TEMP_PATH}/${workName}/${scriptName}.sh
+        . ${TEMP_PATH}/${workName}/${scriptName}.sh
 
     done
 
