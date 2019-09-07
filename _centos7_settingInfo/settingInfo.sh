@@ -64,20 +64,6 @@ https_authentication_scriptList=( \
     "letsEncrypt"
 )
 
-for workName in ${workList[@]}; do
-
-    echo "--------------"$workName" 실행--------------"
-
-    # mkdir -p ${TEMP_PATH}/${workName}
-
-    for scriptName in ${!$workName_scriptList[@]}; do
-
-        echo "--------------"$scriptName" 실행--------------"
-
-    done 
-
-done
-
 #################################################################
 # 신규 사용자 계정 설정
 #################################################################
