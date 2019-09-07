@@ -25,6 +25,8 @@ for workName in ${workList[@]}; do
 
     for scriptName in $scriptList; do
 
+        echo "---------"${scriptName}"---------"
+
         curl ${GIT_REPO_PATH}/${workName}/${scriptName}.sh \
             > ${TEMP_PATH}/${workName}/${scriptName}.sh
 
