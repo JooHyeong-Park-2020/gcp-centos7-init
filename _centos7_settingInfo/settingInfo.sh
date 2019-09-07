@@ -1,19 +1,22 @@
 #!/bin/bash
 
+# 
 workList=( \
     "initServer" \
+    "createUser" \
     "tools" \
-    "db" \
-    "server" \
-    "domain" \
-    "https_authentication " \
-    "bash_profile" \
-    "ownerShip,cleanUp" \
+#    "db" \
+#    "server" \
+#    "domain" \
+#    "https_authentication " \
+#    "bash_profile" \
+#    "ownerShip,cleanUp" \
 )
+
+##############################################################################
 
 # initServer 세팅시 실행 스크립트 목록
 initServer_scriptList=( \
-    "userDirectorty,ownerShip" \
     "yum,epel" \
     "time,language,libraryPath" \
     "zlib,pcre,openssl" \
@@ -23,6 +26,11 @@ initServer_scriptList=( \
     "D2CodingFont" \
     "chrome" \
     "docker" \
+)
+
+createUser__scriptList=( \
+    "createUser" \
+    "userDirectorty,ownerShip" \
 )
 
 # 개발 tools 세팅시 실행 스크립트 목록
@@ -77,6 +85,7 @@ NEW_USER_PASSWORD=dev
 # Centos 서버 설정
 ######################################
 SSH_CONNECTION_PORT=2435
+RDP_CONNECTION_PORT=3389
 DOCKER_GROUP_ID=1205
 
 

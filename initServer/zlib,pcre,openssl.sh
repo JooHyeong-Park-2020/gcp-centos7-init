@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CENTOS 서버 세팅 정보 load / 작업 디렉토리로 이동
+# CENTOS 서버 세팅 정보 load
 source ${WORK_DIR}/${SETTING_INFO}.sh
 
 
@@ -172,5 +172,3 @@ cd ..
 #    /usr/lib64/libssl.so.1.1 && \
 # cp /usr/local/lib64/libcrypto.so.1.1 \
 #    /usr/lib64/libcrypto.so.1.1
-
-##############################################################################

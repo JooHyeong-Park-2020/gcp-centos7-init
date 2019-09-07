@@ -6,26 +6,6 @@ source ${WORK_DIR}/${SETTING_INFO}.sh
 
 ##############################################################################
 
-# 사용자 그룹 / 유저 생성 / 유저 패스워드 변경
-groupadd -g ${NEW_GROUP_ID} ${NEW_GROUP} && \
-useradd -g ${NEW_GROUP} ${NEW_USER} && \
-echo ${NEW_USER_PASSWORD} | passwd ${NEW_USER} --stdin
-
-# 사용자 전용 bin 디렉토리 생성
-mkdir -p /home/${NEW_USER}/bin
-
-# DB_USER_GROUP, NGINX_USER_GROUP, SERVER_USER_GROUP 생성
-groupadd ${DB_USER_GROUP}
-groupadd ${NGINX_USER_GROUP}
-groupadd ${SERVER_USER_GROUP}
-
-# NEW_USER 를 각 그룹에 추가
-usermod -aG ${DB_USER_GROUP} ${NEW_USER}
-usermod -aG ${NGINX_USER_GROUP} ${NEW_USER}
-usermod -aG ${SERVER_USER_GROUP} ${NEW_USER}
-
-##############################################################################
-
 # 개발환경 디렉토리 생성 / 디렉토리별 권한 부여
 mkdir -p ${DEV_TOOLS_PATH}
 
@@ -57,4 +37,3 @@ chown -R ${NEW_USER}:${NGINX_USER_GROUP} ${STATIC_FILE_MAIN_PATH}
 mkdir -p ${SERVER_MAIN_PATH}
 chown -R ${NEW_USER}:${SERVER_USER_GROUP} ${SERVER_MAIN_PATH}
 
-##############################################################################
