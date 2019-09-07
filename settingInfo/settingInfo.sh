@@ -1,13 +1,12 @@
 #!/bin/bash
 
-
 workList=( \
     "initServer" \
     "tools" \
     "db" \
     "server" \
     "domain" \
-    "https_letsEncrypt" \
+    "https_authentication " \
     "bash_profile" \
     "ownerShip,cleanUp" \
 )
@@ -61,7 +60,7 @@ domain_scriptList=( \
 )
 
 # letsEncrypt 로 https 인증시 실행 스크립트 목록
-https_letsEncrypt_scriptList=( \
+https_authentication_scriptList=( \
     "letsEncrypt"
 )
 

@@ -11,18 +11,38 @@ source ${TEMP_PATH}/${SETTING_INFO_NAME}.sh
 
 cd ${TEMP_PATH}
 
-# 
-workName=initServer
+######################################
 
-scriptList=( \
-    "userDirectorty,ownerShip" \
-    "yum,epel" \
-    "time,language,libraryPath" \
-    "zlib,pcre,openssl" \
-    "openssh,sshd_config" \
-)
+for workName in ${workList[@]}; do
 
-mkdir -p ${TEMP_PATH}/${workName}
+    echo "--------------"$workName" 실행--------------"
+    mkdir -p ${TEMP_PATH}/${workName}
+
+    local scriptListName="$workName__scriptList"
+
+    for scriptName in ${!scriptListName[@]}; do
+
+        echo "-----"$scriptName" 실행-----"
+
+
+    done
+
+done
+
+######################################
+
+executeScript()
+{
+    local scriptName=$1
+
+    curl ${GIT_REPO_PATH}/${workName}/${scriptName}.sh \
+        > ${TEMP_PATH}/${workName}/${scriptName}.sh
+    chmod 700 ${TEMP_PATH}/${workName}/${scriptName}.sh
+    ${TEMP_PATH}/${workName}/${scriptName}.sh
+
+}
+
+
 
 curl "${GIT_REPO_PATH}/${workName}/00-${workName}.sh" \
     > ${TEMP_PATH}/${workName}/00-${workName}.sh

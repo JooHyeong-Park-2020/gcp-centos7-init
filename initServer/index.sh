@@ -8,7 +8,8 @@
 # 6. openssh,sshd_config.sh
 # 7. 
 
-directoryName=$1
+workName=$1
+shift
 scriptList=( "$@" )
 
 function executeScript()
@@ -17,18 +18,16 @@ function executeScript()
 
     source ${TEMP_PATH}/${SETTING_INFO_NAME}.sh
 
-    curl ${GIT_REPO_PATH}/${directoryName}/${scriptName}.sh \
-        > ${TEMP_PATH}/${directoryName}/${scriptName}.sh
-    chmod 700 ${TEMP_PATH}/${directoryName}/${scriptName}.sh
-    ${TEMP_PATH}/${directoryName}/${scriptName}.sh
+    curl ${GIT_REPO_PATH}/${workName}/${scriptName}.sh \
+        > ${TEMP_PATH}/${workName}/${scriptName}.sh
+    chmod 700 ${TEMP_PATH}/${workName}/${scriptName}.sh
+    ${TEMP_PATH}/${workName}/${scriptName}.sh
 
 }
 
-for scriptName in ${scriptList[@]}
+for scriptName in ${scriptList[@]}; do
 
-do
-
-echo "-----"$scriptName" 실행-------"
+echo "--------------"$scriptName" 실행--------------"
 
 executeScript $scriptName
 
