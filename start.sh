@@ -18,12 +18,12 @@ for workName in ${workList[@]}; do
     echo "--------------"$workName" 실행--------------"
     mkdir -p ${TEMP_PATH}/${workName}
 
-    local scriptListName="$workName__scriptList"
+    scriptList="$workName__scriptList"
 
-    for scriptName in ${!scriptListName[@]}; do
+    for scriptName in $scriptList; do
 
         echo "-----"$scriptName" 실행-----"
-
+        executeScript $scriptName
 
     done
 
