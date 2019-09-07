@@ -13,32 +13,31 @@ cd ${TEMP_PATH}
 
 ######################################
 
-function executeScript()
-{
-    local scriptName=$1
+# function executeScript()
+# {
+#     local scriptName=$1
 
-    echo "$workName  $scriptName  실행"
+#     echo "$workName  $scriptName  실행"
 
-
-
-}
+# }
 
 ######################################
 
 for workName in ${workList[@]}; do
 
-    echo "--------------"$workName" 실행--------------"
     mkdir -p ${TEMP_PATH}/${workName}
 
-    scriptList="$workName_scriptList"
+    scriptList="${workName_scriptList[@]}"
 
     for scriptName in $scriptList; do
 
-        echo "-----"$scriptName" 실행-----"
-        
+        echo "-----"$workName $scriptName" 실행-----"
+
         curl ${GIT_REPO_PATH}/${workName}/${scriptName}.sh \
             > ${TEMP_PATH}/${workName}/${scriptName}.sh
+
         chmod 700 ${TEMP_PATH}/${workName}/${scriptName}.sh
+
         ${TEMP_PATH}/${workName}/${scriptName}.sh
 
     done
