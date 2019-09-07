@@ -17,6 +17,8 @@ executeScript()
 {
     local scriptName=$1
 
+    echo "$workName  $scriptName  실행"
+
     curl ${GIT_REPO_PATH}/${workName}/${scriptName}.sh \
         > ${TEMP_PATH}/${workName}/${scriptName}.sh
     chmod 700 ${TEMP_PATH}/${workName}/${scriptName}.sh
@@ -25,7 +27,6 @@ executeScript()
 }
 
 ######################################
-
 
 for workName in ${workList[@]}; do
 
@@ -42,15 +43,3 @@ for workName in ${workList[@]}; do
     done
 
 done
-
-######################################
-
-
-
-
-# curl "${GIT_REPO_PATH}/${workName}/00-${workName}.sh" \
-#     > ${TEMP_PATH}/${workName}/00-${workName}.sh
-
-# chmod 700 ${TEMP_PATH}/${workName}/00-${workName}.sh
-
-# ${TEMP_PATH}/${workName}/00-${workName}.sh ${workName} "${scriptList[@]}"
