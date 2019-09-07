@@ -23,7 +23,7 @@ for workName in ${workList[@]}; do
 
     eval scriptList=\( \${${workName}${SCRIPT_LIST_POSTFIX}[@]} \)
 
-    for scriptName in $scriptList; do
+    for scriptName in ${scriptList[@]}; do
 
         echo "---------"${scriptName}"---------"
 
@@ -32,7 +32,7 @@ for workName in ${workList[@]}; do
 
         chmod 700 ${TEMP_PATH}/${workName}/${scriptName}.sh
 
-        . ${TEMP_PATH}/${workName}/${scriptName}.sh
+        ${TEMP_PATH}/${workName}/${scriptName}.sh
 
     done
 
